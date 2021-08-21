@@ -51,12 +51,11 @@ return [
     'mode'        => ['vue', 'html'], //页面模式，可选项为vue与html，默认自带后台接口，如果设置vue则开启Ant Design Vue Admin页面开发，如果设置html则开启普通blade页面开发。无论该参数是否设置，开发的接口都会被开放。
     //菜单路由配置，uri为完整URL链接，title为在菜单上显示的内容，breadcrumbTitle为面包屑上显示的标题，不设置默认为title
     'menu_routes' => [
-        //前端页面的路由，html模式下为页面绝对地址，vue模式下为路由path地址
+        //详见开始开发章节
         [
-            "title"    => "首页", //页面名称，将显示在侧边栏及标签页上，如果不设置breadcrumbTitle也将设置为面包屑。
-            "isHome"   => true, //使用ant-design-vue-admin时此指定此页面组为首页/首页，设置的children将被无视，如需设置首页内容需要自定义vue项目的home.vue文件，只能设置在第一层且只能设置一个。
+            "title"    => "首页",
+            "isHome"   => true,
             "children" => [
-                //二级导航栏
                 [
                     "uri"   => "/software/home/home",
                     "title" => "首页"
@@ -68,7 +67,7 @@ return [
                 [
                     "uri"             => "/software/test/diy_list",
                     "title"           => "自定义页面",
-                    "breadcrumbTitle" => "自定义列表页" //自定义面包屑显示内容
+                    "breadcrumbTitle" => "自定义列表页"
                 ],
                 [
                     "uri"             => "/software/home/list",
@@ -76,7 +75,7 @@ return [
                     "breadcrumbTitle" => "软件管理列表页"
                 ],
                 [
-                    "visible" => false, //设置左侧导航栏中不显示该页面
+                    "visible" => false,
                     "uri"     => "/software/home/create",
                     "title"   => "软件创建页"
                 ],
@@ -129,3 +128,123 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
 }
 ```
 ### 3.开始开发
+这里我推荐在新的Module中进行开发以便项目分包处理。
+```shell script
+$ php artisan module:make SoftwareManager
+```
+其中SoftwareManager为模块名，可以随意起名，这里以SoftwareManager作为范例。
+#### 控制器
+你需要创建一个继承自AntOAController类的控制器Modules\AntOA\Http\Controllers\AntOAController并实现其方法，例如：
+```php
+namespace Modules\SoftwareManager\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Modules\AntOA\Http\Controllers\AntOAController;
+use Modules\AntOA\Http\Utils\AuthInterface;
+use Modules\AntOA\Http\Utils\Grid;
+
+class SoftwareManagerController extends AntOAController {
+    public function __construct(AuthInterface $auth) {
+        parent::__construct($auth);
+    }
+    /**
+     * 初始化Grid对象
+     * @param Grid $grid
+     */
+    public function grid(Grid $grid) {
+        ;//自己实现
+    }
+    /**
+     * 处理统计数据
+     * @param Request $req 客户端请求参数
+     * @return string 统计结果
+     */
+    public function statistic(Request $req) {
+        return "";
+    }
+    //其他自定义方法页面等
+}
+```
+其中Grid方法就是我们要编写的列表页、编辑页、创建页的内容控制位置。具体编写方法请看：[Grid的使用](./Grid.README.md)
+#### 路由
+首先需要在你的模块中配置你模块所需的路由：
+
+需要修改/Modules/SoftwareManager/Routes/web.php：
+```php
+use Illuminate\Support\Facades\Route;
+use Modules\AntOA\Http\Utils\RouteRegister;
+
+Route::prefix('software')->group(function() { //这里的software为自定义的访问页面路径
+    RouteRegister::register('/home', 'SoftwareManagerController'); //web模式下的列表、详情、创建页
+    Route::get('/home/home', 'SoftwareManagerController@home'); //你控制器自己的页面，如果你不需要自定义页面那么可以不设置
+});
+//此范例注册了/software/home/list、/software/home/create、/software/home/list/software/home/edit路由
+```
+需要修改/Modules/SoftwareManager/Routes/api.php：
+```php
+use Illuminate\Support\Facades\Route;
+use Modules\AntOA\Http\Utils\RouteRegister;
+
+Route::prefix('software')->group(function() { //这里的software要与web中设置的一致，自己定义接口就不做例子了
+    RouteRegister::registerApi('/home', 'SoftwareManagerController');
+});
+//此范例注册了/api/software/home/list、/api/software/home/create、/api/software/home/detail、/api/software/home/edit路由
+```
+其次要设置页面左侧导航的路由
+/Modules/AntOA/Config/config.php中参照原有配置编写新页面的导航：
+```php
+//如果您使用vue模式，那么至少有一个一级导航栏设置isHome为true。
+//如果您自定义页面，那么
+return [
+    'menu_routes' => [
+        //一级导航
+        //前端页面的路由，html模式下为页面绝对地址(注意，一定要是在web.php中注册过的路由路径)，vue模式下为路由path地址
+        [
+            "title"    => "首页",
+            //title为页面名称，将显示在左侧导航栏及标签页上，如果不设置breadcrumbTitle也将设置为面包屑。
+            "isHome"   => true,
+            //isHome用于vue模式，指定此页面组为首页/首页，设置的children将被无视，如需设置首页内容需要自定义vue项目的home.vue文件，只能设置在第一层且只能设置一个。
+            "children" => [
+                //二级导航
+                [
+                    "uri"   => "/software/home/home",
+                    "title" => "首页"
+                ]
+            ]
+        ], [
+            "title"    => "软件管理",
+            "children" => [
+                [
+                    "uri"             => "/software/test/diy_list",
+                    "title"           => "自定义页面",
+                    "breadcrumbTitle" => "自定义列表页" //自定义面包屑显示内容
+                ],
+                [
+                    "uri"             => "/software/home/list",
+                    "title"           => "软件管理",
+                    "breadcrumbTitle" => "软件管理列表页"
+                ],
+                [
+                    "visible" => false, //设置左侧导航栏中不显示该页面
+                    "uri"     => "/software/home/create",
+                    "title"   => "软件创建页"
+                ],
+                [
+                    "visible" => false,
+                    "uri"     => "/software/home/edit",
+                    "title"   => "软件编辑页"
+                ]
+            ]
+        ]
+    ]
+    /*
+        此路由配置后侧边导航栏为：
+        首页
+        └──首页
+        软件管理
+        ├──自定义页面
+        └──软件管理
+    */
+];
+```
+### 4.调试与部署

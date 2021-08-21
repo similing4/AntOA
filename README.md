@@ -194,17 +194,6 @@ Route::prefix('software')->group(function() { //这里的software要与web中设
 /Modules/AntOA/Config/config.php中参照原有配置编写新页面的导航：
 ```php
 //如果您使用vue模式，那么至少有一个一级导航栏设置isHome为true。
-/*
-如果您在vue模式下自定义页面，那么需要在src/pages/page.async.js中自行编写vue对应的路由，如范例工程的最后一项：
-{
-    '/software/test/diy_list': {
-		path: '/software/test/diy_list',
-		name: '自定义列表页',
-		component: () => import('@/pages/diy/list.vue')
-	}
-}
-如有传参需求可到ant-design-vue-admin项目中查看异步路由的编写方法。
-*/
 return [
     'menu_routes' => [
         //一级导航
@@ -262,3 +251,59 @@ return [
 使用npm命令即可。注意通过设置index.php解决跨域问题，详情参考[frontend/readme.md](./frontend/README.md)
 #### html模式：
 浏览器直接访问 你的域名/antoa/auth/login 即可登录调试运行。
+
+## 四、自定义页面
+vue模式与html模式的自定义页面方式有所不同：
+### 1.vue模式
+首先您需要在src/pages/page.async.js中自行编写vue对应的路由，如范例工程的最后一项：
+```
+{
+    '/software/test/diy_list': {
+		path: '/software/test/diy_list',
+		name: '自定义列表页',
+		component: () => import('@/pages/diy/list.vue')
+	}
+}
+```
+这个path由您随意定义，但不能以/create、/edit、/list结尾，否则会使用对应页面的路由。
+
+详情可参考ant-design-vue-admin项目中异步路由的编写方法。
+
+### 2.html模式
+首先您需要在路由的web.php中注册您要自定义的页面路由。
+然后要在自己的控制器中使用自定义页面（注意，一定要在参数中带上$this->getCustomParam($request)）：
+```php
+    /**
+     * 测试首页
+     * @param Request $request
+     * @return Renderable 列表页页面
+     */
+    public function home(Request $request) {
+        return view("softwaremanager::home.home", $this->getCustomParam($request));
+    }
+```
+这里的view为你自己创建的.blade.php视图。该视图的模板如下：
+```blade
+@extends('antoa::inc.base_inc')
+@section('head')
+    <!--此处位于head标签对内，可以填写你的script标签、link标签等-->
+@endsection
+@section('content')
+    <div id="APP">
+        <!--此处可以设置vue页面内容，如果不需要可以把外面的id="APP"这层div去掉-->
+    </div>
+@endsection
+@section('script')
+    <script>
+        //这里用来写vue脚本，其实只是为了写vue方便而有了这个地方，不使用vue可以不用下面的写法。
+        window.APP_VUE = new Vue({
+            el: "#APP",
+            data() {
+                return {
+                    helloWorld: "欢迎使用AntOA后台管理系统"
+                };
+            }
+        });
+    </script>
+@endsection
+```

@@ -30,12 +30,12 @@ class GridList implements JsonSerializable {
     private $row_buttons = []; //每行编辑与删除外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
     private $join = []; //左连接的所有表
     private $delete_join = []; //删除表的时候这里面的所有相关表都会根据条件删除
-    private $hasCreate = true;
-    private $hasEdit = true;
-    private $hasDelete = true;
-    private $_list = null;
-    private $displayColumn = null;
-    private $_order = null;
+    private $hasCreate = true; //列表页是否有创建按钮
+    private $hasEdit = true; //列表页是否有编辑按钮
+    private $hasDelete = true; //列表页是否有删除按钮
+    private $_list = null; //DB::table传入的表名
+    private $displayColumn = null; //编辑页与创建页中使用的字段
+    private $_order = null; //排序规则
 
     /**
      * 构造方法
@@ -233,7 +233,7 @@ class GridList implements JsonSerializable {
      * @param String $buttonType 按钮的type属性，默认为primary
      * @return GridList 返回this以便链式调用
      */
-    public function apiButtonWithConfrim($buttonName, $url, $buttonType = 'primary') {
+    public function apiButtonWithConfirm($buttonName, $url, $buttonType = 'primary') {
         $this->header_buttons[] = [
             "btn_do_type" => "api_confirm",
             "title"       => $buttonName,

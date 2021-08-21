@@ -1,0 +1,13 @@
+{
+    "name": "AntOA",
+    "alias": "antoa",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\AntOA\\Providers\\AntOAServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

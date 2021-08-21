@@ -1,0 +1,20 @@
+.beauty-scroll{
+    scrollbar-color: #13c2c2 #13c2c2; /* 第一个方块颜色，第二个轨道颜色(用于更改火狐浏览器样式) */
+    scrollbar-width: thin; /* 火狐滚动条无法自定义宽度，只能通过此属性使滚动条宽度变细 */
+    -ms-overflow-style:none; /* 隐藏滚动条(在IE和Edge两个浏览器中很难更改样式，固采取隐藏方式) */
+}
+/* 以下是chrome浏览器自定义滚动条样式方式 */
+.beauty-scroll::-webkit-scrollbar {/*滚动条整体样式*/
+    width: 3px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 1px;
+}
+.beauty-scroll::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,0);
+    background: #13c2c2;
+}
+.beauty-scroll::-webkit-scrollbar-track {/*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,0);
+    border-radius: 3px;
+    background: #13c2c2;
+}

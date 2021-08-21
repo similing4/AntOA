@@ -1,7 +1,7 @@
 # AntOA
  一个基于Vue AntD Admin二次开发与 Laravel 结合的后台OA管理系统
 
-## 使用前准备
+## 一、使用前准备
 ### 1.确定开发模式
 本项目有两种开发模式：html模式与vue模式，二者在页面开发与展示效果上有些许不同。
 #### html模式介绍
@@ -17,3 +17,18 @@ vue模式下页面是经过修改的Vue AntD Admin项目，采用单入口模式
 因有两种开发模式，针对不同模式的自定义页面有所不同。vue模式下使用的是动态路由注册的页面，因此对命名有一定的要求。html模式下使用的是web路由，因此自定义时需要自己创建页面路由。
 #### 有关插件本身的可扩展性
 框架本身受开发方式的局限性可能不是很适合做框架本身的插件开发，后续会完善针对框架的插件开发能力。
+
+## 二、框架的使用
+### 1.安装部署
+#### laravel-modules
+由于项目基于laravel-modules进行开发，因此您需要安装laravel-modules以支持本框架。laravel-modules安装方法：
+https://nwidart.com/laravel-modules/v6/installation-and-setup
+#### nodejs
+如果您想使用vue开发模式进行开发，那么您需要安装对应版本的nodejs且保证npm能正常运行。
+#### 创建AntOA模块并克隆覆盖
+安装好laravel-modules模块后您可以直接使用命令行创建注册本模块后覆盖：
+```bash
+$ php artisan module:make AntOA 
+```
+
+### 2.

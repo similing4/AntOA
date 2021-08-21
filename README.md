@@ -194,7 +194,17 @@ Route::prefix('software')->group(function() { //这里的software要与web中设
 /Modules/AntOA/Config/config.php中参照原有配置编写新页面的导航：
 ```php
 //如果您使用vue模式，那么至少有一个一级导航栏设置isHome为true。
-//如果您自定义页面，那么
+/*
+如果您在vue模式下自定义页面，那么需要在src/pages/page.async.js中自行编写vue对应的路由，如范例工程的最后一项：
+{
+    '/software/test/diy_list': {
+		path: '/software/test/diy_list',
+		name: '自定义列表页',
+		component: () => import('@/pages/diy/list.vue')
+	}
+}
+如有传参需求可到ant-design-vue-admin项目中查看异步路由的编写方法。
+*/
 return [
     'menu_routes' => [
         //一级导航
@@ -248,3 +258,7 @@ return [
 ];
 ```
 ### 4.调试与部署
+#### vue模式：
+使用npm命令即可。注意通过设置index.php解决跨域问题，详情参考[frontend/readme.md](./frontend/README.md)
+#### html模式：
+浏览器直接访问 你的域名/antoa/auth/login 即可登录调试运行。

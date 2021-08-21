@@ -133,3 +133,73 @@ $grid->list("user")
 每行按钮会自动带上该行的id参数。
 
 ## 2.Create创建页配置
+```php
+        $grid->createForm("software")
+            ->column(GridCreateForm::COLUMN_TEXT, 'title', '软件名')
+            ->column(GridCreateForm::COLUMN_PICTURE, 'icon', '软件图标')
+            ->column(GridCreateForm::COLUMN_PICTURES, 'pictures', '图集')
+            ->column(GridCreateForm::COLUMN_TEXT, 'keyword', '关键词')
+            ->column(GridCreateForm::COLUMN_TEXT, 'version', '版本号')
+            ->column(GridCreateForm::COLUMN_TEXT, 'download_url', '软件下载地址')
+            ->column(GridCreateForm::COLUMN_TEXT, 'size', '大小(MB)')
+            ->column(GridCreateForm::COLUMN_TEXT, 'os_version', '系统版本要求')
+            ->column(GridCreateForm::COLUMN_TEXT, 'language', '语言要求')
+            ->column(GridCreateForm::COLUMN_TEXT, 'author', '作者')
+            ->column(GridCreateForm::COLUMN_TEXTAREA, 'description', '应用介绍')
+            ->column(GridCreateForm::COLUMN_TEXT, 'price', '价格 单位分')
+            ->column(GridCreateForm::COLUMN_CHILDREN_CHOOSE, 'category_id', '所属分类', (new GridList("category"))
+                ->column(GridList::TEXT, "id", "ID")
+                ->column(GridList::TEXT, "title", "分类名")
+                ->setDisplayColumn("title"))
+            ->column(GridCreateForm::COLUMN_RADIO, 'state', '状态', [
+                "0" => "禁用",
+                "1" => "启用"
+            ]);
+        $grid->editForm("software")
+            ->column(GridEditForm::COLUMN_HIDDEN, 'id', 'ID')
+            ->column(GridEditForm::COLUMN_TEXT, 'title', '软件名')
+            ->column(GridEditForm::COLUMN_PICTURE, 'icon', '软件图标')
+            ->column(GridEditForm::COLUMN_PICTURES, 'pictures', '图集')
+            ->column(GridEditForm::COLUMN_TEXT, 'keyword', '关键词')
+            ->column(GridEditForm::COLUMN_TEXT, 'version', '版本号')
+            ->column(GridEditForm::COLUMN_TEXT, 'download_url', '软件下载地址')
+            ->column(GridEditForm::COLUMN_TEXT, 'size', '大小(MB)')
+            ->column(GridEditForm::COLUMN_TEXT, 'os_version', '系统版本要求')
+            ->column(GridEditForm::COLUMN_TEXT, 'language', '语言要求')
+            ->column(GridEditForm::COLUMN_TEXT, 'author', '作者')
+            ->column(GridEditForm::COLUMN_TEXTAREA, 'description', '应用介绍')
+            ->column(GridEditForm::COLUMN_TEXT, 'price', '价格 单位分')
+            ->column(GridEditForm::COLUMN_CHILDREN_CHOOSE, 'category_id', '所属分类', (new GridList("category"))
+                ->column(GridList::TEXT, "id", "ID")
+                ->column(GridList::TEXT, "title", "分类名")
+                ->setDisplayColumn("title"))
+            ->column(GridCreateForm::COLUMN_RADIO, 'state', '状态', [
+                "0" => "禁用",
+                "1" => "启用"
+            ]);
+        $grid->hookList(new class() implements ListHook {
+            public function hook($response) {
+                foreach ($response['data'] as &$r)
+                    $r['size'] = intval($r['size']) / 1024;
+                return $response;
+            }
+        });
+        $grid->hookDetail(new class() implements DetailHook {
+            public function hook($response) {
+                $response['data']['size'] = intval($response['data']['size']) / 1024;
+                return $response;
+            }
+        });
+        $grid->hookCreate(new class() implements CreateHook {
+            public function hook($param) {
+                $param['size'] = intval($param['size'] * 1024);
+                return $param;
+            }
+        });
+        $grid->hookSave(new class() implements SaveHook {
+            public function hook($param) {
+                $param['size'] = intval($param['size'] * 1024);
+                return $param;
+            }
+        });
+```

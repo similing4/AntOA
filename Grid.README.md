@@ -162,7 +162,7 @@ $grid->createForm("你的表名")->column("列类型", '列名', '列展示名')
 //示例：
 $grid->createForm("user")->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名');
 ```
-这里的“**列类型**”为GridList里的常量，可用的常量如下：
+这里的“**列类型**”为GridCreateForm里的常量，可用的常量如下：
 ```php
 const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据，表现形式为一个文本框
 const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据，表现形式为一个textarea
@@ -212,7 +212,7 @@ $grid->editForm("你的表名")->column("列类型", '列名', '列展示名');
 //示例：
 $grid->editForm("user")->column(GridEditForm::COLUMN_TEXT, 'username', '用户名');
 ```
-这里的“**列类型**”为GridList里的常量，可用的常量如下：
+这里的“**列类型**”为GridEditForm里的常量，可用的常量如下：
 ```php
 const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据，表现形式为一个文本框
 const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据，表现形式为一个textarea

@@ -22,13 +22,13 @@ $grid->list("你的表名");
 这里的表名是指DB::table的参数，暂时还不支持Model操作。如果想连接多张表，GridList提供了leftJoin方法，使用方法如下：
 ```php
 //左连接模板：
-$grid->list("你的表名A")->leftJoin("待左连接的表名B","B的主键","A的主键");
+$grid->list("你的表名A")->leftJoin("待左连接的表名B","B中A的外键","A的主键");
 //示例：
 $grid->list("user")->leftJoin("user_money","uid","id");
 ```
 如果您需要删除主表数据行时一并删除连接表的数据时，您可以使用deleteJoin方法：
 ```php
-$grid->list("你的表名A")->leftJoin("待左连接的表名B","B的主键","A的主键")->deleteJoin("待左连接同时删除的表名B","B的主键","A的主键");
+$grid->list("你的表名A")->leftJoin("待左连接的表名B","B中A的外键","A的主键")->deleteJoin("待左连接同时删除的表名B","B中A的外键","A的主键");
 ```
 注：如果使用了左连接，那么后续字段需要带上表名，如user_money.money。
 

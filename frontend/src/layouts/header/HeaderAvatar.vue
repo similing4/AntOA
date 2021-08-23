@@ -1,10 +1,19 @@
 <template>
 	<a-dropdown>
 		<div class="header-avatar" style="cursor: pointer">
-			<img class="avatar" src="@/assets/img/logo.png" />
-			<span class="name">后台用户</span>
+			<a-avatar class="avatar" size="small" shape="circle" :src="user.avatar" />
+			<span class="name">{{user.name}}</span>
 		</div>
 		<a-menu :class="['avatar-menu']" slot="overlay">
+			<a-menu-item>
+				<a-icon type="user" />
+				<span>管理员账户管理</span>
+			</a-menu-item>
+			<a-menu-item>
+				<a-icon type="setting" />
+				<span>修改密码</span>
+			</a-menu-item>
+			<a-menu-divider />
 			<a-menu-item @click="logout">
 				<a-icon style="margin-right: 8px;" type="poweroff" />
 				<span>退出登录</span>
@@ -35,10 +44,6 @@
 <style lang="less">
 	.header-avatar {
 		display: inline-flex;
-		height: 64px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
 		.avatar,
 		.name {
 			align-self: center;
@@ -52,11 +57,5 @@
 	}
 	.avatar-menu {
 		width: 150px;
-	}
-	.avatar{
-		width: 24px;
-		height: 24px;
-		border-radius: 12px;
-		background-color: #BFBFBF;
 	}
 </style>

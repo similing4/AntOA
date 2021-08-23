@@ -8,8 +8,7 @@
 	<title>后台管理系统</title>
 	<link rel="stylesheet" href="{{ asset('/antoa/assets/beauty-scroll.css') }}"/>
 	<link rel="stylesheet" href="{{ asset('/antoa/assets/antd.min.css') }}"/>
-	{{--    <script src="{{ asset('/antoa/assets/vue.min.js') }}"></script>--}}
-	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+	<script src="{{ asset('/antoa/assets/vue.min.js') }}"></script>
 	<script src="{{ asset('/antoa/assets/moment-with-locales.min.js') }}"></script>
 	<script src="{{ asset('/antoa/assets/antd-with-locales.min.js') }}"></script>
 	<script src="{{ asset('/antoa/assets/axios.min.js') }}"></script>

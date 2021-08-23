@@ -212,7 +212,7 @@
 				});
 				for (let i in param) {
 					if (param[i] instanceof moment)
-						param[i] = param[i].format('YYYY-MM-DD hh:mm:ss');
+						param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
 					if (param[i] instanceof Array)
 						param[i] = JSON.stringify(param[i]);
 				}

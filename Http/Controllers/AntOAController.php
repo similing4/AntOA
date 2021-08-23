@@ -140,6 +140,7 @@ abstract class AntOAController extends Controller {
                         if (array_key_exists($r['col'], $req) && $req[$r['col']] !== '')
                             $list->where($r['col'], 'like', "%" . $request->post($r['col']) . "%");
                         break;
+                    case GridList::FILTER_HIDDEN:
                     case GridList::FILTER_ENUM:
                         if (array_key_exists($r['col'], $req) && $req[$r['col']] !== '')
                             $list->where($r['col'], $req[$r['col']]);
@@ -154,15 +155,23 @@ abstract class AntOAController extends Controller {
                         break;
                 }
             }
-            $columns = array_column($config['columns'], 'col');
-            foreach ($columns as &$column)
-                $column = $column . " as " . $column;
+            $columns = [];
+            foreach ($config['columns'] as $column){
+                if($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
+                    continue;
+                $columns[] = $column['col'];
+            }
             if ($config['orderBy'] != null)
                 $list = $list->orderBy($config['orderBy'][0], $config['orderBy'][1]);
             $res = $list
                 ->select($columns)
                 ->paginate(15);
             $res = json_decode(json_encode($res), true);
+            foreach ($res['data'] as &$resi){
+                foreach ($config['columns'] as $column)
+                    if($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
+                        $resi[$column['col']] = '';
+            }
             $res['status'] = 1;
             $res['statics'] = $this->statistic($request);
             $hook = $this->gridObj->getListHook();
@@ -172,7 +181,7 @@ abstract class AntOAController extends Controller {
         } catch (Exception $e2) {
             return json_encode([
                 "status" => 0,
-                "msg"    => $e2->getMessage()
+                "msg"    => $e2->getMessage() . $e2->getLine()
             ]);
         }
     }

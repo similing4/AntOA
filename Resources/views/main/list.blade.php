@@ -41,8 +41,7 @@
                                         <a-select-option value="">不筛选</a-select-option>
                                         <a-select-option value="col" v-for="(col,index2) in filterItem.extra"
                                                          :key="index2">
-                                            @{{
-                                            filterItem[col] }}
+                                            @{{filterItem[col] }}
                                         </a-select-option>
                                     </a-select>
                                 </a-col>
@@ -102,7 +101,7 @@
                             <div v-if="templateItem.type == 'ENUM'">
                                 <div>@{{(templateItem.extra)[record[templateItem.col]+'']}}</div>
                             </div>
-                            <div v-if="templateItem.type == 'RICH_TEXT'">
+                            <div v-if="templateItem.type == 'RICH_TEXT' || templateItem.type == 'RICH_DISPLAY'">
                                 <div v-html="record[templateItem.col]"></div>
                             </div>
                             <div v-if="templateItem.type == 'PICTURE'">
@@ -146,7 +145,7 @@
         const tableObj = {!! $grid->getGridList()->json() !!};
         const api = {!! json_encode($api) !!};
         const columns = tableObj.columns.map((col) => {
-            if (col.type === "TEXT")
+            if (col.type === "TEXT" || col.type == "DISPLAY")
                 return {
                     "title": col.tip,
                     "dataIndex": col.col
@@ -211,7 +210,7 @@
                 },
                 resetSearch() {
                     for (const i in this.searchObj)
-                        this.searchObj[i] = "";
+                        this.searchObj[i] = getQueryString(i);
                 },
                 onDataChange(pagination) {
                     this.pagination = pagination;
@@ -303,9 +302,9 @@
                         });
                     } else if (rowButtonItem.btn_do_type === "navigate")
                         if (rowButtonItem.url.includes("?"))
-                            window.open(rowButtonItem.url + "&id=" + id);
+                            window.open(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
                         else
-                            window.open(rowButtonItem.url + "?id=" + id);
+                            window.open(rowButtonItem.url + "?" + rowButtonItem.dest_col + "=" + id);
                 }
             }
         });

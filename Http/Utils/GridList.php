@@ -17,9 +17,12 @@ use JsonSerializable;
 
 class GridList implements JsonSerializable {
     const TEXT = "TEXT"; //文本类型展示
+    const DISPLAY = "DISPLAY"; //文本类型展示，且不从数据库查询。需要通过HOOK设置
+    const RICH_DISPLAY = "RICH_DISPLAY"; //富文本类型展示，且不从数据库查询。需要通过HOOK设置
     const PICTURE = "PICTURE"; //图片类型展示，需在extra中指定图片宽高
     const ENUM = "ENUM"; //枚举类型展示，需要指定键值对用于确定ENUM对应关系
     const RICH_TEXT = "RICH_TEXT"; //富文本类型展示
+    const FILTER_HIDDEN = "FILTER_HIDDEN"; //隐藏类型筛选，用于外部传入
     const FILTER_TEXT = "FILTER_TEXT"; //文本类型筛选，筛选方式为%keyword%
     const FILTER_STARTTIME = "FILTER_STARTTIME"; //开始时间类型筛选，筛选结果为大于等于该结束时间的行
     const FILTER_ENDTIME = "FILTER_ENDTIME"; //结束时间类型筛选，筛选结果为小于等于该结束时间的行
@@ -58,9 +61,9 @@ class GridList implements JsonSerializable {
      * @return Builder 数据库操作DB的Builder对象
      */
     public function getDBObjectWithJoin() {
-        $ret = DB::table($this->_list . " as antoa_user");
+        $ret = DB::table($this->_list . " as " . $this->_list);
         foreach ($this->join as $join)
-            $ret = $ret->join($join[0], $join[1], $join[2]);
+            $ret = $ret->leftJoin($join[0], $join[1], $join[2]);
         return $ret;
     }
 
@@ -70,6 +73,7 @@ class GridList implements JsonSerializable {
      */
     public function getArr() {
         return [
+            "_list"          => $this->_list,
             "columns"        => $this->columns,
             "join"           => $this->join,
             "delete_join"    => $this->delete_join,
@@ -197,14 +201,16 @@ class GridList implements JsonSerializable {
      * @param String $buttonName 按钮的内容文字
      * @param String $url 按钮的跳转链接
      * @param String $buttonType 按钮的type属性，默认为primary
+     * @param String $buttonDestColumn 跳转携带ID到目标页面的参数名，默认为id
      * @return GridList 返回this以便链式调用
      */
-    public function rowNavigateButton($buttonName, $url, $buttonType = 'primary') {
+    public function rowNavigateButton($buttonName, $url, $buttonType = 'primary', $buttonDestColumn = 'id') {
         $this->row_buttons[] = [
             "btn_do_type" => "navigate",
             "title"       => $buttonName,
             "url"         => $url,
-            "type"        => $buttonType
+            "type"        => $buttonType,
+            "dest_col"    => $buttonDestColumn
         ];
         return $this;
     }

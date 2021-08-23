@@ -73,7 +73,7 @@
 						<div v-if="templateItem.type == 'ENUM'">
 							<div>{{(templateItem.extra)[record[templateItem.col]+'']}}</div>
 						</div>
-						<div v-if="templateItem.type == 'RICH_TEXT'">
+						<div v-if="templateItem.type == 'RICH_TEXT' || templateItem.type == 'RICH_DISPLAY'">
 							<div v-html="record[templateItem.col]"></div>
 						</div>
 						<div v-if="templateItem.type == 'PICTURE'">
@@ -137,7 +137,7 @@
 				const tableObj = configRes.grid.list;
 				const api = configRes.api;
 				this.columns = tableObj.columns.map((col) => {
-					if (col.type === "TEXT")
+					if (col.type === "TEXT" || col.type == "DISPLAY")
 						return {
 							"title": col.tip,
 							"dataIndex": col.col
@@ -190,7 +190,7 @@
 			},
 			resetSearch() {
 				for (const i in this.searchObj)
-					this.searchObj[i] = "";
+					this.searchObj[i] = (this.$route.query[i] ? this.$route.query[i] : '');
 			},
 			onDataChange(pagination) {
 				this.pagination = pagination;
@@ -282,9 +282,9 @@
 					});
 				} else if (rowButtonItem.btn_do_type === "navigate")
 					if (rowButtonItem.url.includes("?"))
-						this.openurl(rowButtonItem.url + "&id=" + id);
+						this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
 					else
-						this.openurl(rowButtonItem.url + "?id=" + id);
+						this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col + "=" + id);
 			}
 		}
 	};

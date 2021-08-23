@@ -133,53 +133,125 @@ $grid->list("user")
     ->rowApiButton("测试按钮","/api/user/test/test","primary") //调用/api/user/test/test接口并对响应JSON根据status字段判定提示msg字段内容
     ->rowApiButtonWithConfirm("测试按钮","/api/user/test/test","primary"); //与rowApiButton相同，但调用接口前会要求用户确认
 ```
-每行按钮会自动带上该行的id参数。
+每行按钮会自动带上该行的id参数。如范例中的测试按钮点击后会弹窗确认，确认后会调用/api/user/test/test?id=1。
+
+如果您想传入您定义的页面的参数不为id，如/api/user/test/test?sid=1
+
+那么您可以定义第四个参数为你要传入的参数，例：
+```php
+$grid->list("user")
+    ->rowApiButtonWithConfirm("测试按钮","/api/user/test/test","primary","sid"); //与rowApiButton相同，但调用接口前会要求用户确认
+```
 
 ## 2.Create创建页配置
+
+### (1)构造
+Create创建页主要由GridCreateForm对象控制。创建GridCreateForm对象的方法如下：
 ```php
-        $grid->createForm("software")
-            ->column(GridCreateForm::COLUMN_TEXT, 'title', '软件名')
-            ->column(GridCreateForm::COLUMN_PICTURE, 'icon', '软件图标')
-            ->column(GridCreateForm::COLUMN_PICTURES, 'pictures', '图集')
-            ->column(GridCreateForm::COLUMN_TEXT, 'keyword', '关键词')
-            ->column(GridCreateForm::COLUMN_TEXT, 'version', '版本号')
-            ->column(GridCreateForm::COLUMN_TEXT, 'download_url', '软件下载地址')
-            ->column(GridCreateForm::COLUMN_TEXT, 'size', '大小(MB)')
-            ->column(GridCreateForm::COLUMN_TEXT, 'os_version', '系统版本要求')
-            ->column(GridCreateForm::COLUMN_TEXT, 'language', '语言要求')
-            ->column(GridCreateForm::COLUMN_TEXT, 'author', '作者')
-            ->column(GridCreateForm::COLUMN_TEXTAREA, 'description', '应用介绍')
-            ->column(GridCreateForm::COLUMN_TEXT, 'price', '价格 单位分')
-            ->column(GridCreateForm::COLUMN_CHILDREN_CHOOSE, 'category_id', '所属分类', (new GridList("category"))
-                ->column(GridList::TEXT, "id", "ID")
-                ->column(GridList::TEXT, "title", "分类名")
-                ->setDisplayColumn("title"))
-            ->column(GridCreateForm::COLUMN_RADIO, 'state', '状态', [
-                "0" => "禁用",
-                "1" => "启用"
-            ]);
-        $grid->editForm("software")
-            ->column(GridEditForm::COLUMN_HIDDEN, 'id', 'ID')
-            ->column(GridEditForm::COLUMN_TEXT, 'title', '软件名')
-            ->column(GridEditForm::COLUMN_PICTURE, 'icon', '软件图标')
-            ->column(GridEditForm::COLUMN_PICTURES, 'pictures', '图集')
-            ->column(GridEditForm::COLUMN_TEXT, 'keyword', '关键词')
-            ->column(GridEditForm::COLUMN_TEXT, 'version', '版本号')
-            ->column(GridEditForm::COLUMN_TEXT, 'download_url', '软件下载地址')
-            ->column(GridEditForm::COLUMN_TEXT, 'size', '大小(MB)')
-            ->column(GridEditForm::COLUMN_TEXT, 'os_version', '系统版本要求')
-            ->column(GridEditForm::COLUMN_TEXT, 'language', '语言要求')
-            ->column(GridEditForm::COLUMN_TEXT, 'author', '作者')
-            ->column(GridEditForm::COLUMN_TEXTAREA, 'description', '应用介绍')
-            ->column(GridEditForm::COLUMN_TEXT, 'price', '价格 单位分')
-            ->column(GridEditForm::COLUMN_CHILDREN_CHOOSE, 'category_id', '所属分类', (new GridList("category"))
-                ->column(GridList::TEXT, "id", "ID")
-                ->column(GridList::TEXT, "title", "分类名")
-                ->setDisplayColumn("title"))
-            ->column(GridCreateForm::COLUMN_RADIO, 'state', '状态', [
-                "0" => "禁用",
-                "1" => "启用"
-            ]);
+$grid->createForm("你的表名");
+```
+此方法调用之后会在Grid内部自动创建GridCreateForm实例并返回该GridCreateForm实例。您可以通过这个GridCreateForm实例来操作列表页信息。
+
+这里的表名是指DB::table的参数，暂时还不支持Model操作。
+
+### (2)column操作
+column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
+```php
+//模板：
+$grid->createForm("你的表名")->column("列类型", '列名', '列展示名');
+//示例：
+$grid->createForm("user")->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名');
+```
+这里的“**列类型**”为GridList里的常量，可用的常量如下：
+```php
+const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据，表现形式为一个文本框
+const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据，表现形式为一个textarea
+const COLUMN_PASSWORD = "COLUMN_PASSWORD"; //密码数据，表现形式为一个密码输入框
+const COLUMN_SELECT = "COLUMN_SELECT"; //下拉单选，表现形式为一个select
+const COLUMN_RADIO = "COLUMN_RADIO"; //Radio单选，表现形式为input type=radio的单选
+const COLUMN_CHECKBOX = "COLUMN_CHECKBOX"; //多选，表现形式为input type=checkbox的多选
+const COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"; //时间选择，表现形式为点击后弹出时间与日期的选择
+const COLUMN_RICHTEXT = "COLUMN_RICHTEXT"; //富文本，表现形式为WangEditor的富文本编辑器
+const COLUMN_PICTURE = "COLUMN_PICTURE"; //图片，表现形式为上传并预览单张图片
+const COLUMN_FILE = "COLUMN_FILE"; //文件，表现形式为上传并预览单个文件
+const COLUMN_PICTURES = "COLUMN_PICTURES"; //多图片，表现形式为上传并预览多张图片
+const COLUMN_FILES = "COLUMN_FILES"; //多文件，表现形式为上传并预览多个文件
+const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
+const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
+const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
+//例：
+$grid->createForm("user")
+    ->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名')
+    ->column(GridCreateForm::COLUMN_PICTUR, 'icon', '用户头像',[
+        "width"  => '50px',
+        "height" => '50px'
+    ])
+    ->column(GridCreateForm::COLUMN_SELECT, 'state', '用户状态',[
+        "0" => "禁用",
+        "1" => "启用"
+    ])
+    ->column(GridCreateForm::COLUMN_RICHTEXT, 'log', '用户备注');
+```
+## 3.Edit编辑页配置
+编辑页与创建页大体相同：
+
+### (1)构造
+Edit编辑页主要由GridEditForm对象控制。创建GridEditForm对象的方法如下：
+```php
+$grid->createForm("你的表名");
+```
+此方法调用之后会在Grid内部自动创建GridCreateForm实例并返回该GridCreateForm实例。您可以通过这个GridCreateForm实例来操作列表页信息。
+
+这里的表名是指DB::table的参数，暂时还不支持Model操作。
+
+### (2)column操作
+column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
+```php
+//模板：
+$grid->editForm("你的表名")->column("列类型", '列名', '列展示名');
+//示例：
+$grid->editForm("user")->column(GridEditForm::COLUMN_TEXT, 'username', '用户名');
+```
+这里的“**列类型**”为GridList里的常量，可用的常量如下：
+```php
+const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据，表现形式为一个文本框
+const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据，表现形式为一个textarea
+const COLUMN_PASSWORD = "COLUMN_PASSWORD"; //密码数据，表现形式为一个密码输入框
+const COLUMN_SELECT = "COLUMN_SELECT"; //下拉单选，表现形式为一个select
+const COLUMN_RADIO = "COLUMN_RADIO"; //Radio单选，表现形式为input type=radio的单选
+const COLUMN_CHECKBOX = "COLUMN_CHECKBOX"; //多选，表现形式为input type=checkbox的多选
+const COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"; //时间选择，表现形式为点击后弹出时间与日期的选择
+const COLUMN_RICHTEXT = "COLUMN_RICHTEXT"; //富文本，表现形式为WangEditor的富文本编辑器
+const COLUMN_PICTURE = "COLUMN_PICTURE"; //图片，表现形式为上传并预览单张图片
+const COLUMN_FILE = "COLUMN_FILE"; //文件，表现形式为上传并预览单个文件
+const COLUMN_PICTURES = "COLUMN_PICTURES"; //多图片，表现形式为上传并预览多张图片
+const COLUMN_FILES = "COLUMN_FILES"; //多文件，表现形式为上传并预览多个文件
+const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
+const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
+const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
+//例：
+$grid->editForm("user")
+    ->column(GridEditForm::COLUMN_TEXT, 'username', '用户名')
+    ->column(GridEditForm::COLUMN_PICTUR, 'icon', '用户头像',[
+        "width"  => '50px',
+        "height" => '50px'
+    ])
+    ->column(GridEditForm::COLUMN_SELECT, 'state', '用户状态',[
+        "0" => "禁用",
+        "1" => "启用"
+    ])
+    ->column(GridEditForm::COLUMN_RICHTEXT, 'log', '用户备注');
+```
+
+## 4. 钩子操作
+钩子函数共分四种，分别对应四个接口：list、detail、create、save。
+
+对于list与detail，钩子触发于结果响应前。
+
+对于create与save，钩子触发于获取参数后但执行操作前。
+
+例：
+```php
         $grid->hookList(new class() implements ListHook {
             public function hook($response) {
                 foreach ($response['data'] as &$r)

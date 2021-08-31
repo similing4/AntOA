@@ -276,7 +276,9 @@ abstract class AntOAController extends Controller {
                 if ($col['type'] === GridCreateForm::COLUMN_PASSWORD || $col['type'] === GridEditForm::COLUMN_PASSWORD)
                     $res[$col['col']] = "";
                 if ($col['type'] === GridCreateForm::COLUMN_CHILDREN_CHOOSE || $col['type'] === GridEditForm::COLUMN_CHILDREN_CHOOSE) {
-                    $tip[$col['col']] = Db::table($col['extra']->getDBObjectWithJoin())->find($res[$col['col']]);
+                    $key = $col['extra']->getArr()['columns'][0]['col'];
+                    $display = $col['extra']->getArr()['displayColumn'];
+                    $tip[$col['col']] = Db::table($col['extra']->getDBObjectWithJoin())->where($key,$res[$col['col']])->first();
                 }
             }
             $hook = $this->gridObj->getDetailHook();

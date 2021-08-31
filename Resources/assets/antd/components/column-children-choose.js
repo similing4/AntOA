@@ -15,6 +15,10 @@ Vue.component("ColumnChildrenChoose", {
         api: {
             type: Object,
             required: true
+        },
+        pagetype: {
+            type: String,
+            required: true
         }
     },
     data() {
@@ -37,10 +41,10 @@ Vue.component("ColumnChildrenChoose", {
     created() {
         this.column.extra.filter_columns.map((col) => {
             if (col.type === "FILTER_STARTTIME")
-                return this.searchObj[col.col + "_starttime"] = "";
+                return this.searchObj[col.col + "_starttime"] = this.getQueryString(col.col + "_starttime");
             if (col.type === "FILTER_ENDTIME")
-                return this.searchObj[col.col + "_endtime"] = "";
-            return this.searchObj[col.col] = "";
+                return this.searchObj[col.col + "_endtime"] = this.getQueryString(col.col + "_endtime");
+            return this.searchObj[col.col] = this.getQueryString(col.col);
         });
         this.columns = this.column.extra.columns.map((col) => {
             if (col.type === "TEXT")
@@ -75,10 +79,18 @@ Vue.component("ColumnChildrenChoose", {
                 if (param[i] === null || param[i] === undefined)
                     param[i] = "";
             }
-            let res = await Vue.prototype.$api(this.api.detail_column_list + "?type=create&col=" + this.column.col).method("POST").param(param).call();
+            let res = await Vue.prototype.$api(this.api.detail_column_list + "?type=" + this.pagetype + "&col=" + this.column.col).method("POST").param(param).call();
             this.pagination.total = res.total;
             this.pagination.pageSize = res.per_page;
             this.dataSource = res.data;
+        },
+        getQueryString(name) {
+            const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            const r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return unescape(r[2]);
+            }
+            return "";
         },
         async onHeaderButtonClick(headerButtonItem) {
             let param = {};

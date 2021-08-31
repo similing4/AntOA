@@ -58,7 +58,11 @@
 			api: {
 				type: Object,
 				required: true
-			}
+			},
+            pagetype: {
+                type: String,
+                required: true
+            }
 		},
 		components:{
 			StandardTable
@@ -121,7 +125,7 @@
 					if (param[i] === null || param[i] === undefined)
 						param[i] = "";
 				}
-				let res = await this.$api(this.api.detail_column_list + "?type=create&col=" + this.column.col)
+				let res = await this.$api(this.api.detail_column_list + "?type=" + this.pagetype + "&col=" + this.column.col)
 					.method("POST").param(param).call();
 				this.pagination.total = res.total;
 				this.pagination.pageSize = res.per_page;

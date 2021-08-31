@@ -127,8 +127,7 @@
                         </a-form-item>
                         <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
                                      v-if="column.type == 'COLUMN_CHILDREN_CHOOSE'">
-                            <column-children-choose v-model="form[column.col]" :tip.sync="formTip[column.col]" v-if="formTip[column.col]"
-                                                    :column="column" :api="api"></column-children-choose>
+                            <column-children-choose v-model="form[column.col]" :tip.sync="formTip[column.col]" v-if="formTip[column.col] !== undefined" :column="column" :api="api" pagetype="edit"></column-children-choose>
                         </a-form-item>
                     </template>
                     <a-form-item style="display: flex;justify-content: center;">
@@ -206,12 +205,16 @@
                                     else
                                         this.form[this.columns[i].col] = getQueryString(this.columns[i].col);
                                 }
-                                if(this.columns[i].type === 'COLUMN_CHILDREN_CHOOSE')
-                                    this.formTip[this.columns[i].col] = res.tip[this.columns[i].col][this.columns[i].extra.displayColumn];
+                                if(this.columns[i].type === 'COLUMN_CHILDREN_CHOOSE'){
+                                    if(res.tip[this.columns[i].col])
+                                        this.formTip[this.columns[i].col] = res.tip[this.columns[i].col][this.columns[i].extra.displayColumn];
+                                    else
+                                        this.formTip[this.columns[i].col] = '';
+                                }
                             }
                         } else
                             throw res.msg;
-                    } catch (e) {
+                    } catch (e) {console.log(e);
                         this.$message.error(e + "", 5);
                     }
                 },

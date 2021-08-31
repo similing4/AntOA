@@ -234,10 +234,19 @@
                     this.statics = res.statics;
                 },
                 onAddClick() {
-                    window.open(this.api.create_page);
+                    var params = [];
+                    for(var i in this.searchObj)
+                        params.push(i + "=" + this.searchObj[i]);
+                    window.open(this.api.create_page + "?" + params.join("&"));
                 },
                 onEditClick(id) {
-                    window.open(this.api.edit_page + "?id=" + id);
+                    var params = [];
+                    for(var i in this.searchObj){
+                        if(i == "id")
+                            continue;
+                        params.push(i + "=" + this.searchObj[i]);
+                    }
+                    window.open(this.api.edit_page + "?id=" + id + "&" + params.join("&"));
                 },
                 onDeleteClick(id) {
                     this.$refs.confirmDialog.confirm("确认要删除这条记录么？").then(async () => {

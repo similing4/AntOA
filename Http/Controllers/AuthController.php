@@ -72,7 +72,7 @@ class AuthController {
         } catch (\Exception $e) {
             return json_encode([
                 "status" => 0,
-                "data"   => $e->getMessage()
+                "msg"   => $e->getMessage()
             ]);
         }
     }

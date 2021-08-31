@@ -128,7 +128,7 @@
                         <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
                                      v-if="column.type == 'COLUMN_CHILDREN_CHOOSE'">
                             <column-children-choose v-model="form[column.col]" :tip.sync="formTip[column.col]"
-                                                    :column="column" :api="api"></column-children-choose>
+                                :column="column" :api="api" pagetype="edit"></column-children-choose>
                         </a-form-item>
                     </template>
                     <a-form-item style="display: flex;justify-content: center;">

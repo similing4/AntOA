@@ -30,7 +30,14 @@ $grid->list("user")->leftJoin("user_money","uid","id");
 ```php
 $grid->list("你的表名A")->leftJoin("待左连接的表名B","B中A的外键","A的主键")->deleteJoin("待左连接同时删除的表名B","B中A的外键","A的主键");
 ```
-注：如果使用了左连接，那么后续字段需要带上表名，如user_money.money。
+注：如果使用了左连接，被左连接的表不能与主表字段重复。如有重复要重命名：
+```php
+$sql = DB::table("race_register")
+    ->groupBy("race_id")
+    ->select([DB::raw('race_id as rid'),DB::raw('count(id) as reg_count')])
+    ->toSql();
+$grid->list("race")->leftJoin(DB::raw("(".$sql.") as t"),"rid","id");
+```
 
 ### (2)column操作
 column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：

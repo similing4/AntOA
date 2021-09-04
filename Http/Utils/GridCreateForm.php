@@ -13,7 +13,7 @@ namespace Modules\AntOA\Http\Utils;
 use JsonSerializable;
 
 class GridCreateForm implements JsonSerializable {
-    private $_table;
+    private $_table; //DBCreateOperator类型对象
     const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据
     const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据
     const COLUMN_PASSWORD = "COLUMN_PASSWORD"; //密码数据
@@ -33,7 +33,7 @@ class GridCreateForm implements JsonSerializable {
 
     /**
      * 构造方法
-     * @param String $table 表接口
+     * @param DBCreateOperator $table 表接口
      */
     public function __construct($table) {
         $this->_table = $table;

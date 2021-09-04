@@ -130,7 +130,7 @@ abstract class AntOAController extends Controller {
                     "msg"    => "登录失效"
                 ]);
             }
-            $list = $this->gridObj->getGridList()->getDBObjectWithJoin();
+            $list = $this->gridObj->getGridList()->getDBObject();
             $config = $this->gridObj->getGridList()->getArr();
             $val = $request->getContent();
             $req = json_decode($val, true);
@@ -238,7 +238,7 @@ abstract class AntOAController extends Controller {
             $hook = $this->gridObj->getCreateHook();
             if ($hook != null)
                 $param = $hook->hook($param);
-            DB::table($tableObj['table'])->insert($param);
+            $tableObj['table']->insert($param);
             return json_encode([
                 "status" => 1,
                 "msg"    => "创建成功"
@@ -267,7 +267,7 @@ abstract class AntOAController extends Controller {
                 ]);
             }
             $tableObj = $this->gridObj->getEditForm()->getArr();
-            $res = DB::table($tableObj['table'])->find($request->get("id"));
+            $res = $tableObj['table']->find($request->get("id"));
             if (!$res)
                 throw new Exception("该项目不存在");
             $res = json_decode(json_encode($res), true);
@@ -278,7 +278,7 @@ abstract class AntOAController extends Controller {
                 if ($col['type'] === GridCreateForm::COLUMN_CHILDREN_CHOOSE || $col['type'] === GridEditForm::COLUMN_CHILDREN_CHOOSE) {
                     $key = $col['extra']->getArr()['columns'][0]['col'];
                     $display = $col['extra']->getArr()['displayColumn'];
-                    $tip[$col['col']] = Db::table($col['extra']->getDBObjectWithJoin())->where($key,$res[$col['col']])->first();
+                    $tip[$col['col']] = Db::table($col['extra']->getDBObject())->where($key,$res[$col['col']])->first();
                 }
             }
             $hook = $this->gridObj->getDetailHook();
@@ -329,7 +329,7 @@ abstract class AntOAController extends Controller {
             $hook = $this->gridObj->getSaveHook();
             if ($hook != null)
                 $param = $hook->hook($param);
-            DB::table($tableObj['table'])->where($tableObj['columns'][0]['col'], $param[$tableObj['columns'][0]['col']])->update($param);
+            $tableObj['table']->onUpdate($tableObj['columns'],$param);
             return json_encode([
                 "status" => 1,
                 "msg"    => "保存成功"
@@ -366,7 +366,7 @@ abstract class AntOAController extends Controller {
         if ($type != null) {
             foreach ($formObj['columns'] as $r) {
                 if ((($r['type'] == GridCreateForm::COLUMN_CHILDREN_CHOOSE && $type == "create") || ($r['type'] == GridEditForm::COLUMN_CHILDREN_CHOOSE && $type == "edit")) && $column == $r['col']) {
-                    $list = $r['extra']->getDBObjectWithJoin();
+                    $list = $r['extra']->getDBObject();
                     $config = $r['extra']->getArr();
                     $req = json_decode($request->getContent(), true);
                     foreach ($config['filter_columns'] as $r) {

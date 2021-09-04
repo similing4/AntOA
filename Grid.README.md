@@ -15,37 +15,25 @@ Grid实例主要控制四个接口，它们分别是List（列表接口）、Cre
 ### (1)构造
 List列表页主要由GridList对象控制。创建GridList对象的方法如下：
 ```php
-$grid->list("你的表名");
+$grid->list(new class(new DB::table("user")) extends DBListOperator {
+    //这里可以重写你各种自定义方法
+});
 ```
 此方法调用之后会在Grid内部自动创建GridList实例并返回该GridList实例。您可以通过这个GridList实例来操作列表页信息。
 
-这里的表名是指DB::table的参数，暂时还不支持Model操作。如果想连接多张表，GridList提供了leftJoin方法，使用方法如下：
-```php
-//左连接模板：
-$grid->list("你的表名A")->leftJoin("待左连接的表名B","B中A的外键","A的主键");
-//示例：
-$grid->list("user")->leftJoin("user_money","uid","id");
-```
-如果您需要删除主表数据行时一并删除连接表的数据时，您可以使用deleteJoin方法：
-```php
-$grid->list("你的表名A")->leftJoin("待左连接的表名B","B中A的外键","A的主键")->deleteJoin("待左连接同时删除的表名B","B中A的外键","A的主键");
-```
-注：如果使用了左连接，被左连接的表不能与主表字段重复。如有重复要重命名：
-```php
-$sql = DB::table("race_register")
-    ->groupBy("race_id")
-    ->select([DB::raw('race_id as rid'),DB::raw('count(id) as reg_count')])
-    ->toSql();
-$grid->list("race")->leftJoin(DB::raw("(".$sql.") as t"),"rid","id");
-```
+这里的匿名类用于对应处理数据库操作，详情请见DBListOperator类。
 
 ### (2)column操作
 column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
 ```php
 //模板：
-$grid->list("你的表名")->column("列类型", '列名', '列展示名');
+$grid->list(new class(new DB::table("user")) extends DBListOperator {
+    //这里可以重写你各种自定义方法
+})->column("列类型", '列名', '列展示名');
 //示例：
-$grid->list("user")->column(GridList::TEXT, 'username', '用户名');
+$grid->list(new class(new DB::table("user")) extends DBListOperator {
+    //这里可以重写你各种自定义方法
+})->column(GridList::TEXT, 'username', '用户名');
 ```
 这里的“**列类型**”为GridList里的常量，可用的常量如下：
 ```php
@@ -56,7 +44,7 @@ const RICH_TEXT = "RICH_TEXT"; //富文本类型展示
 const DISPLAY = "DISPLAY"; //文本类型展示，且不从数据库查询。需要通过HOOK设置
 const RICH_DISPLAY = "RICH_DISPLAY"; //富文本类型展示，且不从数据库查询。需要通过HOOK设置
 //例：
-$grid->list("user")
+$grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->column(GridList::TEXT, 'username', '用户名')
     ->column(GridList::PICTURE, 'icon', '用户头像',[
         "width"  => '50px',
@@ -74,9 +62,12 @@ $grid->list("user")
 filter方法用于配置列表页的列筛选项，且能返回对象自身供链式调用。使用方法如下：
 ```php
 //模板：
-$grid->list("你的表名")->filter("列筛选类型", '列名', '筛选列展示名');
+$grid->list(new class(new DB::table("user")) extends DBListOperator {
+    //这里可以重写你各种自定义方法
+})->filter("列筛选类型", '列名', '筛选列展示名');
 //示例：
-$grid->list("user")->filter(GridList::FILTER_TEXT, 'username', '用户名');
+$grid->list(new class(new DB::table("user")) extends DBListOperator {})
+    ->filter(GridList::FILTER_TEXT, 'username', '用户名');
 ```
 这里的“**列筛选类型**”为GridList里的常量，可用的常量如下：
 ```php
@@ -86,7 +77,7 @@ const FILTER_STARTTIME = "FILTER_STARTTIME"; //开始时间类型筛选，筛选
 const FILTER_ENDTIME = "FILTER_ENDTIME"; //结束时间类型筛选，筛选结果为小于等于该结束时间的行
 const FILTER_ENUM = "FILTER_ENUM"; //单选类型的筛选，需要指定键值对用于确定ENUM对应关系
 //例：
-$grid->list("user")
+$grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->column(GridList::TEXT, 'username', '用户名')
     ->column(GridList::TEXT, 'create_time', '注册时间')
     ->column(GridList::ENUM, 'state', '用户状态',[
@@ -106,7 +97,7 @@ $grid->list("user")
 ### (3)order操作
 等同于DB的order操作，例：
 ```php
-$grid->list("user")
+$grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->column(GridList::TEXT, 'username', '用户名')
     ->order("create_time","desc");
 ```
@@ -118,7 +109,7 @@ $grid->list("user")
 
 您可以分别通过GridList对象的useCreate、useEdit、useDelete方法来设置是否启用它们。它们均返回对象自身实例，可以进行链式调用。例：
 ```php
-$grid->list("user")
+$grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->column(GridList::TEXT, 'username', '用户名')
     ->useCreate(false)
     ->useEdit(false)
@@ -126,7 +117,7 @@ $grid->list("user")
 ```
 如果您需要自定义顶部按钮，GridList提供了三个方法供您使用。它们分别为：navigateButton、apiButton、apiButtonWithConfirm。它们均返回对象自身实例，可以进行链式调用。例：
 ```php
-$grid->list("user")
+$grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->column(GridList::TEXT, 'username', '用户名')
     ->navigateButton("测试按钮","http://www.baidu.com","primary") //跳转到百度
     ->apiButton("测试按钮","/api/user/test/test","primary") //调用/api/user/test/test接口并对响应JSON根据status字段判定提示msg字段内容
@@ -134,7 +125,7 @@ $grid->list("user")
 ```
 相对于顶部按钮，每行按钮则为另外三个方法。它们分别为：rowNavigateButton、rowApiButton、rowApiButtonWithConfirm。它们均返回对象自身实例，可以进行链式调用。例：
 ```php
-$grid->list("user")
+$grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->column(GridList::TEXT, 'username', '用户名')
     ->rowNavigateButton("测试按钮","http://www.baidu.com","primary") //跳转到百度
     ->rowApiButton("测试按钮","/api/user/test/test","primary") //调用/api/user/test/test接口并对响应JSON根据status字段判定提示msg字段内容
@@ -146,7 +137,7 @@ $grid->list("user")
 
 那么您可以定义第四个参数为你要传入的参数，例：
 ```php
-$grid->list("user")
+$grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->rowApiButtonWithConfirm("测试按钮","/api/user/test/test","primary","sid"); //与rowApiButton相同，但调用接口前会要求用户确认
 ```
 
@@ -155,7 +146,9 @@ $grid->list("user")
 ### (1)构造
 Create创建页主要由GridCreateForm对象控制。创建GridCreateForm对象的方法如下：
 ```php
-$grid->createForm("你的表名");
+$grid->createForm(new class(new DB::table("user")) extends DBCreateOperator {
+    //这里可以重写你各种自定义方法
+});
 ```
 此方法调用之后会在Grid内部自动创建GridCreateForm实例并返回该GridCreateForm实例。您可以通过这个GridCreateForm实例来操作列表页信息。
 
@@ -165,9 +158,11 @@ $grid->createForm("你的表名");
 column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
 ```php
 //模板：
-$grid->createForm("你的表名")->column("列类型", '列名', '列展示名');
+$grid->createForm(DBCreateOperator对象)->column("列类型", '列名', '列展示名');
 //示例：
-$grid->createForm("user")->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名');
+$grid->createForm(new DB::table("user")) extends DBCreateOperator {
+    //这里可以重写你各种自定义方法
+})->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名');
 ```
 这里的“**列类型**”为GridCreateForm里的常量，可用的常量如下：
 ```php
@@ -187,7 +182,9 @@ const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
 const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
 const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
 //例：
-$grid->createForm("user")
+$grid->createForm(new DB::table("user")) extends DBCreateOperator {
+        //这里可以重写你各种自定义方法
+    })
     ->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名')
     ->column(GridCreateForm::COLUMN_PICTUR, 'icon', '用户头像',[
         "width"  => '50px',
@@ -205,7 +202,7 @@ $grid->createForm("user")
 ### (1)构造
 Edit编辑页主要由GridEditForm对象控制。创建GridEditForm对象的方法如下：
 ```php
-$grid->createForm("你的表名");
+$grid->editForm("你的表名");
 ```
 此方法调用之后会在Grid内部自动创建GridCreateForm实例并返回该GridCreateForm实例。您可以通过这个GridCreateForm实例来操作列表页信息。
 
@@ -215,9 +212,11 @@ $grid->createForm("你的表名");
 column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
 ```php
 //模板：
-$grid->editForm("你的表名")->column("列类型", '列名', '列展示名');
+$grid->editForm(DBEditOperator对象)->column("列类型", '列名', '列展示名');
 //示例：
-$grid->editForm("user")->column(GridEditForm::COLUMN_TEXT, 'username', '用户名');
+$grid->editForm(new DB::table("user")) extends DBEditOperator {
+    //这里可以重写你各种自定义方法
+})->column(GridEditForm::COLUMN_TEXT, 'username', '用户名');
 ```
 这里的“**列类型**”为GridEditForm里的常量，可用的常量如下：
 ```php
@@ -237,7 +236,9 @@ const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
 const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
 const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
 //例：
-$grid->editForm("user")
+$grid->editForm(new DB::table("user")) extends DBEditOperator {
+        //这里可以重写你各种自定义方法
+    })
     ->column(GridEditForm::COLUMN_TEXT, 'username', '用户名')
     ->column(GridEditForm::COLUMN_PICTUR, 'icon', '用户头像',[
         "width"  => '50px',

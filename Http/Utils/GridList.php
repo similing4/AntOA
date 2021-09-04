@@ -36,13 +36,13 @@ class GridList implements JsonSerializable {
     private $hasCreate = true; //列表页是否有创建按钮
     private $hasEdit = true; //列表页是否有编辑按钮
     private $hasDelete = true; //列表页是否有删除按钮
-    private $_list = null; //DB::table传入的表名
+    private $_list = null; //DBListOperator对象
     private $displayColumn = null; //编辑页与创建页中使用的字段
     private $_order = null; //排序规则
 
     /**
      * 构造方法
-     * @param String $table 表接口
+     * @param DBListOperator $table 表接口
      */
     public function __construct($table) {
         $this->_list = $table;
@@ -50,21 +50,10 @@ class GridList implements JsonSerializable {
 
     /**
      * 获取数据库操作对象
-     * @return Builder 数据库操作DB的Builder对象
+     * @return DBListOperator 数据库操作DB的Builder对象
      */
     public function getDBObject() {
-        return DB::table($this->_list);
-    }
-
-    /**
-     * 获取数据库操作对象
-     * @return Builder 数据库操作DB的Builder对象
-     */
-    public function getDBObjectWithJoin() {
-        $ret = DB::table($this->_list . " as " . $this->_list);
-        foreach ($this->join as $join)
-            $ret = $ret->leftJoin($join[0], $join[1], $join[2]);
-        return $ret;
+        return $this->_list;
     }
 
     /**
@@ -280,30 +269,6 @@ class GridList implements JsonSerializable {
             "url"         => $url,
             "type"        => $buttonType
         ];
-        return $this;
-    }
-
-    /**
-     * 左连接
-     * @param String $table 左连接的表格
-     * @param String $id1 左连接表的ID
-     * @param String $id2 主表ID
-     * @return GridList 返回this以便链式调用
-     */
-    public function leftJoin($table, $id1, $id2) {
-        $this->join[] = [$table, $id1, $id2];
-        return $this;
-    }
-
-    /**
-     * 删除时同时对指定从表一并删除
-     * @param String $table 删除时同时删除的表
-     * @param String $id1 主表对应的字段，取其值作为从表的条件
-     * @param String $id2 从表对应的删除条件列，该列值等于$id1指定列值时删除
-     * @return GridList 返回this以便链式调用
-     */
-    public function deleteJoin($table, $id1, $id2) {
-        $this->delete_join[] = [$table, $id1, $id2];
         return $this;
     }
 

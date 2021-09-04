@@ -59,7 +59,7 @@ class Grid {
 
     /**
      * 初始化GridList对象用于列表页及其接口渲染
-     * @param String $table 表接口
+     * @param DBListOperator $table 表接口
      * @return GridList 返回GridList对象
      */
     public function list($table) {

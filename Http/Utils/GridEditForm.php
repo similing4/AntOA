@@ -34,7 +34,7 @@ class GridEditForm implements JsonSerializable {
 
     /**
      * 构造方法
-     * @param String $table 表接口
+     * @param DBEditOperator $table 表接口
      */
     public function __construct($table) {
         $this->_table = $table;

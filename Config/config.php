@@ -12,32 +12,27 @@ return [
             "children" => [
                 //二级导航栏
                 [
-                    "uri"   => "/software/home/home",
+                    "uri"   => "/admin/home/home",
                     "title" => "首页"
                 ]
             ]
         ], [
-            "title"    => "软件管理",
+            "title"    => "用户管理",
             "children" => [
                 [
-                    "uri"             => "/software/test/diy_list",
-                    "title"           => "自定义页面",
-                    "breadcrumbTitle" => "自定义列表页" //自定义面包屑显示内容
-                ],
-                [
-                    "uri"             => "/software/home/list",
-                    "title"           => "软件管理",
-                    "breadcrumbTitle" => "软件管理列表页"
+                    "uri"             => "/admin/user/list",
+                    "title"           => "用户管理",
+                    "breadcrumbTitle" => "用户管理列表页"
                 ],
                 [
                     "visible" => false, //设置左侧导航栏中不显示该页面
-                    "uri"     => "/software/home/create",
-                    "title"   => "软件创建页"
+                    "uri"     => "/admin/user/create",
+                    "title"   => "用户创建页"
                 ],
                 [
                     "visible" => false,
-                    "uri"     => "/software/home/edit",
-                    "title"   => "软件编辑页"
+                    "uri"     => "/admin/user/edit",
+                    "title"   => "用户编辑页"
                 ]
             ]
         ]

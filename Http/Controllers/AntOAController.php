@@ -54,6 +54,8 @@ abstract class AntOAController extends Controller {
         $uid = $this->auth->getUidFromToken($token);
         if (!$uid)
             throw new Exception("登录失效");
+        if (!$this->checkPower($uid))
+            throw new Exception("权限不足");
         return $uid;
     }
 
@@ -156,8 +158,8 @@ abstract class AntOAController extends Controller {
                 }
             }
             $columns = [];
-            foreach ($config['columns'] as $column){
-                if($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
+            foreach ($config['columns'] as $column) {
+                if ($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
                     continue;
                 $columns[] = $column['col'];
             }
@@ -167,9 +169,9 @@ abstract class AntOAController extends Controller {
                 ->select($columns)
                 ->paginate(15);
             $res = json_decode(json_encode($res), true);
-            foreach ($res['data'] as &$resi){
+            foreach ($res['data'] as &$resi) {
                 foreach ($config['columns'] as $column)
-                    if($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
+                    if ($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
                         $resi[$column['col']] = '';
             }
             $res['status'] = 1;
@@ -278,7 +280,7 @@ abstract class AntOAController extends Controller {
                 if ($col['type'] === GridCreateForm::COLUMN_CHILDREN_CHOOSE || $col['type'] === GridEditForm::COLUMN_CHILDREN_CHOOSE) {
                     $key = $col['extra']->getArr()['columns'][0]['col'];
                     $display = $col['extra']->getArr()['displayColumn'];
-                    $tip[$col['col']] = Db::table($col['extra']->getDBObject())->where($key,$res[$col['col']])->first();
+                    $tip[$col['col']] = Db::table($col['extra']->getDBObject())->where($key, $res[$col['col']])->first();
                 }
             }
             $hook = $this->gridObj->getDetailHook();
@@ -329,7 +331,7 @@ abstract class AntOAController extends Controller {
             $hook = $this->gridObj->getSaveHook();
             if ($hook != null)
                 $param = $hook->hook($param);
-            $tableObj['table']->onUpdate($tableObj['columns'],$param);
+            $tableObj['table']->onUpdate($tableObj['columns'], $param);
             return json_encode([
                 "status" => 1,
                 "msg"    => "保存成功"
@@ -449,4 +451,11 @@ abstract class AntOAController extends Controller {
             ]);
         }
     }
+
+    /**
+     * 根据UID对控制器下所有接口进行鉴权
+     * @param String $uid 用户UID
+     * @return Boolean 返回真则验权通过，否则验权失败
+     */
+    protected abstract function checkPower($uid);
 }

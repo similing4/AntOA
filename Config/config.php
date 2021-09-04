@@ -17,22 +17,26 @@ return [
                 ]
             ]
         ], [
-            "title"    => "用户管理",
-            "children" => [
+            "title"      => "用户管理",
+            "role_limit" => [1], //权限限制，不设置为不限制
+            "children"   => [
                 [
                     "uri"             => "/admin/user/list",
                     "title"           => "用户管理",
-                    "breadcrumbTitle" => "用户管理列表页"
+                    "breadcrumbTitle" => "用户管理列表页",
+                    "role_limit"      => [1]
                 ],
                 [
-                    "visible" => false, //设置左侧导航栏中不显示该页面
-                    "uri"     => "/admin/user/create",
-                    "title"   => "用户创建页"
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "uri"        => "/admin/user/create",
+                    "title"      => "用户创建页",
+                    "role_limit" => [1]
                 ],
                 [
-                    "visible" => false,
-                    "uri"     => "/admin/user/edit",
-                    "title"   => "用户编辑页"
+                    "visible"    => false,
+                    "uri"        => "/admin/user/edit",
+                    "title"      => "用户编辑页",
+                    "role_limit" => [1]
                 ]
             ]
         ]

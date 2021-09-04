@@ -12,6 +12,7 @@ namespace Modules\AntOA\Http\Controllers;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Modules\AntOA\Http\Utils\AuthInterface;
@@ -23,6 +24,7 @@ class AuthController {
     public function __construct(AuthInterface $auth) {
         $this->auth = $auth;
     }
+
     /**
      * 登录页面
      * @return View
@@ -72,7 +74,7 @@ class AuthController {
         } catch (\Exception $e) {
             return json_encode([
                 "status" => 0,
-                "msg"   => $e->getMessage()
+                "msg"    => $e->getMessage()
             ]);
         }
     }
@@ -85,12 +87,13 @@ class AuthController {
      */
     public function auth(Request $request) {
         $auth = $this->auth;
-        $token = $auth->getUidFromToken($request->header("Authorization"));
-        if ($token)
+        $uid = $auth->getUidFromToken($request->header("Authorization"));
+        if ($uid) {
             return json_encode([
                 "status" => 1,
-                "data"   => $token
+                "data"   => $uid
             ]);
+        }
         return json_encode([
             "status" => 0,
             "data"   => "登录失效"
@@ -103,31 +106,36 @@ class AuthController {
      * @return String 通用成功失败返回
      */
     public function api_config(Request $request) {
-        $auth = $this->auth;
-        $token = $request->header('Authorization');
-        if (!$auth->getUidFromToken($token))
+        try {
+            $auth = $this->auth;
+            $token = $request->header('Authorization');
+            $uid = $auth->getUidFromToken($token);
+            if (!$uid)
+                throw new Exception("登录失效");
+            $qiniu = config("antoa.config.qiniu");
+            $menu = $this->getConfigMenu($uid);
+            $accessKey = $qiniu['access_key'];
+            $secretKey = $qiniu['secret_key'];
+            $bucketName = $qiniu['bucket'];
+            $auth = new QiniuAuth($accessKey, $secretKey);
+            $token = $auth->uploadToken($bucketName, null, 300, [
+                "detectMime" => 3,
+                "saveKey"    => '$(etag)' . '$(ext)'
+            ], true);
+            $routes = $this->makeRoutes();
+            return json_encode([
+                "status" => 1,
+                "host"   => $qiniu['url'],
+                "menu"   => $menu,
+                "token"  => $token,
+                "routes" => $routes
+            ]);
+        } catch (Exception $e) {
             return json_encode([
                 "status" => 0,
-                "msg"    => "登录失效"
+                "msg"    => $e->getMessage()
             ]);
-        $qiniu = config("antoa.config.qiniu");
-        $menu = config('antoa.menu_routes');
-        $accessKey = $qiniu['access_key'];
-        $secretKey = $qiniu['secret_key'];
-        $bucketName = $qiniu['bucket'];
-        $auth = new QiniuAuth($accessKey, $secretKey);
-        $token = $auth->uploadToken($bucketName, null, 300, [
-            "detectMime" => 3,
-            "saveKey"    => '$(etag)' . '$(ext)'
-        ], true);
-        $routes = $this->makeRoutes();
-        return json_encode([
-            "status" => 1,
-            "host"   => $qiniu['url'],
-            "menu"   => $menu,
-            "token"  => $token,
-            "routes" => $routes
-        ]);
+        }
     }
 
     private function makeRoutes() {
@@ -232,5 +240,36 @@ class AuthController {
             "router" => $path,
             "path"   => $uri,
         ];
+    }
+
+    private function getConfigMenu($uid) {
+        $user = DB::table("antoa_user")->where("id", $uid)->first();
+        if (!$user)
+            throw new Exception("登录失效");
+        $roles = json_decode($user->role, true);
+        $menus = config('antoa.menu_routes');
+        $menu_return = [];
+        foreach ($menus as &$fmenu) {
+            if (!array_key_exists("role_limit", $fmenu))
+                $fmenu['role_limit'] = [];
+            if (!array_key_exists("children", $fmenu))
+                $fmenu['children'] = [];
+            foreach ($fmenu['children'] as &$child) {
+                if (!array_key_exists("role_limit", $child))
+                    $child['role_limit'] = [];
+            }
+        }
+        foreach ($menus as $fmenu2) {
+            if (count($fmenu2['role_limit']) === 0 || count(array_intersect($fmenu2['role_limit'], $roles)) > 0) {
+                $menu_item = json_decode(json_encode($fmenu2), true);
+                $menu_item['children'] = [];
+                foreach ($fmenu2['children'] as $child) {
+                    if (count($child['role_limit']) === 0 || count(array_intersect($child['role_limit'], $roles)) > 0)
+                        $menu_item['children'][] = $child;
+                }
+                $menu_return[] = $menu_item;
+            }
+        }
+        return $menu_return;
     }
 }

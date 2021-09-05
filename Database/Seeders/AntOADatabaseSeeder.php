@@ -29,7 +29,7 @@ class AntOADatabaseSeeder extends Seeder {
             "password" => md5("admin"), //默认密码为admin，如果需要修改默认密码可以在这里修改
             "role"     => "[1]" //默认有超级管理员角色
         ]);
-        Db::update("CREATE TABLE `antoa_role` (
+        Db::update("CREATE TABLE `" . $pre . "antoa_role` (
              `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '角色ID',
              `name` varchar(200) NOT NULL COMMENT '角色名称',
              PRIMARY KEY (`id`)

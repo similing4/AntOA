@@ -139,20 +139,20 @@ abstract class AntOAController extends Controller {
             foreach ($config['filter_columns'] as $r) {
                 switch ($r['type']) {
                     case GridList::FILTER_TEXT:
-                        if (array_key_exists($r['col'], $req) && $req[$r['col']] !== '')
+                        if ($req[$r['col']] !== '')
                             $list->where($r['col'], 'like', "%" . $request->post($r['col']) . "%");
                         break;
                     case GridList::FILTER_HIDDEN:
                     case GridList::FILTER_ENUM:
-                        if (array_key_exists($r['col'], $req) && $req[$r['col']] !== '')
+                        if ($req[$r['col']] !== '')
                             $list->where($r['col'], $req[$r['col']]);
                         break;
                     case GridList::FILTER_STARTTIME:
-                        if (array_key_exists($r['col'] . "_starttime", $req) && $req[$r['col'] . "_starttime"] !== '')
+                        if ($req[$r['col'] . "_starttime"] !== '')
                             $list->where($r['col'], ">", $req[$r['col'] . "_starttime"]);
                         break;
                     case GridList::FILTER_ENDTIME:
-                        if (array_key_exists($r['col'] . "_endtime", $req) && $req[$r['col'] . "_endtime"] !== '')
+                        if ($req[$r['col'] . "_endtime"] !== '')
                             $list->where($r['col'], "<", $req[$r['col'] . "_endtime"]);
                         break;
                 }
@@ -273,15 +273,43 @@ abstract class AntOAController extends Controller {
             if (!$res)
                 throw new Exception("该项目不存在");
             $res = json_decode(json_encode($res), true);
-            $tip = [];
+            $needsTip = [];
             foreach ($tableObj['columns'] as $col) {
                 if ($col['type'] === GridCreateForm::COLUMN_PASSWORD || $col['type'] === GridEditForm::COLUMN_PASSWORD)
                     $res[$col['col']] = "";
                 if ($col['type'] === GridCreateForm::COLUMN_CHILDREN_CHOOSE || $col['type'] === GridEditForm::COLUMN_CHILDREN_CHOOSE) {
-                    $key = $col['extra']->getArr()['columns'][0]['col'];
-                    $display = $col['extra']->getArr()['displayColumn'];
-                    $tip[$col['col']] = Db::table($col['extra']->getDBObject())->where($key, $res[$col['col']])->first();
+                    $needsTip[] = $col;
                 }
+            }
+            $tip = [];
+            foreach($needsTip as $needTip){
+                $dbObj = $needTip['extra']->getDBObject();
+                $list = clone $dbObj;
+                foreach ($needTip['extra']->getArr()['filter_columns'] as $r) {
+                    switch ($r['type']) {
+                        case GridList::FILTER_TEXT:
+                            if ($request->get($r['col'], "") !== '')
+                                $list->where($r['col'], 'like', "%" . $request->post($r['col']) . "%");
+                            break;
+                        case GridList::FILTER_HIDDEN:
+                        case GridList::FILTER_ENUM:
+                            if ($request->get($r['col'], "") !== '')
+                                $list->where($r['col'], $request->get($r['col'], ""));
+                            break;
+                        case GridList::FILTER_STARTTIME:
+                            if ($request->get($r['col'] . "_starttime", "") !== '')
+                                $list->where($r['col'], ">", $request->get($r['col'] . "_starttime", ""));
+                            break;
+                        case GridList::FILTER_ENDTIME:
+                            if ($request->get($r['col'] . "_endtime", "") !== '')
+                                $list->where($r['col'], "<", $request->get($r['col'] . "_endtime", ""));
+                            break;
+                    }
+                }
+                $key = $needTip['extra']->getArr()['columns'][0]['col'];
+                $display = $needTip['extra']->getArr()['displayColumn'];
+                if($res[$needTip['col']] != "")
+                    $tip[$needTip['col']] = $list->where($key, $res[$needTip['col']])->first();
             }
             $hook = $this->gridObj->getDetailHook();
             if ($hook != null)
@@ -374,19 +402,20 @@ abstract class AntOAController extends Controller {
                     foreach ($config['filter_columns'] as $r) {
                         switch ($r['type']) {
                             case GridList::FILTER_TEXT:
-                                if (array_key_exists($r['col'], $req) && $req[$r['col']] !== '')
+                                if ($req[$r['col']] !== '')
                                     $list->where($r['col'], 'like', "%" . $request->post($r['col']) . "%");
                                 break;
+                            case GridList::FILTER_HIDDEN:
                             case GridList::FILTER_ENUM:
-                                if (array_key_exists($r['col'], $req) && $req[$r['col']] !== '')
+                                if ($req[$r['col']] !== '')
                                     $list->where($r['col'], $req[$r['col']]);
                                 break;
                             case GridList::FILTER_STARTTIME:
-                                if (array_key_exists($r['col'] . "_starttime", $req) && $req[$r['col'] . "_starttime"] !== '')
+                                if ($req[$r['col'] . "_starttime"] !== '')
                                     $list->where($r['col'], ">", $req[$r['col'] . "_starttime"]);
                                 break;
                             case GridList::FILTER_ENDTIME:
-                                if (array_key_exists($r['col'] . "_endtime", $req) && $req[$r['col'] . "_endtime"] !== '')
+                                if ($req[$r['col'] . "_endtime"] !== '')
                                     $list->where($r['col'], "<", $req[$r['col'] . "_endtime"]);
                                 break;
                         }

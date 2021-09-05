@@ -133,7 +133,7 @@ class AuthController {
         } catch (Exception $e) {
             return json_encode([
                 "status" => 0,
-                "msg"    => $e->getMessage()
+                "msg"    => $e->getMessage() . $e->getLine()
             ]);
         }
     }
@@ -259,6 +259,7 @@ class AuthController {
                     $child['role_limit'] = [];
             }
         }
+        $menus = json_decode(json_encode($menus),true);
         foreach ($menus as $fmenu2) {
             if (count($fmenu2['role_limit']) === 0 || count(array_intersect($fmenu2['role_limit'], $roles)) > 0) {
                 $menu_item = json_decode(json_encode($fmenu2), true);

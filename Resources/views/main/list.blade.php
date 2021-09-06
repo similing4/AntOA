@@ -39,9 +39,9 @@
                                     <a-select v-model="searchObj[filterItem.col]"
                                               :placeholder="'请选择'+filterItem.tip" @change="$forceUpdate()">
                                         <a-select-option value="">不筛选</a-select-option>
-                                        <a-select-option value="col" v-for="(col,index2) in filterItem.extra"
+                                        <a-select-option :value="index2" v-for="(col,index2) in filterItem.extra"
                                                          :key="index2">
-                                            @{{filterItem[col] }}
+                                            @{{ col }}
                                         </a-select-option>
                                     </a-select>
                                 </a-col>

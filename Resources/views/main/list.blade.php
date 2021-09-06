@@ -211,6 +211,7 @@
                 resetSearch() {
                     for (const i in this.searchObj)
                         this.searchObj[i] = getQueryString(i);
+                    this.doSearch();
                 },
                 onDataChange(pagination) {
                     this.pagination = pagination;

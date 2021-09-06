@@ -208,6 +208,7 @@
                         if (res.status) {
                             this.$message.success(res.msg, 5);
                             this.reset();
+                            window.close();
                         } else
                             throw res.msg;
                     } catch (e) {

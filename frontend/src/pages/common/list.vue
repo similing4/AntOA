@@ -191,6 +191,7 @@
 			resetSearch() {
 				for (const i in this.searchObj)
 					this.searchObj[i] = (this.$route.query[i] ? this.$route.query[i] : '');
+				this.doSearch();
 			},
 			onDataChange(pagination) {
 				this.pagination = pagination;

@@ -221,6 +221,7 @@
 					if (res.status) {
 						this.$message.success(res.msg, 5);
 						this.reset();
+						this.$closePage(this.$route.path);
 					} else
 						throw res.msg;
 				} catch (e) {

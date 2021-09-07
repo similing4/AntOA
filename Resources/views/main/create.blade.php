@@ -126,6 +126,10 @@
                                     :multiple="true"></upload-button>
                         </a-form-item>
                         <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                     v-if="column.type == 'COLUMN_CHOOSE'">
+                            <a-cascader :placeholder="'请选择' + column.tip" v-model="form[column.col]" :options="column.extra"></a-cascader>
+                        </a-form-item>
+                        <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
                                      v-if="column.type == 'COLUMN_CHILDREN_CHOOSE'">
                             <column-children-choose v-model="form[column.col]" :tip.sync="formTip[column.col]"
                                 :column="column" :api="api" pagetype="edit"></column-children-choose>
@@ -156,7 +160,7 @@
             return "";
         };
         tableObj.columns.map((col) => {
-            if (col.type === 'COLUMN_CHECKBOX' || col.type === 'COLUMN_PICTURES' || col.type === 'COLUMN_FILES')
+            if (col.type === 'COLUMN_CHECKBOX' || col.type === 'COLUMN_PICTURES' || col.type === 'COLUMN_FILES' || col.type === 'COLUMN_CHOOSE')
                 form[col.col] = (getQueryString(col.col) !== '' ? JSON.parse(getQueryString(col.col)) : []);
             else if (col.type === 'COLUMN_TIMESTAMP')
                 form[col.col] = (getQueryString(col.col) !== '' ? getQueryString(col.col) : moment());
@@ -182,12 +186,12 @@
                     for (let i in this.columns) {
                         if (this.columns[i].type === "COLUMN_HIDDEN")
                             ;
-                        else if (this.columns[i].type === 'COLUMN_CHECKBOX' || this.columns[i].type === 'COLUMN_PICTURES' || this.columns[i].type === 'COLUMN_FILES')
-                            form[this.columns[i].col] = [];
+                        else if (this.columns[i].type === 'COLUMN_CHECKBOX' || this.columns[i].type === 'COLUMN_PICTURES' || this.columns[i].type === 'COLUMN_FILES' || this.columns[i].type === 'COLUMN_CHOOSE')
+                            form[this.columns[i].col] = (getQueryString(this.columns[i].col) !== '' ? JSON.parse(getQueryString(this.columns[i].col)) : []);
                         else if (this.columns[i].type === 'COLUMN_TIMESTAMP')
-                            form[this.columns[i].col] = moment();
+                            form[this.columns[i].col] = (getQueryString(this.columns[i].col) !== '' ? getQueryString(this.columns[i].col) : moment());
                         else
-                            this.form[i] = "";
+                            form[this.columns[i].col] = getQueryString(this.columns[i].col);
                     }
                 },
                 async submit() {

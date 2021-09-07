@@ -92,6 +92,11 @@
 						accept="*/*" :multiple="true"></upload-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+					v-if="column.type == 'COLUMN_CHOOSE'">
+					<a-cascader :placeholder="'请选择' + column.tip" v-model="form[column.col]" :options="column.extra">
+					</a-cascader>
+				</a-form-item>
+				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_CHILDREN_CHOOSE'">
 					<column-children-choose v-model="form[column.col]" :tip.sync="formTip[column.col]" :column="column"
 						:api="api" pagetype="create"></column-children-choose>
@@ -122,7 +127,7 @@
 				api: null
 			};
 		},
-		components:{
+		components: {
 			ConfirmDialog,
 			StandardTable,
 			WangEditor,
@@ -145,14 +150,14 @@
 				};
 				tableObj.columns.map((col) => {
 					if (col.type === 'COLUMN_CHECKBOX' || col.type === 'COLUMN_PICTURES' || col.type ===
-						'COLUMN_FILES')
+						'COLUMN_FILES' || col.type === 'COLUMN_CHOOSE')
 						form[col.col] = (getQueryString(col.col) !== '' ? JSON.parse(getQueryString(col.col)) :
 							[]);
 					else if (col.type === 'COLUMN_TIMESTAMP')
 						form[col.col] = (getQueryString(col.col) !== '' ? getQueryString(col.col) : moment());
 					else
 						form[col.col] = getQueryString(col.col);
-					if(col.type === 'COLUMN_CHILDREN_CHOOSE')
+					if (col.type === 'COLUMN_CHILDREN_CHOOSE')
 						formTip[col.col] = "";
 				});
 				this.columns = tableObj.columns
@@ -173,17 +178,17 @@
 					path = url.split("?")[0];
 					query = url.split("?")[1];
 				}
-				if (path.endsWith("/create")){
+				if (path.endsWith("/create")) {
 					url = "/create?path=" + path.substring(0, path.length - "/create".length);
-					if(query != '')
+					if (query != '')
 						url += "&" + query;
-				}else if (path.endsWith("/edit")){
+				} else if (path.endsWith("/edit")) {
 					url = "/edit?path=" + path.substring(0, path.length - "/edit".length);
-					if(query != '')
+					if (query != '')
 						url += "&" + query;
-				}else if (path.endsWith("/list")){
+				} else if (path.endsWith("/list")) {
 					url = "/list?path=" + path.substring(0, path.length - "/list".length);
-					if(query != '')
+					if (query != '')
 						url += "&" + query;
 				}
 				this.$router.push(url);
@@ -191,15 +196,15 @@
 			reset() {
 				for (let i in this.columns) {
 					if (this.columns[i].type === "COLUMN_HIDDEN")
-						;
+					;
 					else if (this.columns[i].type === 'COLUMN_CHECKBOX' || this.columns[i].type === 'COLUMN_PICTURES' ||
-						this.columns[i].type === 'COLUMN_FILES')
+						this.columns[i].type === 'COLUMN_FILES' || this.columns[i].type === 'COLUMN_CHOOSE')
 						this.form[this.columns[i].col] = [];
 					else if (this.columns[i].type === 'COLUMN_TIMESTAMP')
 						this.form[this.columns[i].col] = moment();
 					else
 						this.form[i] = "";
-					if(this.columns[i].type === 'COLUMN_CHILDREN_CHOOSE')
+					if (this.columns[i].type === 'COLUMN_CHILDREN_CHOOSE')
 						this.formTip[this.columns[i].col] = "";
 				}
 			},

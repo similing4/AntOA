@@ -26,6 +26,7 @@ class GridEditForm implements JsonSerializable {
     const COLUMN_PICTURE = "COLUMN_PICTURE"; //图片
     const COLUMN_FILE = "COLUMN_FILE"; //文件
     const COLUMN_PICTURES = "COLUMN_PICTURES"; //多图片
+    const COLUMN_CHOOSE = "COLUMN_CHOOSE"; //级联选择
     const COLUMN_FILES = "COLUMN_FILES"; //多文件
     const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
     const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交

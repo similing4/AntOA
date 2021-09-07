@@ -93,6 +93,11 @@
 						accept="*/*" :multiple="true"></upload-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+					v-if="column.type == 'COLUMN_CHOOSE'">
+					<a-cascader :placeholder="'请选择' + column.tip" v-model="form[column.col]" :options="column.extra">
+					</a-cascader>
+				</a-form-item>
+				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_CHILDREN_CHOOSE'">
 					<column-children-choose v-model="form[column.col]" :tip.sync="formTip[column.col]"
 						v-if="formTip[column.col] !== undefined" :column="column" :api="api" pagetype="edit"></column-children-choose>
@@ -148,7 +153,7 @@
 					return this.$route.query[name] ? this.$route.query[name] : '';
 				};
 				tableObj.columns.map((col) => {
-					if (col.type === 'COLUMN_CHECKBOX' || col.type === 'COLUMN_PICTURES' || col.type === 'COLUMN_FILES')
+					if (col.type === 'COLUMN_CHECKBOX' || col.type === 'COLUMN_PICTURES' || col.type === 'COLUMN_FILES' || col.type === 'COLUMN_CHOOSE')
 						form[col.col] = (getQueryString(col.col) !== '' ? JSON.parse(getQueryString(col.col)) :
 							[]);
 					else if (col.type === 'COLUMN_TIMESTAMP')
@@ -202,7 +207,7 @@
 						for (let i in this.columns) {
 							if (res.data[this.columns[i].col] !== undefined) {
 								if (this.columns[i].type === 'COLUMN_CHECKBOX' || this.columns[i].type ===
-									'COLUMN_PICTURES' || this.columns[i].type === 'COLUMN_FILES')
+									'COLUMN_PICTURES' || this.columns[i].type === 'COLUMN_FILES' || this.columns[i].type === 'COLUMN_CHOOSE')
 									this.form[this.columns[i].col] = JSON.parse(res.data[this.columns[i].col]);
 								else if (this.columns[i].type === 'COLUMN_TIMESTAMP')
 									this.form[this.columns[i].col] = moment(res.data[this.columns[i].col],

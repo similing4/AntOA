@@ -216,7 +216,8 @@ return [
                 [
                     "uri"             => "/software/test/diy_list",
                     "title"           => "自定义页面",
-                    "breadcrumbTitle" => "自定义列表页" //自定义面包屑显示内容
+                    "breadcrumbTitle" => "自定义列表页", //自定义面包屑显示内容
+                    "role_limit"      => [1] //有这个权限ID数组其中之一的用户才展示这个路由
                 ],
                 [
                     "uri"             => "/software/home/list",

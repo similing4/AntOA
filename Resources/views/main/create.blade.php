@@ -33,6 +33,10 @@
                 <a-form>
                     <template v-for="(column,index) in columns">
                         <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                            v-if="column.type == 'COLUMN_DISPLAY'">
+                            <div v-html="column.extra"></div>
+                        </a-form-item>
+                        <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
                                      v-if="column.type == 'COLUMN_TEXT'">
                             <a-input :placeholder="'请填写' + column.tip" v-model="form[column.col]"></a-input>
                         </a-form-item>

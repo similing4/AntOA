@@ -26,14 +26,64 @@ $grid->list(new class(new DB::table("user")) extends DBListOperator {
 ### (2)column操作
 column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
 ```php
-//模板：
 $grid->list(new class(new DB::table("user")) extends DBListOperator {
     //这里可以重写你各种自定义方法
 })->column("列类型", '列名', '列展示名');
-//示例：
+```
+示例：
+```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {
     //这里可以重写你各种自定义方法
 })->column(GridList::TEXT, 'username', '用户名');
+```
+这里的$grid->list参数需要传入一个DBListOperator抽象类子类的实例，这里推荐直接使用匿名对象重写父类方法。DBListOperator类定义如下：
+```php
+<?php
+abstract class DBListOperator {
+    public $builder; //DB类产生的对象，于构造方法中传入
+
+    public function __construct(Builder $builder) {
+        $this->builder = $builder;
+    }
+	
+	//where方法，设置的对应column会作为条件传入。你可以根据column自定义设置传入条件内容
+    public function where($column, $operator = null, $value = null, $boolean = 'and') {
+        $this->builder->where($column, $operator, $value, $boolean);
+        return $this;
+    }
+
+	//orderBy方法，你可以在这里自定义设置排序规则。
+    public function orderBy($column, $direction) {
+        $this->builder->orderBy($column, $direction);
+        return $this;
+    }
+
+	//select方法，如果你有连接查询你可以在这里将查询字段格式化为正确的字段解决冲突。
+    public function select($columns) {
+        $this->builder->select($columns);
+        return $this;
+    }
+
+	//分页方法，不建议直接重写本方法，建议直接通过hook修改结果。
+    public function paginate($pageCount) {
+        return $this->builder->paginate($pageCount);
+    }
+
+	//当编辑页或创建页使用column为COLUMN_CHILDREN_CHOOSE类型时，extra需要使用本方法。
+    public function first() {
+        return $this->builder->first();
+    }
+
+	//detail判断、删除时判断
+    public function find($id) {
+        return $this->builder->find($id);
+    }
+
+	//删除时进行的操作，除了重写这里之外，你也可以直接重写AntOAController的delete方法
+    public function delete($id) {
+        return $this->builder->delete($id);
+    }
+}
 ```
 这里的“**列类型**”为GridList里的常量，可用的常量如下：
 ```php
@@ -164,21 +214,38 @@ $grid->createForm(new DB::table("user")) extends DBCreateOperator {
     //这里可以重写你各种自定义方法
 })->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名');
 ```
+这里的$grid->createForm参数需要传入一个DBCreateOperator抽象类子类的实例，这里推荐直接使用匿名对象重写父类方法。DBCreateOperator类定义如下：
+```php
+<?php
+abstract class DBCreateOperator {
+    public $builder; //构造方法，为DB类的Builder
+
+    public function __construct(Builder $builder) {
+        $this->builder = $builder;
+    }
+	
+	//你可以在这里重写插入方法，但不推荐直接在这里写，你可以在CreateHook中进行插入信息的修改。
+    public function insert(array $values) {
+        return $this->builder->insert($values);
+    }
+}
+```
 这里的“**列类型**”为GridCreateForm里的常量，可用的常量如下：
 ```php
 const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据，表现形式为一个文本框
 const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据，表现形式为一个textarea
 const COLUMN_PASSWORD = "COLUMN_PASSWORD"; //密码数据，表现形式为一个密码输入框
-const COLUMN_SELECT = "COLUMN_SELECT"; //下拉单选，表现形式为一个select
-const COLUMN_RADIO = "COLUMN_RADIO"; //Radio单选，表现形式为input type=radio的单选
-const COLUMN_CHECKBOX = "COLUMN_CHECKBOX"; //多选，表现形式为input type=checkbox的多选
+const COLUMN_SELECT = "COLUMN_SELECT"; //下拉单选，表现形式为一个select，需传入Extra参数为一个键值对数组，如["1"=>"启用","2"=>"禁用"]，那么用户会选择启用与禁用，而你能拿到1或2
+const COLUMN_RADIO = "COLUMN_RADIO"; //Radio单选，表现形式为input type=radio的单选，需传入Extra参数与COLUMN_SELECT一致
+const COLUMN_CHECKBOX = "COLUMN_CHECKBOX"; //多选，表现形式为input type=checkbox的多选，需传入Extra参数与COLUMN_SELECT一致，但你获取到的值为多选选中的键数组
 const COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"; //时间选择，表现形式为点击后弹出时间与日期的选择
 const COLUMN_RICHTEXT = "COLUMN_RICHTEXT"; //富文本，表现形式为WangEditor的富文本编辑器
 const COLUMN_PICTURE = "COLUMN_PICTURE"; //图片，表现形式为上传并预览单张图片
 const COLUMN_FILE = "COLUMN_FILE"; //文件，表现形式为上传并预览单个文件
 const COLUMN_PICTURES = "COLUMN_PICTURES"; //多图片，表现形式为上传并预览多张图片
+const COLUMN_CHOOSE = "COLUMN_CHOOSE"; //级联选择，表现形式参考[级联选择](https://www.antdv.com/components/cascader-cn/#API)，需传入Extra参数为Cascader组件的options格式，对应数据为Cascader组件的v-model格式的数组的json_encode格式
 const COLUMN_FILES = "COLUMN_FILES"; //多文件，表现形式为上传并预览多个文件
-const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
+const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交。可以通过extra传入要展示的富文本信息。
 const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
 const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
 //例：

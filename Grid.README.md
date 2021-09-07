@@ -246,22 +246,22 @@ const COLUMN_PICTURES = "COLUMN_PICTURES"; //多图片，表现形式为上传�
 const COLUMN_CHOOSE = "COLUMN_CHOOSE"; //级联选择，表现形式参考[级联选择](https://www.antdv.com/components/cascader-cn/#API)，需传入Extra参数为Cascader组件的options格式，对应数据为Cascader组件的v-model格式的数组的json_encode格式
 const COLUMN_FILES = "COLUMN_FILES"; //多文件，表现形式为上传并预览多个文件
 const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交。可以通过extra传入要展示的富文本信息。
-const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
-const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
+const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交，所有column配置内容均可通过页面传入参数注入。
+const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择，Extra中需传入GridList类的实例并配置displayColumn。
 //例：
 $grid->createForm(new DB::table("user")) extends DBCreateOperator {
-        //这里可以重写你各种自定义方法
-    })
-    ->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名')
-    ->column(GridCreateForm::COLUMN_PICTUR, 'icon', '用户头像',[
-        "width"  => '50px',
-        "height" => '50px'
-    ])
-    ->column(GridCreateForm::COLUMN_SELECT, 'state', '用户状态',[
-        "0" => "禁用",
-        "1" => "启用"
-    ])
-    ->column(GridCreateForm::COLUMN_RICHTEXT, 'log', '用户备注');
+	//这里可以重写你各种自定义方法
+})
+->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名')
+->column(GridCreateForm::COLUMN_PICTURE, 'icon', '用户头像',[
+	"width"  => '50px',
+	"height" => '50px'
+])
+->column(GridCreateForm::COLUMN_SELECT, 'state', '用户状态',[
+	"0" => "禁用",
+	"1" => "启用"
+])
+->column(GridCreateForm::COLUMN_RICHTEXT, 'log', '用户备注');
 ```
 ## 3.Edit编辑页配置
 编辑页与创建页大体相同：
@@ -269,11 +269,33 @@ $grid->createForm(new DB::table("user")) extends DBCreateOperator {
 ### (1)构造
 Edit编辑页主要由GridEditForm对象控制。创建GridEditForm对象的方法如下：
 ```php
-$grid->editForm("你的表名");
+$grid->editForm(new DB::table("user")) extends DBEditOperator {
+	//这里可以重写你各种自定义方法
+});
 ```
-此方法调用之后会在Grid内部自动创建GridCreateForm实例并返回该GridCreateForm实例。您可以通过这个GridCreateForm实例来操作列表页信息。
+此方法调用之后会在Grid内部自动创建GridEditForm实例并返回该GridEditForm实例。您可以通过这个GridEditForm实例来操作列表页信息。
 
-这里的表名是指DB::table的参数，暂时还不支持Model操作。
+这里的$grid->editForm参数需要传入一个DBEditOperator抽象类子类的实例，这里推荐直接使用匿名对象重写父类方法。DBEditOperator类定义如下：
+```php
+<?php
+abstract class DBEditOperator {
+    public $builder;
+
+    public function __construct(Builder $builder) {
+        $this->builder = $builder;
+    }
+	
+	//用于获取detail数据
+    public function find($id) {
+        return $this->builder->find($id);
+    }
+
+	//用于更新数据，更新时会默认以第一个传入的column为条件更新数据。你可以重写这个方法自定义更新数据
+    public function onUpdate($columns, $param) {
+        return $this->builder->where($columns[0]['col'], $param[$columns[0]['col']])->update($param);
+    }
+}
+```
 
 ### (2)column操作
 column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
@@ -281,7 +303,7 @@ column方法用于配置列表页的列数据，且能返回对象自身供链�
 //模板：
 $grid->editForm(DBEditOperator对象)->column("列类型", '列名', '列展示名');
 //示例：
-$grid->editForm(new DB::table("user")) extends DBEditOperator {
+$grid->editForm(new class(DB::table("user")) extends DBEditOperator {
     //这里可以重写你各种自定义方法
 })->column(GridEditForm::COLUMN_TEXT, 'username', '用户名');
 ```
@@ -303,19 +325,19 @@ const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
 const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
 const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
 //例：
-$grid->editForm(new DB::table("user")) extends DBEditOperator {
-        //这里可以重写你各种自定义方法
-    })
-    ->column(GridEditForm::COLUMN_TEXT, 'username', '用户名')
-    ->column(GridEditForm::COLUMN_PICTUR, 'icon', '用户头像',[
-        "width"  => '50px',
-        "height" => '50px'
-    ])
-    ->column(GridEditForm::COLUMN_SELECT, 'state', '用户状态',[
-        "0" => "禁用",
-        "1" => "启用"
-    ])
-    ->column(GridEditForm::COLUMN_RICHTEXT, 'log', '用户备注');
+$grid->editForm(new class(DB::table("user")) extends DBEditOperator {
+	//这里可以重写你各种自定义方法
+})
+->column(GridEditForm::COLUMN_TEXT, 'username', '用户名')
+->column(GridEditForm::COLUMN_PICTUR, 'icon', '用户头像',[
+	"width"  => '50px',
+	"height" => '50px'
+])
+->column(GridEditForm::COLUMN_SELECT, 'state', '用户状态',[
+	"0" => "禁用",
+	"1" => "启用"
+])
+->column(GridEditForm::COLUMN_RICHTEXT, 'log', '用户备注');
 ```
 
 ## 4. 钩子操作
@@ -327,29 +349,29 @@ $grid->editForm(new DB::table("user")) extends DBEditOperator {
 
 例：
 ```php
-        $grid->hookList(new class() implements ListHook {
-            public function hook($response) {
-                foreach ($response['data'] as &$r)
-                    $r['size'] = intval($r['size']) / 1024;
-                return $response;
-            }
-        });
-        $grid->hookDetail(new class() implements DetailHook {
-            public function hook($response) {
-                $response['data']['size'] = intval($response['data']['size']) / 1024;
-                return $response;
-            }
-        });
-        $grid->hookCreate(new class() implements CreateHook {
-            public function hook($param) {
-                $param['size'] = intval($param['size'] * 1024);
-                return $param;
-            }
-        });
-        $grid->hookSave(new class() implements SaveHook {
-            public function hook($param) {
-                $param['size'] = intval($param['size'] * 1024);
-                return $param;
-            }
-        });
+$grid->hookList(new class() implements ListHook {
+	public function hook($response) {
+		foreach ($response['data'] as &$r)
+			$r['size'] = intval($r['size']) / 1024;
+		return $response;
+	}
+});
+$grid->hookDetail(new class() implements DetailHook {
+	public function hook($response) {
+		$response['data']['size'] = intval($response['data']['size']) / 1024;
+		return $response;
+	}
+});
+$grid->hookCreate(new class() implements CreateHook {
+	public function hook($param) {
+		$param['size'] = intval($param['size'] * 1024);
+		return $param;
+	}
+});
+$grid->hookSave(new class() implements SaveHook {
+	public function hook($param) {
+		$param['size'] = intval($param['size'] * 1024);
+		return $param;
+	}
+});
 ```

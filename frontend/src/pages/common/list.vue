@@ -11,7 +11,7 @@
 								</div>
 							</a-col>
 							<a-col :span="16">
-								<a-select v-model="searchObj[filterItem.col]" :placeholder="'请选择'+filterItem.tip"
+								<a-select v-model="searchObj[filterItem.col]" :placeholder="'请选择'+filterItem.tip" style="width:100%"
 									@change="$forceUpdate()">
 									<a-select-option value="">不筛选</a-select-option>
 									<a-select-option :value="index2" v-for="(col,index2) in filterItem.extra" :key="index2">

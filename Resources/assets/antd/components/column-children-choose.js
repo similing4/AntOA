@@ -158,6 +158,58 @@ Vue.component("ColumnChildrenChoose", {
 	<a-button type="primary" @click="isShow = true;$forceUpdate()">选择
 	</a-button>
 	<a-modal v-model="isShow" :title="'请选择' + column.tip">
+		<div>
+			<a-row>
+				<a-col :md="12" :sm="24" v-for="(filterItem,indexT) in column.extra.filter_columns" :key="indexT">
+					<a-row v-if="filterItem.type == 'FILTER_ENUM'" class="antoa-list-filter-item">
+						<a-col :span="8">
+							<div class="antoa-list-filter-label">
+								{{filterItem.tip}}
+							</div>
+						</a-col>
+						<a-col :span="16">
+							<a-select v-model="searchObj[filterItem.col]" :placeholder="'请选择'+filterItem.tip"
+								@change="$forceUpdate()">
+								<a-select-option value="">不筛选</a-select-option>
+								<a-select-option :value="index2" v-for="(col,index2) in filterItem.extra"
+									:key="index2">
+									{{ col }}
+								</a-select-option>
+							</a-select>
+						</a-col>
+					</a-row>
+					<a-row v-if="filterItem.type == 'FILTER_STARTTIME' || filterItem.type == 'FILTER_ENDTIME'"
+						class="antoa-list-filter-item">
+						<a-col :span="8" class="antoa-list-filter-label">
+							<div class="antoa-list-filter-label">
+								{{filterItem.tip}}
+							</div>
+						</a-col>
+						<a-col :span="16">
+							<a-date-picker
+								v-model="searchObj[filterItem.col + (filterItem.type == 'FILTER_STARTTIME' ? '_starttime' : '_endtime')]"
+								format="YYYY-MM-DD hh:mm:ss" :placeholder="'请选择'+filterItem.tip"
+								style="width: 100%;" @panelChange="$forceUpdate()"></a-date-picker>
+						</a-col>
+					</a-row>
+					<a-row v-if="filterItem.type == 'FILTER_TEXT'" class="antoa-list-filter-item">
+						<a-col :span="8" class="antoa-list-filter-label">
+							<div class="antoa-list-filter-label">
+								{{filterItem.tip}}
+							</div>
+						</a-col>
+						<a-col :span="16">
+							<a-input v-model="searchObj[filterItem.col]" :placeholder="'请填写' + filterItem.tip">
+							</a-input>
+						</a-col>
+					</a-row>
+				</a-col>
+				<span style="float: right; margin-top: 3px;">
+					<a-button type="primary" @click="doSearch">查询</a-button>
+					<a-button style="margin-left: 8px" @click="resetSearch">重置</a-button>
+				</span>
+			</a-row>
+		</div>
 		<a-space class="antoa-list-operator">
 			<a-button @click="onHeaderButtonClick(headerButton)" :type="headerButton.type"
 				v-for="(headerButton,index) in column.extra.header_buttons" :key="index">

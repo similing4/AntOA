@@ -259,6 +259,8 @@
 					if (res.status) {
 						this.$message.success(res.msg, 5);
 						this.reset();
+						this.$closePage(this.$route.path);
+						this.$router.go(-1);
 					} else
 						throw res.msg;
 				} catch (e) {

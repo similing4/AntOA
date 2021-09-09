@@ -30,7 +30,7 @@
 							<a-col :span="16">
 								<a-date-picker
 									v-model="searchObj[filterItem.col + (filterItem.type == 'FILTER_STARTTIME' ? '_starttime' : '_endtime')]"
-									format="YYYY-MM-DD hh:mm:ss" :placeholder="'请选择'+filterItem.tip"
+									format="YYYY-MM-DD HH:mm:ss" :placeholder="'请选择'+filterItem.tip" show-time
 									style="width: 100%;" @panelChange="$forceUpdate()"></a-date-picker>
 							</a-col>
 						</a-row>
@@ -204,7 +204,7 @@
 				});
 				for (let i in param) {
 					if (param[i] instanceof moment)
-						param[i] = param[i].format('YYYY-MM-DD hh:mm:ss');
+						param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
 					if (param[i] === null || param[i] === undefined)
 						param[i] = "";
 				}
@@ -249,7 +249,7 @@
 				});
 				for (let i in param)
 					if (param[i] instanceof moment)
-						param[i] = param[i].format('YYYY-MM-DD hh:mm:ss');
+						param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
 				if (headerButtonItem.btn_do_type === "api") {
 					let res = await this.$api(headerButtonItem.url).method("POST").param(param).call();
 					if (!res.status)

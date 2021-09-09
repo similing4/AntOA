@@ -56,7 +56,7 @@
                                 <a-col :span="16">
                                     <a-date-picker
                                             v-model="searchObj[filterItem.col + (filterItem.type == 'FILTER_STARTTIME' ? '_starttime' : '_endtime')]"
-                                            format="YYYY-MM-DD hh:mm:ss"
+                                            format="YYYY-MM-DD HH:mm:ss"
                                             :placeholder="'请选择'+filterItem.tip" style="width: 100%;"
                                             @panelChange="$forceUpdate()"></a-date-picker>
                                 </a-col>
@@ -83,8 +83,7 @@
                     <a-space class="antoa-list-operator">
                         <a-button @click="onAddClick" type="primary" v-if="tableObj.hasCreate">创建</a-button>
                         <a-button @click="onHeaderButtonClick(headerButton)" :type="headerButton.type"
-                                  v-for="(headerButton,index) in tableObj.header_buttons" :key="index">@{{
-                            headerButton.title }}
+                                  v-for="(headerButton,index) in tableObj.header_buttons" :key="index">@{{ headerButton.title }}
                         </a-button>
                     </a-space>
                     <div style="margin-bottom: 16px">
@@ -224,7 +223,7 @@
                     });
                     for (let i in param) {
                         if (param[i] instanceof moment)
-                            param[i] = param[i].format('YYYY-MM-DD hh:mm:ss');
+                            param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
                         if (param[i] === null || param[i] === undefined)
                             param[i] = "";
                     }
@@ -269,7 +268,7 @@
                     });
                     for (let i in param)
                         if (param[i] instanceof moment)
-                            param[i] = param[i].format('YYYY-MM-DD hh:mm:ss');
+                            param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
                     if (headerButtonItem.btn_do_type === "api") {
                         let res = await this.$api(headerButtonItem.url).method("POST").param(param).call();
                         if (!res.status)

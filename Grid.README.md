@@ -165,19 +165,21 @@ $grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->useEdit(false)
     ->useDelete(false);
 ```
-如果您需要自定义顶部按钮，GridList提供了三个方法供您使用。它们分别为：navigateButton、apiButton、apiButtonWithConfirm。它们均返回对象自身实例，可以进行链式调用。例：
+如果您需要自定义顶部按钮，GridList提供了四个方法供您使用。它们分别为：navigateButton、blobButton、apiButton、apiButtonWithConfirm。它们均返回对象自身实例，可以进行链式调用。例：
 ```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->column(GridList::TEXT, 'username', '用户名')
     ->navigateButton("测试按钮","http://www.baidu.com","primary") //跳转到百度
+    ->blobButton("测试按钮","/api/user/test/test","primary","test.xls") //调用/api/user/test/test接口并使响应的二进制数据直接弹出下载
     ->apiButton("测试按钮","/api/user/test/test","primary") //调用/api/user/test/test接口并对响应JSON根据status字段判定提示msg字段内容
     ->apiButtonWithConfirm("测试按钮","/api/user/test/test","primary"); //与apiButton相同，但调用接口前会要求用户确认
 ```
-相对于顶部按钮，每行按钮则为另外三个方法。它们分别为：rowNavigateButton、rowApiButton、rowApiButtonWithConfirm。它们均返回对象自身实例，可以进行链式调用。例：
+相对于顶部按钮，每行按钮则为另外三个方法。它们分别为：rowNavigateButton、rowBlobButton、rowApiButton、rowApiButtonWithConfirm。它们均返回对象自身实例，可以进行链式调用。例：
 ```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {})
     ->column(GridList::TEXT, 'username', '用户名')
     ->rowNavigateButton("测试按钮","http://www.baidu.com","primary") //跳转到百度
+    ->rowBlobButton("测试按钮","/api/user/test/test","primary","test.xls") //调用/api/user/test/test接口并使响应的二进制数据直接弹出下载
     ->rowApiButton("测试按钮","/api/user/test/test","primary") //调用/api/user/test/test接口并对响应JSON根据status字段判定提示msg字段内容
     ->rowApiButtonWithConfirm("测试按钮","/api/user/test/test","primary"); //与rowApiButton相同，但调用接口前会要求用户确认
 ```

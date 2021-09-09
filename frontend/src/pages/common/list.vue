@@ -270,8 +270,7 @@
 					this.openurl(headerButtonItem.url);
 				} else if (headerButtonItem.btn_do_type.startsWith("blob:")){
 					try{
-						let res = await this.$api(headerButtonItem.url).method("POST").param(param).setBlob(true).call();
-						const blob = res.data;
+						const blob = await this.$api(headerButtonItem.url).method("POST").param(param).setBlob(true).call();
 						var downloadElement = document.createElement("a");
 						var href = window.URL.createObjectURL(blob);
 						downloadElement.href = href;

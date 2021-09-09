@@ -266,8 +266,24 @@
 							this.$message.success(res.data);
 						this.loadPage();
 					});
-				} else if (headerButtonItem.btn_do_type === "navigate")
+				} else if (headerButtonItem.btn_do_type === "navigate"){
 					this.openurl(headerButtonItem.url);
+				} else if (headerButtonItem.btn_do_type.startsWith("blob:")){
+					try{
+						let res = await this.$api(headerButtonItem.url).method("POST").param(param).setBlob(true).call();
+						const blob = res.data;
+						var downloadElement = document.createElement("a");
+						var href = window.URL.createObjectURL(blob);
+						downloadElement.href = href;
+						downloadElement.download = headerButtonItem.btn_do_type.substring("blob:".length);
+						document.body.appendChild(downloadElement);
+						downloadElement.click();
+						document.body.removeChild(downloadElement);
+						window.URL.revokeObjectURL(href);
+					}catch(e){
+						this.$message.error("文件导出时发生了错误：" + e, 5);
+					}
+				}
 			},
 			async onRowButtonClick(rowButtonItem, record, id) {
 				if (rowButtonItem.btn_do_type === "api") {
@@ -290,11 +306,29 @@
 							this.$message.success(res.data);
 						this.loadPage();
 					});
-				} else if (rowButtonItem.btn_do_type === "navigate")
+				} else if (rowButtonItem.btn_do_type === "navigate"){
 					if (rowButtonItem.url.includes("?"))
 						this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
 					else
 						this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col + "=" + id);
+				} else if (rowButtonItem.btn_do_type.startsWith("blob:")){
+					try{
+						let res = await this.$api(rowButtonItem.url).method("GET").param({
+							id: id
+						}).setBlob(true).call();
+						const blob = res.data;
+						var downloadElement = document.createElement("a");
+						var href = window.URL.createObjectURL(blob);
+						downloadElement.href = href;
+						downloadElement.download = rowButtonItem.btn_do_type.substring("blob:".length);
+						document.body.appendChild(downloadElement);
+						downloadElement.click();
+						document.body.removeChild(downloadElement);
+						window.URL.revokeObjectURL(href);
+					}catch(e){
+						this.$message.error("文件导出时发生了错误：" + e, 5);
+					}
+				}
 			}
 		}
 	};

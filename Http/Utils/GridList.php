@@ -222,6 +222,24 @@ class GridList implements JsonSerializable {
     }
 
     /**
+     * 创建一个头部文件BLOB下载调用按钮
+     * @param String $buttonName 按钮的内容文字
+     * @param String $url 按钮调用的接口链接
+     * @param String $buttonType 按钮的type属性，默认为primary
+     * @param String $file_name 按钮弹出下载时的文件名，默认为"文件"
+     * @return GridList 返回this以便链式调用
+     */
+    public function blobButton($buttonName, $url, $buttonType = 'primary', $file_name = "文件") {
+        $this->header_buttons[] = [
+            "btn_do_type" => "blob:" . $file_name,
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType
+        ];
+        return $this;
+    }
+
+    /**
      * 创建一个需要弹窗确认的头部API调用按钮
      * @param String $buttonName 按钮的内容文字
      * @param String $url 按钮调用的链接
@@ -265,6 +283,24 @@ class GridList implements JsonSerializable {
     public function rowApiButtonWithConfirm($buttonName, $url, $buttonType = 'primary') {
         $this->row_buttons[] = [
             "btn_do_type" => "api_confirm",
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType
+        ];
+        return $this;
+    }
+
+    /**
+     * 创建一个每行文件BLOB下载调用按钮
+     * @param String $buttonName 按钮的内容文字
+     * @param String $url 按钮调用的接口链接
+     * @param String $buttonType 按钮的type属性，默认为primary
+     * @param String $file_name 按钮弹出下载时的文件名，默认为"文件"
+     * @return GridList 返回this以便链式调用
+     */
+    public function rowBlobButton($buttonName, $url, $buttonType = 'primary', $file_name = "文件") {
+        $this->row_buttons[] = [
+            "btn_do_type" => "blob:" . $file_name,
             "title"       => $buttonName,
             "url"         => $url,
             "type"        => $buttonType

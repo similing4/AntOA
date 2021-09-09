@@ -312,10 +312,9 @@
 						this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col + "=" + id);
 				} else if (rowButtonItem.btn_do_type.startsWith("blob:")){
 					try{
-						let res = await this.$api(rowButtonItem.url).method("GET").param({
+						const blob = await this.$api(rowButtonItem.url).method("GET").param({
 							id: id
 						}).setBlob(true).call();
-						const blob = res.data;
 						var downloadElement = document.createElement("a");
 						var href = window.URL.createObjectURL(blob);
 						downloadElement.href = href;

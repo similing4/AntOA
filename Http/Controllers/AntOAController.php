@@ -240,7 +240,8 @@ abstract class AntOAController extends Controller {
             $hook = $this->gridObj->getCreateHook();
             if ($hook != null)
                 $param = $hook->hook($param);
-            $tableObj['table']->insert($param);
+            if ($param != null)
+                $tableObj['table']->insert($param);
             return json_encode([
                 "status" => 1,
                 "msg"    => "创建成功"
@@ -282,7 +283,7 @@ abstract class AntOAController extends Controller {
                 }
             }
             $tip = [];
-            foreach($needsTip as $needTip){
+            foreach ($needsTip as $needTip) {
                 $dbObj = $needTip['extra']->getDBObject();
                 $list = clone $dbObj;
                 foreach ($needTip['extra']->getArr()['filter_columns'] as $r) {
@@ -308,7 +309,7 @@ abstract class AntOAController extends Controller {
                 }
                 $key = $needTip['extra']->getArr()['columns'][0]['col'];
                 $display = $needTip['extra']->getArr()['displayColumn'];
-                if($res[$needTip['col']] != "")
+                if ($res[$needTip['col']] != "")
                     $tip[$needTip['col']] = $list->where($key, $res[$needTip['col']])->first();
             }
             $hook = $this->gridObj->getDetailHook();
@@ -359,7 +360,8 @@ abstract class AntOAController extends Controller {
             $hook = $this->gridObj->getSaveHook();
             if ($hook != null)
                 $param = $hook->hook($param);
-            $tableObj['table']->onUpdate($tableObj['columns'], $param);
+            if ($param != null)
+                $tableObj['table']->onUpdate($tableObj['columns'], $param);
             return json_encode([
                 "status" => 1,
                 "msg"    => "保存成功"

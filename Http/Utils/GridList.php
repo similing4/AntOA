@@ -257,6 +257,25 @@ class GridList implements JsonSerializable {
     }
 
     /**
+     * 创建一个需要弹窗输入内容的头部API调用按钮
+     * @param String $buttonName 按钮的内容文字
+     * @param String $url 表单提交的目标链接，post请求
+     * @param String $buttonType 按钮的type属性，默认为primary
+     * @param GridCreateForm $gridCreateForm GridCreateForm对象，待展示的表单
+     * @return GridList 返回this以便链式调用
+     */
+    public function apiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null) {
+        $this->header_buttons[] = [
+            "btn_do_type" => "api_form",
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType,
+            "extra"       => $gridCreateForm
+        ];
+        return $this;
+    }
+
+    /**
      * 创建一个每行API调用按钮
      * @param String $buttonName 按钮的内容文字
      * @param String $url 按钮调用的链接
@@ -286,6 +305,25 @@ class GridList implements JsonSerializable {
             "title"       => $buttonName,
             "url"         => $url,
             "type"        => $buttonType
+        ];
+        return $this;
+    }
+
+    /**
+     * 创建一个需要弹窗输入内容的每行API调用按钮
+     * @param String $buttonName 按钮的内容文字
+     * @param String $url 表单提交的目标链接，post请求
+     * @param String $buttonType 按钮的type属性，默认为primary
+     * @param GridCreateForm $gridCreateForm GridCreateForm对象，待展示的表单
+     * @return GridList 返回this以便链式调用
+     */
+    public function rowApiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null) {
+        $this->row_buttons[] = [
+            "btn_do_type" => "api_form",
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType,
+            "extra"       => $gridCreateForm
         ];
         return $this;
     }

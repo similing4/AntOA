@@ -36,7 +36,7 @@
                                     </div>
                                 </a-col>
                                 <a-col :span="16">
-                                    <a-select v-model="searchObj[filterItem.col]"
+                                    <a-select v-model="searchObj[filterItem.col]" style="width:100%"
                                               :placeholder="'请选择'+filterItem.tip" @change="$forceUpdate()">
                                         <a-select-option value="">不筛选</a-select-option>
                                         <a-select-option :value="index2" v-for="(col,index2) in filterItem.extra"
@@ -55,10 +55,10 @@
                                 </a-col>
                                 <a-col :span="16">
                                     <a-date-picker
-                                            v-model="searchObj[filterItem.col + (filterItem.type == 'FILTER_STARTTIME' ? '_starttime' : '_endtime')]"
-                                            format="YYYY-MM-DD HH:mm:ss"
-                                            :placeholder="'请选择'+filterItem.tip" style="width: 100%;"
-                                            @panelChange="$forceUpdate()"></a-date-picker>
+                                        v-model="searchObj[filterItem.col + (filterItem.type == 'FILTER_STARTTIME' ? '_starttime' : '_endtime')]"
+                                        format="YYYY-MM-DD HH:mm:ss"
+                                        :placeholder="'请选择'+filterItem.tip" style="width: 100%;"
+                                        @panelChange="$forceUpdate()"></a-date-picker>
                                 </a-col>
                             </a-row>
                             <a-row v-if="filterItem.type == 'FILTER_TEXT'" class="antoa-list-filter-item">
@@ -83,7 +83,8 @@
                     <a-space class="antoa-list-operator">
                         <a-button @click="onAddClick" type="primary" v-if="tableObj.hasCreate">创建</a-button>
                         <a-button @click="onHeaderButtonClick(headerButton)" :type="headerButton.type"
-                                  v-for="(headerButton,index) in tableObj.header_buttons" :key="index">@{{ headerButton.title }}
+                                  v-for="(headerButton,index) in tableObj.header_buttons" :key="index">@{{
+                            headerButton.title }}
                         </a-button>
                     </a-space>
                     <div style="margin-bottom: 16px">
@@ -126,6 +127,137 @@
                     </standard-table>
                 </div>
                 <confirm-dialog ref="confirmDialog"></confirm-dialog>
+                <a-modal v-model="createFormModal.isShow" @ok="createFormModal.onSubmit">
+                    <a-form>
+                        <template v-for="(column,index) in createFormModal.columns">
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_DISPLAY'">
+                                <div v-html="column.extra"></div>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_TEXT'">
+                                <a-input :placeholder="'请填写' + column.tip"
+                                         v-model="createFormModal.form[column.col]"></a-input>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_TEXTAREA'">
+                                <a-textarea :placeholder="'请填写' + column.tip"
+                                            v-model="createFormModal.form[column.col]" rows="20"
+                                            allow-clear></a-textarea>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_PASSWORD'">
+                                <a-input-password :placeholder="'请填写' + column.tip"
+                                                  v-model="createFormModal.form[column.col]"></a-input-password>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_RADIO'">
+                                <a-radio-group v-model="createFormModal.form[column.col]" @change="$forceUpdate()">
+                                    <a-radio :value="index" v-for="(column_i,index) in column.extra" :key="index">
+                                        @{{column_i}}
+                                    </a-radio>
+                                </a-radio-group>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_SELECT'">
+                                <a-select v-model="createFormModal.form[column.col]">
+                                    <a-select-option :value="index" v-for="(column_i,index) in column.extra"
+                                                     :key="index">
+                                        @{{column_i}}
+                                    </a-select-option>
+                                </a-select>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_CHECKBOX'">
+                                <a-checkbox-group v-model="createFormModal.form[column.col]"
+                                                  @change="$forceUpdate()">
+                                    <a-checkbox v-for="(column_i,index) in column.extra" :key="index"
+                                                :value="index">
+                                        @{{column_i}}
+                                    </a-checkbox>
+                                </a-checkbox-group>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_TIMESTAMP'">
+                                <a-date-picker show-time format="YYYY-MM-DD HH:mm:ss"
+                                               :placeholder="'请选择' + column.tip"
+                                               v-model="createFormModal.form[column.col]"
+                                               @change="$forceUpdate()"></a-date-picker>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_RICHTEXT'">
+                                <wang-editor :id="createFormModal.form[column.col]"
+                                             v-model="createFormModal.form[column.col]"></wang-editor>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_PICTURE'">
+                                <img :src="createFormModal.form[column.col]"
+                                     v-if="createFormModal.form[column.col] != ''" style="width: 200px"/>
+                                <a-button type="danger" @click="createFormModal.form[column.col] = ''"
+                                          v-if="createFormModal.form[column.col]!=''">删除
+                                </a-button>
+                                <upload-button
+                                    @uploadfinished="createFormModal.form[column.col] = $event[0].response"
+                                    accept="image/*"
+                                    :multiple="false"></upload-button>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_FILE'">
+                                <a-button type="primary" @click="openurl(createFormModal.form[column.col])"
+                                          v-if="createFormModal.form[column.col]!=''">下载
+                                </a-button>
+                                <a-button type="danger" @click="createFormModal.form[column.col] = ''"
+                                          v-if="createFormModal.form[column.col]!=''">删除
+                                </a-button>
+                                <upload-button
+                                    @uploadfinished="createFormModal.form[column.col] = $event[0].response"
+                                    accept="*/*"
+                                    :multiple="false"></upload-button>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_PICTURES'">
+                                <div v-for="(fileItem,index) in createFormModal.form[column.col]" :key="index">
+                                    <img :src="fileItem" style="width: 200px"/>
+                                    <a-button type="danger"
+                                              @click="createFormModal.form[column.col] = createFormModal.form[column.col].filter((t)=>{return t != fileItem;})">
+                                        删除
+                                    </a-button>
+                                </div>
+                                <upload-button
+                                    @uploadfinished="createFormModal.form[column.col] = createFormModal.form[column.col].concat($event.map((t)=>{return t.response;}))"
+                                    accept="image/*"
+                                    :multiple="true"></upload-button>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_FILES'">
+                                <div v-for="(fileItem,index) in createFormModal.form[column.col]" :key="index">
+                                    <a-button type="primary" @click="openurl(fileItem)">下载</a-button>
+                                    <a-button type="danger"
+                                              @click="createFormModal.form[column.col] = createFormModal.form[column.col].filter((t)=>{return t != fileItem;})">
+                                        删除
+                                    </a-button>
+                                </div>
+                                <upload-button
+                                    @uploadfinished="createFormModal.form[column.col] = createFormModal.form[column.col].concat($event.map((t)=>{return t.response;}))"
+                                    accept="*/*"
+                                    :multiple="true"></upload-button>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_CHOOSE'">
+                                <a-cascader :placeholder="'请选择' + column.tip"
+                                            v-model="createFormModal.form[column.col]"
+                                            :options="column.extra"></a-cascader>
+                            </a-form-item>
+                            <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                         v-if="column.type == 'COLUMN_CHILDREN_CHOOSE'">
+                                <column-children-choose v-model="createFormModal.form[column.col]"
+                                                        :tip.sync="createFormModal.formTip[column.col]"
+                                                        :column="column" :api="api"
+                                                        pagetype="edit"></column-children-choose>
+                            </a-form-item>
+                        </template>
+                    </a-form>
+                </a-modal>
             </a-card>
         </a-locale-provider>
     </div>
@@ -190,6 +322,15 @@
                         current: 1,
                         total: 0,
                         pageSize: 15
+                    },
+                    createFormModal: {
+                        columns: [],
+                        form: {},
+                        formTip: {},
+                        isShow: false,
+                        onSubmit() {
+                        },
+                        submitText: ""
                     }
                 };
             },
@@ -235,14 +376,14 @@
                 },
                 onAddClick() {
                     var params = [];
-                    for(var i in this.searchObj)
+                    for (var i in this.searchObj)
                         params.push(i + "=" + this.searchObj[i]);
                     window.open(this.api.create_page + "?" + params.join("&"));
                 },
                 onEditClick(id) {
                     var params = [];
-                    for(var i in this.searchObj){
-                        if(i == "id")
+                    for (var i in this.searchObj) {
+                        if (i == "id")
                             continue;
                         params.push(i + "=" + this.searchObj[i]);
                     }
@@ -285,23 +426,25 @@
                                 this.$message.success(res.data);
                             this.loadPage();
                         });
-                    } else if (headerButtonItem.btn_do_type === "navigate"){
+                    } else if (headerButtonItem.btn_do_type === "navigate") {
                         window.open(headerButtonItem.url);
-					} else if (headerButtonItem.btn_do_type.startsWith("blob:")){
-						try{
-							const blob = await this.$api(headerButtonItem.url).method("POST").param(param).setBlob(true).call();
-							var downloadElement = document.createElement("a");
-							var href = window.URL.createObjectURL(blob);
-							downloadElement.href = href;
-							downloadElement.download = headerButtonItem.btn_do_type.substring("blob:".length);
-							document.body.appendChild(downloadElement);
-							downloadElement.click();
-							document.body.removeChild(downloadElement);
-							window.URL.revokeObjectURL(href);
-						}catch(e){
-							this.$message.error("文件导出时发生了错误：" + e, 5);
-						}
-					}
+                    } else if (headerButtonItem.btn_do_type === "api_form") {
+                        this.showCreateFormModal(headerButtonItem, null);
+                    } else if (headerButtonItem.btn_do_type.startsWith("blob:")) {
+                        try {
+                            const blob = await this.$api(headerButtonItem.url).method("POST").param(param).setBlob(true).call();
+                            var downloadElement = document.createElement("a");
+                            var href = window.URL.createObjectURL(blob);
+                            downloadElement.href = href;
+                            downloadElement.download = headerButtonItem.btn_do_type.substring("blob:".length);
+                            document.body.appendChild(downloadElement);
+                            downloadElement.click();
+                            document.body.removeChild(downloadElement);
+                            window.URL.revokeObjectURL(href);
+                        } catch (e) {
+                            this.$message.error("文件导出时发生了错误：" + e, 5);
+                        }
+                    }
                 },
                 async onRowButtonClick(rowButtonItem, record, id) {
                     if (rowButtonItem.btn_do_type === "api") {
@@ -324,28 +467,59 @@
                                 this.$message.success(res.data);
                             this.loadPage();
                         });
-                    } else if (rowButtonItem.btn_do_type === "navigate"){
+                    } else if (rowButtonItem.btn_do_type === "navigate") {
                         if (rowButtonItem.url.includes("?"))
                             window.open(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
                         else
                             window.open(rowButtonItem.url + "?" + rowButtonItem.dest_col + "=" + id);
-					} else if (rowButtonItem.btn_do_type.startsWith("blob:")){
-						try{
-							const blob = await this.$api(rowButtonItem.url).method("GET").param({
-								id: id
-							}).setBlob(true).call();
-							var downloadElement = document.createElement("a");
-							var href = window.URL.createObjectURL(blob);
-							downloadElement.href = href;
-							downloadElement.download = rowButtonItem.btn_do_type.substring("blob:".length);
-							document.body.appendChild(downloadElement);
-							downloadElement.click();
-							document.body.removeChild(downloadElement);
-							window.URL.revokeObjectURL(href);
-						}catch(e){
-							this.$message.error("文件导出时发生了错误：" + e, 5);
-						}
-					}
+                    } else if (rowButtonItem.btn_do_type === "api_form") {
+                        this.showCreateFormModal(rowButtonItem, record);
+                    } else if (rowButtonItem.btn_do_type.startsWith("blob:")) {
+                        try {
+                            const blob = await this.$api(rowButtonItem.url).method("GET").param({
+                                id: id
+                            }).setBlob(true).call();
+                            var downloadElement = document.createElement("a");
+                            var href = window.URL.createObjectURL(blob);
+                            downloadElement.href = href;
+                            downloadElement.download = rowButtonItem.btn_do_type.substring("blob:".length);
+                            document.body.appendChild(downloadElement);
+                            downloadElement.click();
+                            document.body.removeChild(downloadElement);
+                            window.URL.revokeObjectURL(href);
+                        } catch (e) {
+                            this.$message.error("文件导出时发生了错误：" + e, 5);
+                        }
+                    }
+                },
+                showCreateFormModal(rowButtonItem, record) {
+                    const that = this;
+                    let form = {};
+                    rowButtonItem.extra.columns.map((col) => {
+                        if (col.type === 'COLUMN_CHECKBOX' || col.type === 'COLUMN_PICTURES' || col.type === 'COLUMN_FILES' || col.type === 'COLUMN_CHOOSE')
+                            form[col.col] = [];
+                        else if (col.type === 'COLUMN_TIMESTAMP')
+                            form[col.col] = moment();
+                        else
+                            form[col.col] = "";
+                    });
+                    this.createFormModal = {
+                        columns: rowButtonItem.extra.columns,
+                        form: form,
+                        formTip: {},
+                        isShow: true,
+                        onSubmit: async () => {
+                            let res = await this.$api(rowButtonItem.url).method("POST").param({
+                                row: record,
+                                form: that.createFormModal.form
+                            }).call();
+                            if (res.status === 0)
+                                return that.$message.error(res.data, 5);
+                            that.$message.success(res.data);
+                            that.createFormModal.isShow = false;
+                        },
+                        submitText: "提交"
+                    };
                 }
             }
         });

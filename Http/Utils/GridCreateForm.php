@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils;
 
+use Illuminate\Support\Facades\DB;
 use JsonSerializable;
 
 class GridCreateForm implements JsonSerializable {
@@ -33,6 +34,15 @@ class GridCreateForm implements JsonSerializable {
     private $columns = []; //创建页的所有行（col）、注释（tip）、类型（type）、额外数据（extra）
 
     /**
+     * 工厂方法用于创建空的GridCreateForm对象用于apiButtonWithForm方法。
+     * @return GridCreateForm
+     */
+    public static function EmptyForm() {
+        return new self(new class(DB::table("")) extends DBCreateOperator {
+        });
+    }
+
+    /**
      * 构造方法
      * @param DBCreateOperator $table 表接口
      */
@@ -46,7 +56,7 @@ class GridCreateForm implements JsonSerializable {
      */
     public function getArr() {
         return [
-            "table" => $this->_table,
+            "table"   => $this->_table,
             "columns" => $this->columns
         ];
     }

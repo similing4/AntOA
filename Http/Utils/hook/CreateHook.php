@@ -19,7 +19,7 @@ interface CreateHook {
     /**
      * 创建接口前置钩子
      * @param array $param 传入参数
-     * @return array 返回传入参数
+     * @return array|null 返回传入参数，如果返回null则不进行插入操作。
      */
     public function hook($param);
 }

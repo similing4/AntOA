@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Utils;
 
 use Modules\AntOA\Http\Utils\hook\CreateHook;
+use Modules\AntOA\Http\Utils\hook\DeleteHook;
 use Modules\AntOA\Http\Utils\hook\DetailHook;
 use Modules\AntOA\Http\Utils\hook\ListHook;
 use Modules\AntOA\Http\Utils\hook\SaveHook;
@@ -56,6 +57,11 @@ class Grid {
      * SaveHook对象，编辑页保存钩子
      */
     private $_deal_save = null;
+    /**
+     * @var DeleteHook
+     * DeleteHook对象，删除钩子
+     */
+    private $_deal_delete = null;
 
     /**
      * 初始化GridList对象用于列表页及其接口渲染
@@ -144,6 +150,14 @@ class Grid {
     }
 
     /**
+     * 获取删除接口钩子
+     * @return DeleteHook
+     */
+    public function getDeleteHook() {
+        return $this->_deal_delete;
+    }
+
+    /**
      * 列表接口后置钩子
      * @param ListHook $func 列表接口后置钩子
      * @return Grid 返回this
@@ -180,6 +194,16 @@ class Grid {
      */
     public function hookSave($func) {
         $this->_deal_save = $func;
+        return $this;
+    }
+
+    /**
+     * 删除接口前置钩子
+     * @param DeleteHook $func 钩子函数
+     * @return Grid 返回this
+     */
+    public function hookDelete($func) {
+        $this->_deal_delete = $func;
         return $this;
     }
 }

@@ -466,11 +466,16 @@ abstract class AntOAController extends Controller {
             $resp = $obj->find($id);
             if (!$resp)
                 throw new Exception("项目不存在");
-            $obj->delete($id);
+            $hook = $this->gridObj->getDeleteHook();
+            if ($hook != null)
+                $id = $hook->hook($id);
+            if ($id != null)
+                $obj->delete($id);
             $resp = json_encode($resp);
             $resp = json_decode($resp, true);
-            foreach ($config['delete_join'] as $table)
+            foreach ($config['delete_join'] as $table) {
                 DB::table($table[0])->where($table[2], $resp[$table[1]])->delete();
+            }
             return json_encode([
                 "status" => 1,
                 "data"   => "删除成功"

@@ -18,8 +18,8 @@ namespace Modules\AntOA\Http\Utils\hook;
 interface DeleteHook {
     /**
      * 删除接口前置钩子
-     * @param array $param 传入参数
+     * @param string $id 待删除的内容ID
      * @return array|null 返回传入参数，如果返回null则不进行删除操作。
      */
-    public function hook($param);
+    public function hook($id);
 }

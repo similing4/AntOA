@@ -485,6 +485,7 @@
 							return that.$message.error(res.data, 5);
 						that.$message.success(res.data);
 						that.createFormModal.isShow = false;
+						that.loadPage();
 					},
 					submitText: "提交"
 				};

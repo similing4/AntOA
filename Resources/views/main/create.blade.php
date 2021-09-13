@@ -201,7 +201,7 @@
                         else
                             form[this.columns[i].col] = getQueryString(this.columns[i].col);
                     }
-                    tableObj.setDefaultValues();
+                    this.setDefaultValues();
                 },
                 setDefaultValues(){
                     for(var i in this.defaultValues)

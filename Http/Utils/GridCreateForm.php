@@ -32,6 +32,7 @@ class GridCreateForm implements JsonSerializable {
     const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
     const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
     private $columns = []; //创建页的所有行（col）、注释（tip）、类型（type）、额外数据（extra）
+    private $defaultValues = [];
 
     /**
      * 工厂方法用于创建空的GridCreateForm对象用于apiButtonWithForm方法。
@@ -57,7 +58,8 @@ class GridCreateForm implements JsonSerializable {
     public function getArr() {
         return [
             "table"   => $this->_table,
-            "columns" => $this->columns
+            "columns" => $this->columns,
+            "default_values" => $this->defaultValues
         ];
     }
 
@@ -67,7 +69,8 @@ class GridCreateForm implements JsonSerializable {
      */
     public function json() {
         return json_encode([
-            "columns" => $this->columns
+            "columns" => $this->columns,
+            "default_values" => $this->defaultValues
         ]);
     }
 
@@ -94,6 +97,16 @@ class GridCreateForm implements JsonSerializable {
             "tip"   => $colTip,
             "extra" => $extra
         ];
+        return $this;
+    }
+
+    /**
+     * 设置默认值
+     * @param array $defaultValues 默认值的键值对数组
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function defaultVal($defaultValues) {
+        $this->defaultValues = $defaultValues;
         return $this;
     }
 

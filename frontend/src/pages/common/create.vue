@@ -165,9 +165,11 @@
 						formTip[col.col] = "";
 				});
 				this.columns = tableObj.columns
+				this.defaultValues = tableObj.default_values;
 				this.form = form;
 				this.formTip = formTip;
 				this.api = api;
+				this.setDefaultValues();
 			} catch (e) {
 				this.$message.error("配置加载错误：" + e, 5);
 			}
@@ -212,6 +214,10 @@
 						this.formTip[this.columns[i].col] = "";
 				}
 			},
+            setDefaultValues(){
+                for(var i in this.defaultValues)
+                    this.form[i] = this.defaultValues[i];
+            },
 			async submit() {
 				const param = {};
 				this.columns.map((col) => {

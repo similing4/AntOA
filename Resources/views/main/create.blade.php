@@ -177,10 +177,14 @@
                 return {
                     lang: antd.locales.zh_CN,
                     columns: tableObj.columns,
+                    defaultValues: tableObj.default_values,
                     form: form,
                     formTip: formTip,
                     api: api
                 };
+            },
+            created(){
+                this.setDefaultValues();
             },
             methods: {
                 openurl(url) {
@@ -197,6 +201,11 @@
                         else
                             form[this.columns[i].col] = getQueryString(this.columns[i].col);
                     }
+                    tableObj.setDefaultValues();
+                },
+                setDefaultValues(){
+                    for(var i in this.defaultValues)
+                        this.form[i] = this.defaultValues[i];
                 },
                 async submit() {
                     const param = {};

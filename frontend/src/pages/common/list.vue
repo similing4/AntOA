@@ -91,7 +91,7 @@
 						</a-button>
 						<a-button @click="onRowButtonClick(rowButton,record,record[columns[0].dataIndex])"
 							:type="rowButton.type" v-for="(rowButton,index) in tableObj.row_buttons" :key="index"
-                                  v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
+							v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
 							{{ rowButton.title }}
 						</a-button>
 					</div>
@@ -214,9 +214,9 @@
 						</a-form-item>
 					</template>
 				</a-form>
-                <a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
-                    <div v-html="richHtmlModal.html"></div>
-                </a-modal>
+				<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
+					<div v-html="richHtmlModal.html"></div>
+				</a-modal>
 			</a-modal>
 		</a-card>
 	</div>
@@ -250,10 +250,10 @@
 					onSubmit() {},
 					submitText: ""
 				},
-                    richHtmlModal: {
-                        isShow: false,
-                        html: ""
-                    }
+				richHtmlModal: {
+					isShow: false,
+					html: ""
+				}
 			};
 		},
 		components: {
@@ -404,12 +404,12 @@
 				} else if (headerButtonItem.btn_do_type === "api_form") {
 					this.showCreateFormModal(headerButtonItem, null);
 				} else if (headerButtonItem.btn_do_type === "rich_text") {
-                    const html = await this.$api(headerButtonItem.html).method("GET").call();
-                    if(!html.status)
-                        return this.$message.error(html.msg);
-                    this.richHtmlModal.html = html.data;
-                    this.richHtmlModal.isShow = true;
-                } else if (headerButtonItem.btn_do_type.startsWith("blob:")) {
+					const html = await this.$api(headerButtonItem.html).method("GET").call();
+					if (!html.status)
+						return this.$message.error(html.msg);
+					this.richHtmlModal.html = html.data;
+					this.richHtmlModal.isShow = true;
+				} else if (headerButtonItem.btn_do_type.startsWith("blob:")) {
 					try {
 						const blob = await this.$api(headerButtonItem.url).method("POST").param(param).setBlob(true)
 							.call();
@@ -448,21 +448,52 @@
 						this.loadPage();
 					});
 				} else if (rowButtonItem.btn_do_type === "navigate") {
-					if (rowButtonItem.url.includes("?"))
-						this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
-					else
-						this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col + "=" + id);
+					if (typeof(rowButtonItem.dest_col) === "string") {
+						if (rowButtonItem.url.includes("?"))
+							this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
+						else
+							this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col + "=" + id);
+					} else {
+						const urlEncode = function(param, key, encode) {
+							if (param == null)
+								return '';
+							let paramStr = '';
+							let t = typeof(param);
+							if (t === 'string' || t === 'number' || t === 'boolean') {
+								paramStr += '&' + key + '=' + ((encode == null || encode) ? encodeURIComponent(
+									param) : param);
+							} else {
+								for (let i in param) {
+									let k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' +
+										i);
+									paramStr += urlEncode(param[i], k, encode);
+								}
+							}
+							return paramStr;
+						};
+						let params = {};
+						for (let key in rowButtonItem.dest_col) {
+							if (record[key] !== undefined)
+								params[rowButtonItem.dest_col[key]] = record[key];
+							else
+								params[rowButtonItem.dest_col[key]] = this.$route.query[key];
+						}
+						if (rowButtonItem.url.includes("?"))
+							this.openurl(rowButtonItem.url + "&" + urlEncode(params));
+						else
+							this.openurl(rowButtonItem.url + "?" + urlEncode(params));
+					}
 				} else if (rowButtonItem.btn_do_type === "api_form") {
 					this.showCreateFormModal(rowButtonItem, record);
 				} else if (rowButtonItem.btn_do_type === "rich_text") {
-				    const html = await this.$api(rowButtonItem.html).method("GET").param({
-                        id: id
-                    }).call();
-                    if(!html.status)
-                        return this.$message.error(html.msg);
-                    this.richHtmlModal.html = html.data;
-                    this.richHtmlModal.isShow = true;
-                } else if (rowButtonItem.btn_do_type.startsWith("blob:")) {
+					const html = await this.$api(rowButtonItem.html).method("GET").param({
+						id: id
+					}).call();
+					if (!html.status)
+						return this.$message.error(html.msg);
+					this.richHtmlModal.html = html.data;
+					this.richHtmlModal.isShow = true;
+				} else if (rowButtonItem.btn_do_type.startsWith("blob:")) {
 					try {
 						const blob = await this.$api(rowButtonItem.url).method("GET").param({
 							id: id

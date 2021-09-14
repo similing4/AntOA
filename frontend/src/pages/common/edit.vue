@@ -4,7 +4,8 @@
 			<template v-for="(column,index) in columns">
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_DISPLAY'">
-					<div v-html="column.extra"></div>
+					<div v-if="!form[column.col]" v-html="column.extra"></div>
+                    <div v-if="form[column.col]" v-html="form[column.col]"></div>
                     <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"

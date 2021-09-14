@@ -278,7 +278,7 @@ class GridList implements JsonSerializable {
     /**
      * 创建一个头部弹窗展示富文本的模态框的按钮
      * @param String $buttonName 按钮的内容文字
-     * @param String $html 展示富文本的接口url，每行会带有行参数
+     * @param String $html 展示富文本的接口url
      * @param String $buttonType 按钮的type属性，默认为primary
      * @return GridList 返回this以便链式调用
      */
@@ -348,7 +348,7 @@ class GridList implements JsonSerializable {
     /**
      * 创建一个每行弹窗展示富文本的模态框的按钮
      * @param String $buttonName 按钮的内容文字
-     * @param String $html 展示的富文本
+     * @param String $html 展示富文本的接口url，每行会带有行参数
      * @param String $buttonType 按钮的type属性，默认为primary
      * @return GridList 返回this以便链式调用
      */

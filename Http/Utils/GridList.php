@@ -13,6 +13,7 @@ namespace Modules\AntOA\Http\Utils;
 use \Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use JsonSerializable;
+use Modules\AntOA\Http\Utils\hook\ButtonCondition;
 
 
 class GridList implements JsonSerializable {
@@ -177,10 +178,10 @@ class GridList implements JsonSerializable {
      */
     public function navigateButton($buttonName, $url, $buttonType = 'primary') {
         $this->header_buttons[] = [
-            "btn_do_type" => "navigate",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
+            "btn_do_type"    => "navigate",
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType
         ];
         return $this;
     }
@@ -191,15 +192,17 @@ class GridList implements JsonSerializable {
      * @param String $url 按钮的跳转链接
      * @param String $buttonType 按钮的type属性，默认为primary
      * @param String $buttonDestColumn 跳转携带ID到目标页面的参数名，默认为id
+     * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      */
-    public function rowNavigateButton($buttonName, $url, $buttonType = 'primary', $buttonDestColumn = 'id') {
+    public function rowNavigateButton($buttonName, $url, $buttonType = 'primary', $buttonDestColumn = 'id', $condition = null) {
         $this->row_buttons[] = [
-            "btn_do_type" => "navigate",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType,
-            "dest_col"    => $buttonDestColumn
+            "btn_do_type"    => "navigate",
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType,
+            "dest_col"       => $buttonDestColumn,
+            "show_condition" => $condition
         ];
         return $this;
     }
@@ -213,10 +216,10 @@ class GridList implements JsonSerializable {
      */
     public function apiButton($buttonName, $url, $buttonType = 'primary') {
         $this->header_buttons[] = [
-            "btn_do_type" => "api",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
+            "btn_do_type"    => "api",
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType
         ];
         return $this;
     }
@@ -231,10 +234,10 @@ class GridList implements JsonSerializable {
      */
     public function blobButton($buttonName, $url, $buttonType = 'primary', $file_name = "文件") {
         $this->header_buttons[] = [
-            "btn_do_type" => "blob:" . $file_name,
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
+            "btn_do_type"    => "blob:" . $file_name,
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType
         ];
         return $this;
     }
@@ -248,10 +251,10 @@ class GridList implements JsonSerializable {
      */
     public function apiButtonWithConfirm($buttonName, $url, $buttonType = 'primary') {
         $this->header_buttons[] = [
-            "btn_do_type" => "api_confirm",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
+            "btn_do_type"    => "api_confirm",
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType
         ];
         return $this;
     }
@@ -266,11 +269,11 @@ class GridList implements JsonSerializable {
      */
     public function apiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null) {
         $this->header_buttons[] = [
-            "btn_do_type" => "api_form",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType,
-            "extra"       => $gridCreateForm
+            "btn_do_type"    => "api_form",
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType,
+            "extra"          => $gridCreateForm
         ];
         return $this;
     }
@@ -284,10 +287,10 @@ class GridList implements JsonSerializable {
      */
     public function richTextButton($buttonName, $html, $buttonType = 'primary') {
         $this->header_buttons[] = [
-            "btn_do_type" => "rich_text",
-            "title"       => $buttonName,
-            "html"        => $html,
-            "type"        => $buttonType
+            "btn_do_type"    => "rich_text",
+            "title"          => $buttonName,
+            "html"           => $html,
+            "type"           => $buttonType
         ];
         return $this;
     }
@@ -297,14 +300,16 @@ class GridList implements JsonSerializable {
      * @param String $buttonName 按钮的内容文字
      * @param String $url 按钮调用的链接
      * @param String $buttonType 按钮的type属性，默认为primary
+     * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      */
-    public function rowApiButton($buttonName, $url, $buttonType = 'primary') {
+    public function rowApiButton($buttonName, $url, $buttonType = 'primary', $condition = null) {
         $this->row_buttons[] = [
-            "btn_do_type" => "api",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
+            "btn_do_type"    => "api",
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType,
+            "show_condition" => $condition
         ];
         return $this;
     }
@@ -314,14 +319,16 @@ class GridList implements JsonSerializable {
      * @param String $buttonName 按钮的内容文字
      * @param String $url 按钮调用的链接
      * @param String $buttonType 按钮的type属性，默认为primary
+     * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      */
-    public function rowApiButtonWithConfirm($buttonName, $url, $buttonType = 'primary') {
+    public function rowApiButtonWithConfirm($buttonName, $url, $buttonType = 'primary', $condition = null) {
         $this->row_buttons[] = [
-            "btn_do_type" => "api_confirm",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
+            "btn_do_type"    => "api_confirm",
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType,
+            "show_condition" => $condition
         ];
         return $this;
     }
@@ -332,15 +339,17 @@ class GridList implements JsonSerializable {
      * @param String $url 表单提交的目标链接，post请求
      * @param String $buttonType 按钮的type属性，默认为primary
      * @param GridCreateForm $gridCreateForm GridCreateForm对象，待展示的表单
+     * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      */
-    public function rowApiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null) {
+    public function rowApiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null, $condition = null) {
         $this->row_buttons[] = [
-            "btn_do_type" => "api_form",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType,
-            "extra"       => $gridCreateForm
+            "btn_do_type"    => "api_form",
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType,
+            "extra"          => $gridCreateForm,
+            "show_condition" => $condition
         ];
         return $this;
     }
@@ -350,14 +359,16 @@ class GridList implements JsonSerializable {
      * @param String $buttonName 按钮的内容文字
      * @param String $html 展示富文本的接口url，每行会带有行参数
      * @param String $buttonType 按钮的type属性，默认为primary
+     * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      */
-    public function rowRichTextButton($buttonName, $html, $buttonType = 'primary') {
+    public function rowRichTextButton($buttonName, $html, $buttonType = 'primary', $condition = null) {
         $this->row_buttons[] = [
-            "btn_do_type" => "rich_text",
-            "title"       => $buttonName,
-            "html"        => $html,
-            "type"        => $buttonType
+            "btn_do_type"    => "rich_text",
+            "title"          => $buttonName,
+            "html"           => $html,
+            "type"           => $buttonType,
+            "show_condition" => $condition
         ];
         return $this;
     }
@@ -368,14 +379,16 @@ class GridList implements JsonSerializable {
      * @param String $url 按钮调用的接口链接
      * @param String $buttonType 按钮的type属性，默认为primary
      * @param String $file_name 按钮弹出下载时的文件名，默认为"文件"
+     * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      */
-    public function rowBlobButton($buttonName, $url, $buttonType = 'primary', $file_name = "文件") {
+    public function rowBlobButton($buttonName, $url, $buttonType = 'primary', $file_name = "文件", $condition = null) {
         $this->row_buttons[] = [
-            "btn_do_type" => "blob:" . $file_name,
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
+            "btn_do_type"    => "blob:" . $file_name,
+            "title"          => $buttonName,
+            "url"            => $url,
+            "type"           => $buttonType,
+            "show_condition" => $condition
         ];
         return $this;
     }

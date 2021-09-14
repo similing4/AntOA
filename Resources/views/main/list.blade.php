@@ -118,7 +118,7 @@
                                       style="margin: 5px;">删除
                             </a-button>
                             <a-button @click="onRowButtonClick(rowButton,record,record[columns[0].dataIndex])"
-                                      :type="rowButton.type"
+                                      :type="rowButton.type" v-if="record['BUTTON_CONDITION_DATA'][index]"
                                       v-for="(rowButton,index) in tableObj.row_buttons" :key="index"
                                       style="margin: 5px;">
                                 @{{ rowButton.title }}
@@ -439,7 +439,7 @@
                         this.showCreateFormModal(headerButtonItem, null);
                     } else if (headerButtonItem.btn_do_type === "rich_text") {
                         const html = await this.$api(headerButtonItem.html).method("GET").call();
-                        if(!html.status)
+                        if (!html.status)
                             return this.$message.error(html.msg);
                         this.richHtmlModal.html = html.data;
                         this.richHtmlModal.isShow = true;
@@ -491,7 +491,7 @@
                         const html = await this.$api(rowButtonItem.html).method("GET").param({
                             id: id
                         }).call();
-                        if(!html.status)
+                        if (!html.status)
                             return this.$message.error(html.msg);
                         this.richHtmlModal.html = html.data;
                         this.richHtmlModal.isShow = true;

@@ -91,7 +91,7 @@
 						</a-button>
 						<a-button @click="onRowButtonClick(rowButton,record,record[columns[0].dataIndex])"
 							:type="rowButton.type" v-for="(rowButton,index) in tableObj.row_buttons" :key="index"
-							style="margin: 5px;">
+                                  v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
 							{{ rowButton.title }}
 						</a-button>
 					</div>
@@ -214,9 +214,9 @@
 						</a-form-item>
 					</template>
 				</a-form>
-			</a-modal>
-			<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
-				<div v-html="richHtmlModal.html"></div>
+                <a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
+                    <div v-html="richHtmlModal.html"></div>
+                </a-modal>
 			</a-modal>
 		</a-card>
 	</div>

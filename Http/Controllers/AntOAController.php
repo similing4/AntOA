@@ -170,9 +170,16 @@ abstract class AntOAController extends Controller {
                 ->paginate(15);
             $res = json_decode(json_encode($res), true);
             foreach ($res['data'] as &$resi) {
+                $resi['BUTTON_CONDITION_DATA'] = [];
                 foreach ($config['columns'] as $column)
                     if ($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
                         $resi[$column['col']] = '';
+                foreach ($config['row_buttons'] as $rowButtonItem) {
+                    if ($rowButtonItem['show_condition'] == null)
+                        $resi['BUTTON_CONDITION_DATA'][] = true;
+                    else
+                        $resi['BUTTON_CONDITION_DATA'][] = $rowButtonItem['show_condition']->isShow($resi);
+                }
             }
             $res['status'] = 1;
             $res['statics'] = $this->statistic($request);

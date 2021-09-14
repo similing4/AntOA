@@ -214,6 +214,9 @@
 						</a-form-item>
 					</template>
 				</a-form>
+                <a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
+                    <div v-html="richHtmlModal.html"></div>
+                </a-modal>
 			</a-modal>
 		</a-card>
 	</div>
@@ -246,7 +249,11 @@
 					isShow: false,
 					onSubmit() {},
 					submitText: ""
-				}
+				},
+                    richHtmlModal: {
+                        isShow: false,
+                        html: ""
+                    }
 			};
 		},
 		components: {
@@ -396,7 +403,13 @@
 					this.openurl(headerButtonItem.url);
 				} else if (headerButtonItem.btn_do_type === "api_form") {
 					this.showCreateFormModal(headerButtonItem, null);
-				} else if (headerButtonItem.btn_do_type.startsWith("blob:")) {
+				} else if (headerButtonItem.btn_do_type === "rich_text") {
+                    const html = await this.$api(headerButtonItem.html).method("GET").call();
+                    if(!html.status)
+                        return this.$message.error(html.msg);
+                    this.richHtmlModal.html = html.data;
+                    this.richHtmlModal.isShow = true;
+                } else if (headerButtonItem.btn_do_type.startsWith("blob:")) {
 					try {
 						const blob = await this.$api(headerButtonItem.url).method("POST").param(param).setBlob(true)
 							.call();
@@ -441,7 +454,15 @@
 						this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col + "=" + id);
 				} else if (rowButtonItem.btn_do_type === "api_form") {
 					this.showCreateFormModal(rowButtonItem, record);
-				} else if (rowButtonItem.btn_do_type.startsWith("blob:")) {
+				} else if (rowButtonItem.btn_do_type === "rich_text") {
+				    const html = await this.$api(rowButtonItem.html).method("GET").param({
+                        id: id
+                    }).call();
+                    if(!html.status)
+                        return this.$message.error(html.msg);
+                    this.richHtmlModal.html = html.data;
+                    this.richHtmlModal.isShow = true;
+                } else if (rowButtonItem.btn_do_type.startsWith("blob:")) {
 					try {
 						const blob = await this.$api(rowButtonItem.url).method("GET").param({
 							id: id

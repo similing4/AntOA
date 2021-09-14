@@ -32,6 +32,7 @@ class GridCreateForm implements JsonSerializable {
     const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
     const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
     private $columns = []; //创建页的所有行（col）、注释（tip）、类型（type）、额外数据（extra）
+    private $columnsApiButton = []; //创建页的每行自定义API按钮
     private $defaultValues = [];
 
     /**
@@ -57,9 +58,10 @@ class GridCreateForm implements JsonSerializable {
      */
     public function getArr() {
         return [
-            "table"   => $this->_table,
-            "columns" => $this->columns,
-            "default_values" => $this->defaultValues
+            "table"              => $this->_table,
+            "columns"            => $this->columns,
+            "default_values"     => $this->defaultValues,
+            "columns_api_button" => $this->columnsApiButton
         ];
     }
 
@@ -69,8 +71,9 @@ class GridCreateForm implements JsonSerializable {
      */
     public function json() {
         return json_encode([
-            "columns" => $this->columns,
-            "default_values" => $this->defaultValues
+            "columns"        => $this->columns,
+            "default_values" => $this->defaultValues,
+            "columns_api_button" => $this->columnsApiButton
         ]);
     }
 
@@ -107,6 +110,24 @@ class GridCreateForm implements JsonSerializable {
      */
     public function defaultVal($defaultValues) {
         $this->defaultValues = $defaultValues;
+        return $this;
+    }
+
+    /**
+     * 指定一列后方请求数据的按钮
+     * @param string $col 列名
+     * @param string $buttonName 按钮名称
+     * @param string $url 按钮请求的接口地址
+     * @param String $buttonType 按钮的type属性，默认为primary
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function columnApiButton($col, $buttonName, $url, $buttonType = 'primary') {
+        $this->columnsApiButton[] = [
+            "column" => $col,
+            "title"  => $buttonName,
+            "url"    => $url,
+            "type"   => $buttonType
+        ];
         return $this;
     }
 

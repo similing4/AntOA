@@ -214,9 +214,9 @@
 						</a-form-item>
 					</template>
 				</a-form>
-                <a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
-                    <div v-html="richHtmlModal.html"></div>
-                </a-modal>
+			</a-modal>
+			<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
+				<div v-html="richHtmlModal.html"></div>
 			</a-modal>
 		</a-card>
 	</div>

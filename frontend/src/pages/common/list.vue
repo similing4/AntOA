@@ -400,7 +400,34 @@
 						this.loadPage();
 					});
 				} else if (headerButtonItem.btn_do_type === "navigate") {
-					this.openurl(headerButtonItem.url);
+					const urlEncode = function(param, key, encode) {
+						if (param == null)
+							return '';
+						let paramStr = '';
+						let t = typeof(param);
+						if (t === 'string' || t === 'number' || t === 'boolean') {
+							paramStr += '&' + key + '=' + ((encode == null || encode) ? encodeURIComponent(
+								param) : param);
+						} else {
+							for (let i in param) {
+								let k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' +
+									i);
+								paramStr += urlEncode(param[i], k, encode);
+							}
+						}
+						return paramStr;
+					};
+					let params = {};
+					for (let key in headerButtonItem.dest_col) {
+						if (record[key] !== undefined)
+							params[headerButtonItem.dest_col[key]] = record[key];
+						else
+							params[headerButtonItem.dest_col[key]] = this.$route.query[key];
+					}
+					if (headerButtonItem.url.includes("?"))
+						this.openurl(headerButtonItem.url + "&" + urlEncode(params));
+					else
+						this.openurl(headerButtonItem.url + "?" + urlEncode(params));
 				} else if (headerButtonItem.btn_do_type === "api_form") {
 					this.showCreateFormModal(headerButtonItem, null);
 				} else if (headerButtonItem.btn_do_type === "rich_text") {

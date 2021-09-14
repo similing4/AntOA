@@ -174,14 +174,16 @@ class GridList implements JsonSerializable {
      * @param String $buttonName 按钮的内容文字
      * @param String $url 按钮的跳转链接
      * @param String $buttonType 按钮的type属性，默认为primary
+     * @param array $buttonDestColumn 跳转携带到目标页面的键值对数组，将页面的参数按照值对应的键传入新页面
      * @return GridList 返回this以便链式调用
      */
-    public function navigateButton($buttonName, $url, $buttonType = 'primary') {
+    public function navigateButton($buttonName, $url, $buttonType = 'primary', $buttonDestColumn = []) {
         $this->header_buttons[] = [
-            "btn_do_type"    => "navigate",
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType
+            "btn_do_type" => "navigate",
+            "title"       => $buttonName,
+            "url"         => $url,
+            "dest_col"    => $buttonDestColumn,
+            "type"        => $buttonType
         ];
         return $this;
     }
@@ -191,7 +193,7 @@ class GridList implements JsonSerializable {
      * @param String $buttonName 按钮的内容文字
      * @param String $url 按钮的跳转链接
      * @param String $buttonType 按钮的type属性，默认为primary
-     * @param String $buttonDestColumn 跳转携带ID到目标页面的参数名，默认为id
+     * @param String|array $buttonDestColumn 跳转携带ID到目标页面的参数名，默认为id。如果传入为键值对数组，则对应将页面及行对应的参数（行优先）按照值对应的键传入新页面
      * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      */
@@ -216,10 +218,10 @@ class GridList implements JsonSerializable {
      */
     public function apiButton($buttonName, $url, $buttonType = 'primary') {
         $this->header_buttons[] = [
-            "btn_do_type"    => "api",
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType
+            "btn_do_type" => "api",
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType
         ];
         return $this;
     }
@@ -234,10 +236,10 @@ class GridList implements JsonSerializable {
      */
     public function blobButton($buttonName, $url, $buttonType = 'primary', $file_name = "文件") {
         $this->header_buttons[] = [
-            "btn_do_type"    => "blob:" . $file_name,
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType
+            "btn_do_type" => "blob:" . $file_name,
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType
         ];
         return $this;
     }
@@ -251,10 +253,10 @@ class GridList implements JsonSerializable {
      */
     public function apiButtonWithConfirm($buttonName, $url, $buttonType = 'primary') {
         $this->header_buttons[] = [
-            "btn_do_type"    => "api_confirm",
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType
+            "btn_do_type" => "api_confirm",
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType
         ];
         return $this;
     }
@@ -269,11 +271,11 @@ class GridList implements JsonSerializable {
      */
     public function apiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null) {
         $this->header_buttons[] = [
-            "btn_do_type"    => "api_form",
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType,
-            "extra"          => $gridCreateForm
+            "btn_do_type" => "api_form",
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType,
+            "extra"       => $gridCreateForm
         ];
         return $this;
     }
@@ -287,10 +289,10 @@ class GridList implements JsonSerializable {
      */
     public function richTextButton($buttonName, $html, $buttonType = 'primary') {
         $this->header_buttons[] = [
-            "btn_do_type"    => "rich_text",
-            "title"          => $buttonName,
-            "html"           => $html,
-            "type"           => $buttonType
+            "btn_do_type" => "rich_text",
+            "title"       => $buttonName,
+            "html"        => $html,
+            "type"        => $buttonType
         ];
         return $this;
     }

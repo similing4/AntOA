@@ -18,7 +18,7 @@ namespace Modules\AntOA\Http\Utils\hook;
 interface DetailHook  {
     /**
      * 详情接口后置钩子
-     * @param array $response 列表paginate经过数组化的数据
+     * @param array $response 详情页数据，格式：["status" => 1,"data"   => $res,"tip"    => $tip]
      * @return array 返回传入参数
      */
     public function hook($response);

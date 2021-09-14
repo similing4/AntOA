@@ -66,6 +66,7 @@
 				}
 			}
 			E.registerMenu("mp3Key", MP3Menu)
+			this.editor.config.zIndex = 100;
 			this.editor.create();
 			this.editor.txt.html(this.value);
 		},

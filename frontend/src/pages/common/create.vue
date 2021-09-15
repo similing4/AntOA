@@ -6,23 +6,23 @@
 					v-if="column.type == 'COLUMN_DISPLAY'">
 					<div v-if="!form[column.col]" v-html="column.extra"></div>
                     <div v-if="form[column.col]" v-html="form[column.col]"></div>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_TEXT'">
 					<a-input :placeholder="'请填写' + column.tip" v-model="form[column.col]"></a-input>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_TEXTAREA'">
 					<a-textarea :placeholder="'请填写' + column.tip" v-model="form[column.col]" rows="20" allow-clear>
 					</a-textarea>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_PASSWORD'">
 					<a-input-password :placeholder="'请填写' + column.tip" v-model="form[column.col]"></a-input-password>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_RADIO'">
@@ -31,7 +31,7 @@
 							{{column_i}}
 						</a-radio>
 					</a-radio-group>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_SELECT'">
@@ -40,7 +40,7 @@
 							{{column_i}}
 						</a-select-option>
 					</a-select>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_CHECKBOX'">
@@ -49,18 +49,18 @@
 							{{column_i}}
 						</a-checkbox>
 					</a-checkbox-group>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_TIMESTAMP'">
 					<a-date-picker show-time format="YYYY-MM-DD HH:mm:ss" :placeholder="'请选择' + column.tip"
 						v-model="form[column.col]" @change="$forceUpdate()"></a-date-picker>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_RICHTEXT'">
 					<wang-editor :id="form[column.col]" v-model="form[column.col]"></wang-editor>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_PICTURE'">
@@ -69,7 +69,7 @@
 					</a-button>
 					<upload-button @uploadfinished="form[column.col] = $event[0].response" accept="image/*"
 						:multiple="false"></upload-button>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_FILE'">
@@ -79,7 +79,7 @@
 					</a-button>
 					<upload-button @uploadfinished="form[column.col] = $event[0].response" accept="*/*"
 						:multiple="false"></upload-button>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_PICTURES'">
@@ -93,7 +93,7 @@
 					<upload-button
 						@uploadfinished="form[column.col] = form[column.col].concat($event.map((t)=>{return t.response;}))"
 						accept="image/*" :multiple="true"></upload-button>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_FILES'">
@@ -107,19 +107,19 @@
 					<upload-button
 						@uploadfinished="form[column.col] = form[column.col].concat($event.map((t)=>{return t.response;}))"
 						accept="*/*" :multiple="true"></upload-button>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_CHOOSE'">
 					<a-cascader :placeholder="'请选择' + column.tip" v-model="form[column.col]" :options="column.extra">
 					</a-cascader>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 				<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
 					v-if="column.type == 'COLUMN_CHILDREN_CHOOSE'">
 					<column-children-choose v-model="form[column.col]" :tip.sync="formTip[column.col]" :column="column"
 						:api="api" pagetype="create"></column-children-choose>
-                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
 			</template>
 			<a-form-item style="display: flex;justify-content: center;">

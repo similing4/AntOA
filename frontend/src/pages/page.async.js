@@ -30,6 +30,11 @@ export default {
 		name: '编辑页',
 		component: () => import('@/pages/common/edit.vue')
 	},
+	'/antoa/user/change_password': {
+		path: '/antoa/user/change_password',
+		name: '修改密码',
+		component: () => import('@/pages/common/change_password.vue')
+	},
 	'/software/test/diy_list': {
 		path: '/software/test/diy_list',
 		name: '自定义列表页',

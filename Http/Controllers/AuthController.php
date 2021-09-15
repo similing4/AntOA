@@ -142,6 +142,19 @@ class AuthController {
 
     private function makeRoutes() {
         $configRoutes = config('antoa.menu_routes');
+        $configRoutes[] = [
+            "title"      => "修改密码",
+            "visible"    => false,
+            "children"   => [
+                [
+                    "visible"    => false,
+                    "uri"        => "/antoa/user/change_password",
+                    "title"      => "修改密码",
+                    "role_limit" => []
+                ]
+            ],
+            "role_limit" => []
+        ];
         $routes = [];
         $id = 0;
         foreach ($configRoutes as $r2) {
@@ -150,7 +163,8 @@ class AuthController {
                 "path"     => "/parent/" . $id,
                 "router"   => 'bparent',
                 "name"     => $r2['title'],
-                "children" => []
+                "children" => [],
+                "invisible" => array_key_exists('visible', $r2) ? !$r2['visible'] : false
             ];
             if (array_key_exists('uri', $r2))
                 $ra["path"] = $r2['uri'];
@@ -190,10 +204,10 @@ class AuthController {
                     array_key_exists('breadcrumbTitle', $r2) ? $r2['breadcrumbTitle'] : $r2['title'],
                 ];
                 $ra = [
-                    "router" => $router['router'],
-                    "name"   => $r2['title'],
-                    "path"   => $router['path'],
-                    "meta"   => [
+                    "router"    => $router['router'],
+                    "name"      => $r2['title'],
+                    "path"      => $router['path'],
+                    "meta"      => [
                         "page" => [
                             "breadcrumb" => $breadcrumb
                         ]

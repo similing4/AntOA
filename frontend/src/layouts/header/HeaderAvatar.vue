@@ -9,8 +9,8 @@
 				<a-icon type="user" />
 				<span>返回管理首页</span>
 			</a-menu-item>
-			<a-menu-item>
-				<a-icon type="setting" @click="goPasswordSetting" />
+			<a-menu-item @click="goPasswordSetting">
+				<a-icon type="setting" />
 				<span>修改密码</span>
 			</a-menu-item>
 			<a-menu-divider />

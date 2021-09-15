@@ -69,6 +69,10 @@
                                 <a-icon type="user"></a-icon>
                                 <span>返回管理首页</span>
                             </a-menu-item>
+                            <a-menu-item @click="goUrl('/antoa/antoa/user/change_password')">
+                                <a-icon type="user"></a-icon>
+                                <span>修改密码</span>
+                            </a-menu-item>
                             <a-menu-divider></a-menu-divider>
                             <a-menu-item @click="goUrl('/antoa/auth/logout?token=' + token)">
                                 <a-icon style="margin-right: 8px;" type="poweroff"></a-icon>
@@ -130,7 +134,9 @@
     }
     Vue.prototype.$api("/api/antoa/auth/config").param({
         token: localStorage.token
-    }).method("GET").call().then((conf)=> {
+    }).method("GET").call().then((conf) => {
+        if (conf.status === 0)
+            return location.href = "/antoa/auth/login";
         const menuList = fillMenuId(conf.menu);
         const currentRoute = "/{!! $api['path'] !!}";
         window.appMenuVue = new Vue({
@@ -217,6 +223,8 @@
             },
             computed: {
                 breadcrumb() {
+                    if (currentRoute === "/antoa/antoa/user/change_password")
+                        return ["个人信息", "修改密码"];
                     for (let i in this.menuList) {
                         if (currentRoute === this.getPath(this.menuList[i].uri))
                             return [this.menuList[i].title];
@@ -231,6 +239,8 @@
                     return [this.menuList[0].id];
                 },
                 breadcrumbTitle() {
+                    if (currentRoute === "/antoa/antoa/user/change_password")
+                        return "修改密码";
                     for (let i in this.menuList) {
                         if (currentRoute === this.getPath(this.menuList[i].uri))
                             return this.menuList[i].breadcrumbTitle;

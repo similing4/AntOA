@@ -12,6 +12,7 @@
 */
 
 use Illuminate\Support\Facades\Route;
+use Modules\AntOA\Http\Utils\RouteRegister;
 
 Route::prefix('antoa')->group(function () {
     $callback = function ($base_dir) {
@@ -42,6 +43,7 @@ Route::prefix('antoa')->group(function () {
         Route::get('/auth/login', 'AuthController@page_login'); //web模式下的登录页面
         Route::get('/assets/{file}', $callback('/')); //web模式下的前台资源
         Route::get('/assets/components/{file}', $callback('/components/')); //web模式下的组件资源
+        Route::get("/antoa/user/change_password", "AntOAUserController@changePasswordPage");
     }
     if (in_array("vue", $config["mode"])) {
         Route::get('/webpack/static/css/{file}', $callback('/../webpack/static/css/')); //vue模式下的资源css目录

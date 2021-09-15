@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\AntOA\Http\Utils\RouteRegister;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +21,5 @@ Route::prefix('antoa')->group(function() {
     Route::post('/auth/login', 'AuthController@login');
     Route::post('/auth/auth', 'AuthController@auth');
     Route::get('/auth/config', 'AuthController@api_config');
+    Route::post("/antoa/user/change_password","AntOAUserController@changePassword");
 });

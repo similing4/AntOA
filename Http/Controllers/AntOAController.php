@@ -241,7 +241,7 @@ abstract class AntOAController extends Controller {
             foreach ($tableObj['columns'] as $col) {
                 if ($col['type'] === GridCreateForm::COLUMN_PASSWORD)
                     $param[$col['col']] = md5($req[$col['col']]);
-                if ($col['type'] !== GridCreateForm::COLUMN_DISPLAY)
+                else if ($col['type'] !== GridCreateForm::COLUMN_DISPLAY)
                     $param[$col['col']] = $req[$col['col']];
             }
             $hook = $this->gridObj->getCreateHook();

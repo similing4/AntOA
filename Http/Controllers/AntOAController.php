@@ -138,8 +138,9 @@ abstract class AntOAController extends Controller {
         try {
             if ($this->gridObj->getGridList() == null)
                 throw new Exception("页面配置信息不存在");
+            $uid = null;
             try {
-                $this->getUserInfo($request);
+                $uid = $this->getUserInfo($request);
             } catch (Exception $e) {
                 return json_encode([
                     "status" => 0,
@@ -168,6 +169,23 @@ abstract class AntOAController extends Controller {
                     case GridList::FILTER_ENDTIME:
                         if ($req[$r['col'] . "_endtime"] !== '')
                             $list->where($r['col'], "<", $req[$r['col'] . "_endtime"]);
+                        break;
+                }
+            }
+            foreach ($config['filter_user'] as $r) {
+                switch ($r['type']) {
+                    case GridList::FILTER_TEXT:
+                        $list->where($r['col'], 'like', "%" . $uid . "%");
+                        break;
+                    case GridList::FILTER_HIDDEN:
+                    case GridList::FILTER_ENUM:
+                        $list->where($r['col'], $uid);
+                        break;
+                    case GridList::FILTER_STARTTIME:
+                        $list->where($r['col'], ">", $uid . "_starttime");
+                        break;
+                    case GridList::FILTER_ENDTIME:
+                        $list->where($r['col'], "<", $uid . "_endtime");
                         break;
                 }
             }

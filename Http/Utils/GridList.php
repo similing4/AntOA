@@ -30,6 +30,7 @@ class GridList implements JsonSerializable {
     const FILTER_ENUM = "FILTER_ENUM"; //单选类型的筛选，需要指定键值对用于确定ENUM对应关系
     private $columns = []; //列表的所有列（col）、注释（tip）、类型（type）、额外数据（extra）
     private $filter_columns = []; //列表的所有筛选列（col）、注释（tip）、类型（type）、额外数据（extra）
+    private $filter_user = []; //列表页根据用户UID筛选的列（col）、类型（type）
     private $header_buttons = []; //顶部创建外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
     private $row_buttons = []; //每行编辑与删除外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
     private $join = []; //左连接的所有表
@@ -68,6 +69,7 @@ class GridList implements JsonSerializable {
             "join"           => $this->join,
             "delete_join"    => $this->delete_join,
             "filter_columns" => $this->filter_columns,
+            "filter_user"    => $this->filter_user,
             "header_buttons" => $this->header_buttons,
             "row_buttons"    => $this->row_buttons,
             "hasCreate"      => $this->hasCreate,
@@ -165,6 +167,20 @@ class GridList implements JsonSerializable {
             "col"   => $col,
             "tip"   => $colTip,
             "extra" => $extra
+        ];
+        return $this;
+    }
+
+    /**
+     * 设置uid筛选项
+     * @param String $columnType 筛选类型，可选类型为GridList对应的FILTER_开头的静态属性
+     * @param String $col 数据库列名
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterUid($columnType, $col) {
+        $this->filter_user[] = [
+            "type" => $columnType,
+            "col"  => $col
         ];
         return $this;
     }

@@ -54,6 +54,9 @@ abstract class AntOAController extends Controller {
         $uid = $this->auth->getUidFromToken($token);
         if (!$uid)
             throw new Exception("登录失效");
+        $user = DB::table("antoa_user")->find($uid);
+        if ($user->status == 0)
+            throw new Exception("账户已被封禁");
         if (!$this->checkPower($uid))
             throw new Exception("权限不足");
         return $uid;

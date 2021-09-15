@@ -64,6 +64,8 @@ class AuthController {
                 throw new \Exception("用户名或密码错误");
             if ($result->password != md5($password))
                 throw new \Exception("用户名或密码错误");
+            if ($result->status == 0)
+                throw new \Exception("您的账户已被禁用，如有疑问请联系管理员！");
             $result = json_decode(json_encode($result), true);
             $auth = $this->auth;
             $token = $auth->makeTokenWithCache($result['id']);
@@ -259,7 +261,7 @@ class AuthController {
                     $child['role_limit'] = [];
             }
         }
-        $menus = json_decode(json_encode($menus),true);
+        $menus = json_decode(json_encode($menus), true);
         foreach ($menus as $fmenu2) {
             if (count($fmenu2['role_limit']) === 0 || count(array_intersect($fmenu2['role_limit'], $roles)) > 0) {
                 $menu_item = json_decode(json_encode($fmenu2), true);

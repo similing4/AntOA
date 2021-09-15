@@ -51,7 +51,7 @@ class AntOAUserController extends Controller {
         try {
             $uid = $this->getUserInfo($request);
             $data = $request->input();
-            $password = json_decode($data)->password;
+            $password = $data['password'];
             if ($password == "")
                 throw new Exception("新密码不能为空");
             DB::table("antoa_user")->where("id", $uid)->update([

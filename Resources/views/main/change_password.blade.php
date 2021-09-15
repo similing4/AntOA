@@ -32,10 +32,10 @@
             <a-card>
                 <a-form>
                     <a-form-item label="新密码" :label-col="{span: 7}" :wrapper-col="{span: 10}">
-                        <a-input placeholder="请输入新密码" v-model="password"></a-input>
+                        <a-input-password placeholder="请输入新密码" v-model="password"></a-input-password>
                     </a-form-item>
                     <a-form-item label="再次输入新密码" :label-col="{span: 7}" :wrapper-col="{span: 10}">
-                        <a-input placeholder="请再次输入新密码" v-model="password2"></a-input>
+                        <a-input-password placeholder="请再次输入新密码" v-model="password2"></a-input-password>
                     </a-form-item>
                     <a-form-item style="display: flex;justify-content: center;">
                         <a-button type="primary" @click="submit">修改</a-button>

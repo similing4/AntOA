@@ -212,12 +212,21 @@ abstract class AntOAController extends Controller {
                 "msg"    => "登录失效"
             ]);
         }
+        $gridList = $this->gridObj->getGridList();
+        $gridCreate = $this->gridObj->getCreateForm();
+        $gridEdit = $this->gridObj->getEditForm();
+        if ($gridList)
+            $gridList = $gridList->json();
+        if ($gridCreate)
+            $gridCreate = $gridCreate->json();
+        if ($gridEdit)
+            $gridEdit = $gridEdit->json();
         return json_encode([
             "status" => 1,
             "grid"   => [
-                "list"   => json_decode($this->gridObj->getGridList()->json(), true),
-                "create" => json_decode($this->gridObj->getCreateForm()->json(), true),
-                "edit"   => json_decode($this->gridObj->getEditForm()->json(), true)
+                "list"   => json_decode($gridList, true),
+                "create" => json_decode($gridCreate, true),
+                "edit"   => json_decode($gridEdit, true)
             ],
             "api"    => $this->getCustomParam($request)['api']
         ]);

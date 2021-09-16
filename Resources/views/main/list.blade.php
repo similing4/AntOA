@@ -26,7 +26,7 @@
     <div id="APP">
         <a-locale-provider :locale="lang">
             <a-card>
-                <div>
+                <div style="margin-bottom: 16px">
                     <a-row>
                         <a-col :md="12" :sm="24" v-for="(filterItem,indexT) in tableObj.filter_columns" :key="indexT">
                             <a-row v-if="filterItem.type == 'FILTER_ENUM'" class="antoa-list-filter-item">
@@ -90,7 +90,14 @@
                     <div style="margin-bottom: 16px">
                         <a-alert type="info" :show-icon="true">
                             <div class="message" slot="message">
-                                共计&nbsp;<a style="font-weight: 600">@{{pagination.total}}</a>&nbsp;行 @{{statics}}
+                                共计&nbsp;<a style="font-weight: 600">@{{pagination.total}}</a>&nbsp;行
+                            </div>
+                        </a-alert>
+                    </div>
+                    <div style="margin-bottom: 16px">
+                        <a-alert type="info" :show-icon="true">
+                            <div class="message" slot="message">
+                                <div style="white-space: pre-wrap;">@{{statics}}</div>
                             </div>
                         </a-alert>
                     </div>

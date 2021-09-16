@@ -124,7 +124,7 @@ class AuthController {
                 "detectMime" => 3,
                 "saveKey"    => '$(etag)' . '$(ext)'
             ], true);
-            $routes = $this->makeRoutes();
+            $routes = $this->makeRoutes($uid);
             return json_encode([
                 "status" => 1,
                 "host"   => $qiniu['url'],
@@ -140,7 +140,11 @@ class AuthController {
         }
     }
 
-    private function makeRoutes() {
+    private function makeRoutes($uid) {
+        $user = DB::table("antoa_user")->where("id", $uid)->first();
+        if (!$user)
+            throw new Exception("登录失效");
+        $roles = json_decode($user->role, true);
         $configRoutes = config('antoa.menu_routes');
         $configRoutes[] = [
             "title"      => "修改密码",
@@ -155,9 +159,20 @@ class AuthController {
             ],
             "role_limit" => []
         ];
+        foreach ($configRoutes as &$fmenu) {
+            if (!array_key_exists("role_limit", $fmenu))
+                $fmenu['role_limit'] = [];
+            if (array_key_exists("children", $fmenu))
+                foreach ($fmenu['children'] as &$child) {
+                    if (!array_key_exists("role_limit", $child))
+                        $child['role_limit'] = [];
+                }
+        }
         $routes = [];
         $id = 0;
         foreach ($configRoutes as $r2) {
+            if(count($r2['role_limit']) !== 0 && count(array_intersect($r2['role_limit'], $roles)) == 0)
+                continue;
             $id++;
             $ra = [
                 "path"     => "/parent/" . $id,
@@ -179,6 +194,8 @@ class AuthController {
             }
             if (array_key_exists("children", $r2))
                 foreach ($r2['children'] as $child) {
+                    if(count($child['role_limit']) !== 0 && count(array_intersect($child['role_limit'], $roles)) == 0)
+                        continue;
                     $router = $this->getRouterFromPath($child['uri']);
                     $breadcrumb = [
                         "首页",

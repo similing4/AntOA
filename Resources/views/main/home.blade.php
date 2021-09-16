@@ -15,6 +15,11 @@
             data() {
                 return {};
             },
+            methods: {
+                openurl(url) {
+                    window.open(url);
+                }
+            },
             components: {
                 "HomeComponent": async function (recv) {
                     try {

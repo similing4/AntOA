@@ -356,6 +356,9 @@
                 });
             },
             methods: {
+                openurl(url) {
+                    window.open(url);
+                },
                 onShow() {
                     this.loadPage();
                 },

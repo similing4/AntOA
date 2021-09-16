@@ -9,6 +9,13 @@ export default {
 	data() {
 		return {};
 	},
+	methods: {
+		openurl(url) {
+			if (url.startsWith("http"))
+				return window.open(url);
+			this.$router.push(url);
+		},
+	},
 	components: {
 		"HomeComponent": async function(recv) {
 			try {

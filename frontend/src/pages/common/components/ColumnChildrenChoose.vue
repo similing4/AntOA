@@ -50,8 +50,7 @@
 						</a-row>
 					</a-col>
 					<span style="float: right; margin-top: 3px;">
-						<a-button type="primary" @click="doSearch">查询</a-button>
-						<a-button style="margin-left: 8px" @click="resetSearch">重置</a-button>
+						<a-button type="primary" @click="loadPage">查询</a-button>
 					</span>
 				</a-row>
 			</div>

@@ -214,7 +214,7 @@ abstract class AntOAController extends Controller {
                 }
             }
             $res['status'] = 1;
-            $res['statics'] = $this->statistic($request);
+            $res['statistic'] = $this->statistic($request);
             $hook = $this->gridObj->getListHook();
             if ($hook != null)
                 return json_encode($hook->hook($res));

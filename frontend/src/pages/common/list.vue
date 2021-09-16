@@ -68,10 +68,10 @@
 						</div>
 					</a-alert>
 				</div>
-				<div style="margin-bottom: 16px">
+				<div style="margin-bottom: 16px" v-if="statistic != ''">
 					<a-alert type="info" :show-icon="true">
 						<div class="message" slot="message">
-							<div style="white-space: pre-wrap;">{{statics}}</div>
+							<div style="white-space: pre-wrap;">{{statistic}}</div>
 						</div>
 					</a-alert>
 				</div>
@@ -241,7 +241,7 @@
 				searchObj: null,
 				api: null,
 				templates: null,
-				statics: "",
+				statistic: "",
 				dataSource: [],
 				selectedRows: [],
 				pagination: {
@@ -356,7 +356,7 @@
 				this.pagination.total = res.total;
 				this.pagination.pageSize = res.per_page;
 				this.dataSource = res.data;
-				this.statics = res.statics;
+				this.statistic = res.statistic;
 			},
 			onAddClick() {
 				var params = [];

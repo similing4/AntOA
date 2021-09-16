@@ -41,6 +41,7 @@ Route::prefix('antoa')->group(function () {
     if (in_array("html", $config["mode"])) {
         Route::get('/auth/logout', 'AuthController@page_logout'); //web模式下的注销页面
         Route::get('/auth/login', 'AuthController@page_login'); //web模式下的登录页面
+        Route::get("/home/home", "AuthController@page_home"); //web模式下的首页
         Route::get('/assets/{file}', $callback('/')); //web模式下的前台资源
         Route::get('/assets/components/{file}', $callback('/components/')); //web模式下的组件资源
         Route::get("/antoa/user/change_password", "AntOAUserController@changePasswordPage");

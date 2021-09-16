@@ -562,9 +562,14 @@
 						}).call();
 						if (res.status === 0)
 							return that.$message.error(res.data, 5);
-						that.$message.success(res.data);
-						that.createFormModal.isShow = false;
-						that.loadPage();
+						if (res.type === "rich_text") {
+                            that.richHtmlModal.html = res.html;
+                            that.richHtmlModal.isShow = true;
+                        } else {
+							that.$message.success(res.data);
+							that.createFormModal.isShow = false;
+							that.loadPage();
+                        }
 					},
 					submitText: "提交"
 				};

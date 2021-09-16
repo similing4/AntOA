@@ -35,10 +35,10 @@
                     </a-menu-item>
                     <a-sub-menu :key="menuItem.id"
                                 v-if="menuItem.children.filter((t)=>{return t.visible !== false;}).length > 0">
-                			<span slot="title">
-                				<a-icon type="appstore"></a-icon>
-                				<span>@{{menuItem.title}}</span>
-                			</span>
+                            <span slot="title">
+                                <a-icon type="appstore"></a-icon>
+                                <span>@{{menuItem.title}}</span>
+                            </span>
                         <a-menu-item :key="menuItemChildItem.id" v-for="menuItemChildItem in menuItem.children"
                                      v-if="menuItemChildItem.visible !== false"
                                      @click="goUrl(menuItemChildItem.uri,[menuItem.id,menuItemChildItem.id])">
@@ -117,6 +117,10 @@
                 menu[i].children = [];
             if (!menu[i].breadcrumbTitle)
                 menu[i].breadcrumbTitle = menu[i].title;
+            if(menu[i].isHome) {
+                menu[i].uri = "/antoa/home/home";
+                localStorage.homeVueApi = menu[i].vue_api;
+            }
             for (let j in menu[i].children) {
                 menu[i].children[j].id = id++;
                 if (!menu[i].children[j].uri)

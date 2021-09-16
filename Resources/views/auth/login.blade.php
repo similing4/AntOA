@@ -82,7 +82,7 @@
                     .call();
                 if (!res.status)
                     throw "登录失效";
-                location.href = "{!! config("antoa.menu_routes")[0]['children'][0]['uri'] !!}";
+                location.href = "/antoa/home/home";
             } catch (e) {
                 ;
             }
@@ -125,7 +125,7 @@
                         throw res.msg;
                     localStorage.token = res.data;
                     this.logging = false;
-                    location.href = "{!! config("antoa.menu_routes")[0]['children'][0]['uri'] !!}";
+                    location.href = "/antoa/home/home";
                 }catch (e) {
                     this.$message.error(e + "");
                     this.logging = false;

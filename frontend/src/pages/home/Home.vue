@@ -7,10 +7,7 @@
 import Vue from "vue";
 export default {
 	data() {
-		return {
-			data: "测试",
-			isLoaded: false
-		}
+		return {};
 	},
 	components: {
 		"HomeComponent": async function(recv) {

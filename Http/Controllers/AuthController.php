@@ -34,6 +34,16 @@ class AuthController {
     }
 
     /**
+     * 后台首页
+     * @param Request $request
+     * @return View
+     */
+    public function page_home(Request $request) {
+        return view('antoa::main/home', ["api" => ["path" => $request->path()]]);
+    }
+
+
+    /**
      * 注销页面
      * @param Request $request
      * token：token

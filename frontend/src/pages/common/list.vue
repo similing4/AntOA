@@ -312,6 +312,10 @@
 				this.api = api;
 				this.tableObj = tableObj;
 				this.loadPage();
+				if(this.$route.query.click_header_button)
+					for(var i in  tableObj.header_buttons)
+						if(tableObj.header_buttons[i].title == this.$route.query.click_header_button)
+							this.onHeaderButtonClick(tableObj.header_buttons[i]);
 			} catch (e) {
 				this.$message.error("配置加载错误：" + e, 5);
 			}

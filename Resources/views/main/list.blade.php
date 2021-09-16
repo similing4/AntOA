@@ -276,7 +276,7 @@
     <script>
         function getQueryString(name) {
             const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
-            const r = window.location.search.substr(1).match(reg);
+            const r = decodeURI(window.location.search).substr(1).match(reg);
             if (r != null) {
                 return unescape(r[2]);
             }
@@ -354,6 +354,10 @@
                     if (document.visibilityState === 'visible')
                         this.loadPage();
                 });
+                if(getQueryString("click_header_button"))
+                    for(var i in tableObj.header_buttons)
+                        if(tableObj.header_buttons[i].title == getQueryString("click_header_button"))
+                            this.onHeaderButtonClick(tableObj.header_buttons[i]);
             },
             methods: {
                 openurl(url) {

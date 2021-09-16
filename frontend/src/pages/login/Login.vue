@@ -131,6 +131,10 @@
 					if (!e.status)
 						throw e.msg;
 					loadRoutes(e.routes);
+					for(var i in e.routes[0].children){
+						if(e.routes[0].children[i].meta && e.routes[0].children[i].meta.is_home)
+							localStorage.homeVueApi = e.routes[0].children[i].meta.vue_api;
+					}
 					this.$router.push("/home");
 				} catch (e) {
 					this.$message.error(e + "", 5)

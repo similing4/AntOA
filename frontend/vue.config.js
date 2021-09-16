@@ -105,6 +105,7 @@ module.exports = {
 			}
 		}
 	},
+	runtimeCompiler: true,
 	publicPath: process.env.VUE_APP_PUBLIC_PATH,
 	outputDir: path.resolve(__dirname, '../Resources/assets/webpack'),
 	assetsDir: 'static',

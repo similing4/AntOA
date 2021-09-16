@@ -171,14 +171,14 @@ class AuthController {
         $routes = [];
         $id = 0;
         foreach ($configRoutes as $r2) {
-            if(count($r2['role_limit']) !== 0 && count(array_intersect($r2['role_limit'], $roles)) == 0)
+            if (count($r2['role_limit']) !== 0 && count(array_intersect($r2['role_limit'], $roles)) == 0)
                 continue;
             $id++;
             $ra = [
-                "path"     => "/parent/" . $id,
-                "router"   => 'bparent',
-                "name"     => $r2['title'],
-                "children" => [],
+                "path"      => "/parent/" . $id,
+                "router"    => 'bparent',
+                "name"      => $r2['title'],
+                "children"  => [],
                 "invisible" => array_key_exists('visible', $r2) ? !$r2['visible'] : false
             ];
             if (array_key_exists('uri', $r2))
@@ -187,6 +187,10 @@ class AuthController {
                 $ra = [
                     "router"   => 'bparent',
                     "name"     => $r2['title'],
+                    "meta"     => [
+                        'vue_api' => array_key_exists('vue_api', $r2) ? $r2['vue_api'] : "",
+                        'is_home' => true
+                    ],
                     "children" => ['home']
                 ];
                 $routes[] = $ra;
@@ -194,7 +198,7 @@ class AuthController {
             }
             if (array_key_exists("children", $r2))
                 foreach ($r2['children'] as $child) {
-                    if(count($child['role_limit']) !== 0 && count(array_intersect($child['role_limit'], $roles)) == 0)
+                    if (count($child['role_limit']) !== 0 && count(array_intersect($child['role_limit'], $roles)) == 0)
                         continue;
                     $router = $this->getRouterFromPath($child['uri']);
                     $breadcrumb = [
@@ -221,10 +225,10 @@ class AuthController {
                     array_key_exists('breadcrumbTitle', $r2) ? $r2['breadcrumbTitle'] : $r2['title'],
                 ];
                 $ra = [
-                    "router"    => $router['router'],
-                    "name"      => $r2['title'],
-                    "path"      => $router['path'],
-                    "meta"      => [
+                    "router" => $router['router'],
+                    "name"   => $r2['title'],
+                    "path"   => $router['path'],
+                    "meta"   => [
                         "page" => [
                             "breadcrumb" => $breadcrumb
                         ]

@@ -9,6 +9,7 @@ return [
         [
             "title"    => "首页", //页面名称，将显示在侧边栏及标签页上，如果不设置breadcrumbTitle也将设置为面包屑。
             "isHome"   => true, //使用ant-design-vue-admin时此指定此页面组为首页/首页，设置的children将被无视，如需设置首页内容需要自定义vue项目的home.vue文件，只能设置在第一层且只能设置一个。
+            "vue_api"  => "", //首页如果设置了这个属性那么页面将会根据这个api获取vue页面信息进行组件渲染。格式如：{data() {return{};},template: ``}
             "children" => [
                 //二级导航栏
                 [

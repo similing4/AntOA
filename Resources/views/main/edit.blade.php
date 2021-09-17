@@ -197,17 +197,19 @@
                     form: form,
                     formTip: formTip,
                     api: api,
-                    displayColumns: []
+                    displayColumns: [],
+                    formItemTip: {}
                 };
             },
             mounted() {
                 if (!this.id)
                     return this.$message.error("参数不正确", 5);
-                this.reset();
-                this.columns.map((col) => {
-                    this.displayColumns.push(col.col);
+                this.reset().then(()=>{
+                    this.columns.map((col) => {
+                        this.displayColumns.push(col.col);
+                    });
+                    this.setWatchHook(tableObj);
                 });
-                this.setWatchHook(tableObj);
             },
             methods: {
                 setWatchHook(tableObj){
@@ -252,8 +254,8 @@
                                         this.form[this.columns[i].col] = res.data[this.columns[i].col] + "";
                                 }
                                 if (this.columns[i].type === 'COLUMN_CHILDREN_CHOOSE')
-                                    if(res.tip[this.columns[i].col])
-                                        this.formTip[this.columns[i].col] = res.tip[this.columns[i].col][this.columns[i].extra.displayColumn];
+                                    if(this.formItemTip[this.columns[i].col])
+                                        this.formTip[this.columns[i].col] = this.formItemTip[this.columns[i].col][this.columns[i].extra.displayColumn];
                                     else
                                         this.formTip[this.columns[i].col] = '';
                             }
@@ -330,6 +332,7 @@
                                         this.formTip[this.columns[i].col] = '';
                                 }
                             }
+                            this.formItemTip = res.tip;
                         } else
                             throw res.msg;
                     } catch (e) {console.log(e);

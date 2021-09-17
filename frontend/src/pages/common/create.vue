@@ -238,10 +238,7 @@
 									this.form[this.columns[i].col] = res.data[this.columns[i].col] + "";
 							}
 							if (this.columns[i].type === 'COLUMN_CHILDREN_CHOOSE')
-							    if(res.tip[this.columns[i].col])
-								    this.formTip[this.columns[i].col] = res.tip[this.columns[i].col][this.columns[i].extra.displayColumn];
-								else
-								    this.formTip[this.columns[i].col] = '';
+								this.formTip[this.columns[i].col] = '';
 						}
 						if(!res.display && res.display !== [])
 							return;

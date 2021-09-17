@@ -148,7 +148,8 @@
 				form: null,
 				formTip: null,
 				api: null,
-				displayColumns: []
+				displayColumns: [],
+				formItemTip: {}
 			};
 		},
 		components:{
@@ -192,8 +193,9 @@
 				this.form = form;
 				this.formTip = formTip;
 				this.api = api;
-				this.reset();
-				this.setWatchHook(tableObj);
+				this.reset().then(()=>{
+					this.setWatchHook(tableObj);
+				});
 			} catch (e) {
 				this.$message.error("配置加载错误：" + e, 5);
 			}
@@ -241,8 +243,8 @@
 									this.form[this.columns[i].col] = res.data[this.columns[i].col] + "";
 							}
 							if (this.columns[i].type === 'COLUMN_CHILDREN_CHOOSE')
-							    if(res.tip[this.columns[i].col])
-								    this.formTip[this.columns[i].col] = res.tip[this.columns[i].col][this.columns[i].extra.displayColumn];
+							    if(this.formItemTip[this.columns[i].col])
+								    this.formTip[this.columns[i].col] = this.formItemTip[this.columns[i].col][this.columns[i].extra.displayColumn];
 								else
 								    this.formTip[this.columns[i].col] = '';
 						}
@@ -347,6 +349,7 @@
 								else
 								    this.formTip[this.columns[i].col] = '';
 						}
+						this.formItemTip = res.tip;
 					} else
 						throw res.msg;
 				} catch (e) {

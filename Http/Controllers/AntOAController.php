@@ -83,7 +83,7 @@ abstract class AntOAController extends Controller {
                 "save"               => "/api/" . $path . "/save",
                 "delete"             => "/api/" . $path . "/delete",
                 "detail_column_list" => "/api/" . $path . "/detail_column_list",
-                "api_column_change"  => "/api/" . $path . "/api_column_change",
+                "api_column_change"  => "/api/" . $path . "/column_change",
                 "list_page"          => "/" . $path . "/list",
                 "create_page"        => "/" . $path . "/create",
                 "edit_page"          => "/" . $path . "/edit"

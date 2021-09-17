@@ -193,13 +193,21 @@
 				this.formTip = formTip;
 				this.api = api;
 				this.reset();
-				this.setWatchHook();
+				this.setWatchHook(tableObj);
 			} catch (e) {
 				this.$message.error("配置加载错误：" + e, 5);
 			}
 		},
 		methods: {
-			async setWatchHook(){
+			setWatchHook(tableObj){
+                this.onHookCall();
+                tableObj.change_hook.map((col)=>{
+                	this.$watch("form." + col,()=>{
+                		this.onHookCall();
+                	});
+                });
+			},
+			async onHookCall(){
 				const param = {};
 				this.columns.map((col) => {
 					if (col.type === 'COLUMN_DISPLAY')
@@ -213,7 +221,10 @@
 						param[i] = JSON.stringify(param[i]);
 				}
 				try {
-					let res = await this.$api(this.api.api_column_change).method("POST").param(param).call();
+					let res = await this.$api(this.api.api_column_change).method("POST").param({
+                        type: "edit",
+                        form: param
+                    }).call();
 					if (res.status){
 						res = res.data;
 						for (let i in this.columns) {

@@ -204,10 +204,18 @@
                 if (!this.id)
                     return this.$message.error("参数不正确", 5);
                 this.reset();
-                this.setWatchHook();
+                this.setWatchHook(tableObj);
             },
             methods: {
-                async setWatchHook(){
+                setWatchHook(tableObj){
+                    this.onHookCall();
+                    tableObj.change_hook.map((col)=>{
+                        this.$watch("form." + col,()=>{
+                            this.onHookCall();
+                        });
+                    });
+                },
+                async onHookCall(){
                     const param = {};
                     this.columns.map((col) => {
                         this.displayColumns.push(col.col);
@@ -222,7 +230,10 @@
                             param[i] = JSON.stringify(param[i]);
                     }
                     try {
-                        let res = await this.$api(this.api.api_column_change).method("POST").param(param).call();
+                        let res = await this.$api(this.api.api_column_change).method("POST").param({
+                            type: "edit",
+                            form: param
+                        }).call();
                         if (res.status){
                             res = res.data;
                             for (let i in this.columns) {

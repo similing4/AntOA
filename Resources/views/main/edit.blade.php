@@ -204,6 +204,9 @@
                 if (!this.id)
                     return this.$message.error("参数不正确", 5);
                 this.reset();
+                this.columns.map((col) => {
+                    this.displayColumns.push(col.col);
+                });
                 this.setWatchHook(tableObj);
             },
             methods: {
@@ -220,7 +223,6 @@
                 async onHookCall(){
                     const param = {};
                     this.columns.map((col) => {
-                        this.displayColumns.push(col.col);
                         if (col.type === 'COLUMN_DISPLAY')
                             return;
                         param[col.col] = this.form[col.col];

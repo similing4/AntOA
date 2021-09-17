@@ -517,6 +517,8 @@ abstract class AntOAController extends Controller {
         try {
             if ($this->gridObj->getGridList() == null)
                 throw new Exception("页面配置信息不存在");
+            if (!$this->gridObj->getGridList()->getArr()['hasDelete'])
+                throw new Exception("非法操作");
         } catch (Exception $e) {
             return json_encode([
                 "status" => 0,

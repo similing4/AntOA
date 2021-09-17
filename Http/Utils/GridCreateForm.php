@@ -33,7 +33,7 @@ class GridCreateForm implements JsonSerializable {
     const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
     private $columns = []; //创建页的所有行（col）、注释（tip）、类型（type）、额外数据（extra）
     private $columnsApiButton = []; //创建页的每行自定义API按钮
-    private $defaultValues = [];
+    private $defaultValues = []; //默认值，可为数组或字符串，如果为数组那么为静态默认值，如果为字符串那么为根据接口获取的动态默认值
 
     /**
      * 工厂方法用于创建空的GridCreateForm对象用于apiButtonWithForm方法。
@@ -71,8 +71,8 @@ class GridCreateForm implements JsonSerializable {
      */
     public function json() {
         return json_encode([
-            "columns"        => $this->columns,
-            "default_values" => $this->defaultValues,
+            "columns"            => $this->columns,
+            "default_values"     => $this->defaultValues,
             "columns_api_button" => $this->columnsApiButton
         ]);
     }
@@ -110,6 +110,16 @@ class GridCreateForm implements JsonSerializable {
      */
     public function defaultVal($defaultValues) {
         $this->defaultValues = $defaultValues;
+        return $this;
+    }
+
+    /**
+     * 通过接口设置默认值
+     * @param string $url 默认值接口url
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function defaultValFromApi($url) {
+        $this->defaultValues = $url;
         return $this;
     }
 

@@ -139,7 +139,8 @@
                         <template v-for="(column,index) in createFormModal.columns">
                             <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
                                          v-if="column.type == 'COLUMN_DISPLAY'">
-                                <div v-html="column.extra"></div>
+                                <div v-if="!createFormModal.form[column.col]" v-html="column.extra"></div>
+                                <div v-if="createFormModal.form[column.col]" v-html="createFormModal.form[column.col]"></div>
                             </a-form-item>
                             <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
                                          v-if="column.type == 'COLUMN_TEXT'">
@@ -354,9 +355,9 @@
                     if (document.visibilityState === 'visible')
                         this.loadPage();
                 });
-                if(getQueryString("click_header_button"))
-                    for(var i in tableObj.header_buttons)
-                        if(tableObj.header_buttons[i].title == getQueryString("click_header_button"))
+                if (getQueryString("click_header_button"))
+                    for (var i in tableObj.header_buttons)
+                        if (tableObj.header_buttons[i].title == getQueryString("click_header_button"))
                             this.onHeaderButtonClick(tableObj.header_buttons[i]);
             },
             methods: {
@@ -581,7 +582,7 @@
                         }
                     }
                 },
-                showCreateFormModal(rowButtonItem, record) {
+                async showCreateFormModal(rowButtonItem, record) {
                     const that = this;
                     let form = {};
                     rowButtonItem.extra.columns.map((col) => {
@@ -592,6 +593,17 @@
                         else
                             form[col.col] = "";
                     });
+                    if (typeof (rowButtonItem.extra.default_values) === "string") {
+                        let res = await this.$api(rowButtonItem.extra.default_values).method("POST").param({
+                            row: record
+                        }).call();
+                        if (res.status === 0)
+                            return that.$message.error(res.msg, 5);
+                        Object.assign(form, res.data);
+                    } else {
+                        if(rowButtonItem.extra.default_values != [])
+                            Object.assign(form, rowButtonItem.extra.default_values);
+                    }
                     this.createFormModal = {
                         columns: rowButtonItem.extra.columns,
                         form: form,
@@ -608,7 +620,7 @@
                                 this.richHtmlModal.html = res.html;
                                 this.richHtmlModal.isShow = true;
                             } else {
-                                that.$message.success(res.data);
+                                that.$message.success(res.msg);
                                 that.createFormModal.isShow = false;
                                 that.loadPage();
                             }

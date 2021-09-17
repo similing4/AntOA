@@ -12,6 +12,7 @@ namespace Modules\AntOA\Http\Utils;
 
 use Illuminate\Support\Facades\DB;
 use JsonSerializable;
+use Modules\AntOA\Http\Utils\hook\CreateOrEditColumnChangeHook;
 
 class GridCreateForm implements JsonSerializable {
     private $_table; //DBCreateOperator类型对象
@@ -34,6 +35,7 @@ class GridCreateForm implements JsonSerializable {
     private $columns = []; //创建页的所有行（col）、注释（tip）、类型（type）、额外数据（extra）
     private $columnsApiButton = []; //创建页的每行自定义API按钮
     private $defaultValues = []; //默认值，可为数组或字符串，如果为数组那么为静态默认值，如果为字符串那么为根据接口获取的动态默认值
+    private $changeHook = null; //数据变更时的钩子
 
     /**
      * 工厂方法用于创建空的GridCreateForm对象用于apiButtonWithForm方法。
@@ -61,7 +63,8 @@ class GridCreateForm implements JsonSerializable {
             "table"              => $this->_table,
             "columns"            => $this->columns,
             "default_values"     => $this->defaultValues,
-            "columns_api_button" => $this->columnsApiButton
+            "columns_api_button" => $this->columnsApiButton,
+            "change_hook"        => $this->changeHook
         ];
     }
 
@@ -73,7 +76,8 @@ class GridCreateForm implements JsonSerializable {
         return json_encode([
             "columns"            => $this->columns,
             "default_values"     => $this->defaultValues,
-            "columns_api_button" => $this->columnsApiButton
+            "columns_api_button" => $this->columnsApiButton,
+            "change_hook"        => $this->changeHook ? $this->changeHook['columns'] : null
         ]);
     }
 
@@ -141,4 +145,17 @@ class GridCreateForm implements JsonSerializable {
         return $this;
     }
 
+    /**
+     * 添加内容变更钩子
+     * @param string $cols 监听的列列表
+     * @param CreateOrEditColumnChangeHook $hook 行数据变更时的钩子
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function setChangeHook($cols, CreateOrEditColumnChangeHook $hook) {
+        $this->changeHook = [
+            "columns" => $cols,
+            "hook"    => $hook
+        ];
+        return $this;
+    }
 }

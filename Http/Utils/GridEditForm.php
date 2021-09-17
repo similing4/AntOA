@@ -12,6 +12,7 @@ namespace Modules\AntOA\Http\Utils;
 
 
 use JsonSerializable;
+use Modules\AntOA\Http\Utils\hook\CreateOrEditColumnChangeHook;
 
 class GridEditForm implements JsonSerializable {
     private $_table;
@@ -33,6 +34,7 @@ class GridEditForm implements JsonSerializable {
     const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
     private $columns = []; //编辑页的所有行（col）、注释（tip）、类型（type）、额外数据（extra）
     private $columnsApiButton = []; //编辑页的每行自定义API按钮
+    private $changeHook = null; //数据变更时的钩子
 
     /**
      * 构造方法
@@ -48,9 +50,10 @@ class GridEditForm implements JsonSerializable {
      */
     public function getArr() {
         return [
-            "table"   => $this->_table,
-            "columns" => $this->columns,
-            "columns_api_button" => $this->columnsApiButton
+            "table"              => $this->_table,
+            "columns"            => $this->columns,
+            "columns_api_button" => $this->columnsApiButton,
+            "change_hook"        => $this->changeHook
         ];
     }
 
@@ -60,8 +63,9 @@ class GridEditForm implements JsonSerializable {
      */
     public function json() {
         return json_encode([
-            "columns" => $this->columns,
-            "columns_api_button" => $this->columnsApiButton
+            "columns"            => $this->columns,
+            "columns_api_button" => $this->columnsApiButton,
+            "change_hook"        => $this->changeHook ? $this->changeHook['columns'] : null
         ]);
     }
 
@@ -105,6 +109,20 @@ class GridEditForm implements JsonSerializable {
             "title"  => $buttonName,
             "url"    => $url,
             "type"   => $buttonType
+        ];
+        return $this;
+    }
+
+    /**
+     * 添加内容变更钩子
+     * @param string $cols 监听的列列表
+     * @param CreateOrEditColumnChangeHook $hook 行数据变更时的钩子
+     * @return GridEditForm 返回this以便链式调用
+     */
+    public function setChangeHook($cols, CreateOrEditColumnChangeHook $hook) {
+        $this->changeHook = [
+            "columns" => $cols,
+            "hook"    => $hook
         ];
         return $this;
     }

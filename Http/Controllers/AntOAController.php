@@ -83,6 +83,7 @@ abstract class AntOAController extends Controller {
                 "save"               => "/api/" . $path . "/save",
                 "delete"             => "/api/" . $path . "/delete",
                 "detail_column_list" => "/api/" . $path . "/detail_column_list",
+                "api_column_change"  => "/api/" . $path . "/api_column_change",
                 "list_page"          => "/" . $path . "/list",
                 "create_page"        => "/" . $path . "/create",
                 "edit_page"          => "/" . $path . "/edit"
@@ -555,6 +556,49 @@ abstract class AntOAController extends Controller {
             return json_encode([
                 "status" => 1,
                 "data"   => "删除成功"
+            ]);
+        } catch (Exception $e) {
+            return json_encode([
+                "status" => 0,
+                "msg"    => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * 创建页与编辑页响应变化的API
+     * @param Request $request
+     * @return String 详见CreateOrEditColumnChangeHook
+     */
+    public function api_column_change(Request $request) {
+        try {
+            $this->getUserInfo($request);
+            $content = $request->getContent();
+            if (!$content)
+                throw new Exception("非法操作");
+            $content = json_decode($content, true);
+            if (!$content)
+                throw new Exception("非法操作");
+            $hookConfig = null;
+            if (!array_key_exists("type", $content) || !array_key_exists("form", $content))
+                throw new Exception("非法操作");
+            $type = $content['type'];
+            if ($type == "create") {
+                if ($this->gridObj->getCreateForm() == null)
+                    throw new Exception("页面配置信息不存在");
+                $hookConfig = $this->gridObj->getCreateForm()->getArr()["change_hook"];
+            } else if ($type == "edit") {
+                if ($this->gridObj->getEditForm() == null)
+                    throw new Exception("页面配置信息不存在");
+                $hookConfig = $this->gridObj->getEditForm()->getArr()["change_hook"];
+            } else
+                throw new Exception("非法操作");
+            if ($hookConfig == null)
+                throw new Exception("页面配置信息不存在");
+            $data = $hookConfig['hook']->hook($content['form']);
+            return json_encode([
+                "status" => 1,
+                "data"   => $data
             ]);
         } catch (Exception $e) {
             return json_encode([

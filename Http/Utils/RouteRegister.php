@@ -29,6 +29,7 @@ class RouteRegister {
         Route::post($route . "/detail_column_list", $controller . "@api_detail_column_list");
         Route::post($route . "/save", $controller . "@api_save");
         Route::get($route . "/delete", $controller . "@api_delete");
+        Route::get($route . "/column_change", $controller . "@api_column_change");
         Route::get($route . "/grid_config", $controller . "@api_grid_config");
     }
 }

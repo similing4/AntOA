@@ -527,7 +527,7 @@
                     } else if (headerButtonItem.btn_do_type === "api_form") {
                         this.showCreateFormModal(headerButtonItem, null);
                     } else if (headerButtonItem.btn_do_type === "rich_text") {
-                        const html = await this.$api(headerButtonItem.html).method("GET").call();
+                        const html = await this.$api(headerButtonItem.html + location.search).method("GET").call();
                         if (!html.status)
                             return this.$message.error(html.msg);
                         this.richHtmlModal.html = html.data;

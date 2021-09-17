@@ -207,6 +207,8 @@
             },
             methods: {
                 setWatchHook(tableObj){
+                    if(!tableObj.change_hook)
+                        return;
                     this.onHookCall();
                     tableObj.change_hook.map((col)=>{
                         this.$watch("form." + col,()=>{

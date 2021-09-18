@@ -405,7 +405,7 @@
                         for(let i in res.data)
                             this.createFormModal.form[i] = res.data[i];
                         if(res.msg)
-                            this.$message.success(res.data);
+                            this.$message.success(res.msg);
                     } catch (e) {
                         this.$message.error(e + "", 5);
                     }
@@ -665,7 +665,7 @@
                                 form: that.createFormModal.form
                             }).call();
                             if (res.status === 0)
-                                return that.$message.error(res.data, 5);
+                                return that.$message.error(res.msg, 5);
                             if (res.type === "rich_text") {
                                 this.richHtmlModal.html = res.html;
                                 this.richHtmlModal.isShow = true;

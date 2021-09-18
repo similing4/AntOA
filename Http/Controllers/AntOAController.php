@@ -295,7 +295,7 @@ abstract class AntOAController extends Controller {
                 $tableObj['table']->insert($param);
             return json_encode([
                 "status" => 1,
-                "msg"    => "创建成功"
+                "data"    => "创建成功"
             ]);
         } catch (Exception $e2) {
             return json_encode([
@@ -419,7 +419,7 @@ abstract class AntOAController extends Controller {
                 $tableObj['table']->onUpdate($tableObj['columns'], $param);
             return json_encode([
                 "status" => 1,
-                "msg"    => "保存成功"
+                "data"    => "保存成功"
             ]);
         } catch (Exception $e2) {
             return json_encode([

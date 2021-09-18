@@ -276,7 +276,7 @@
                     for(let i in res.data)
                         this.form[i] = res.data[i];
                     if(res.msg)
-                        this.$message.success(res.msg);
+                        this.$message.success(res.data);
                 } catch (e) {
                     this.$message.error(e + "", 5);
                 }
@@ -340,7 +340,7 @@
 				try {
 					let res = await this.$api(this.api.create).method("POST").param(param).call();
 					if (res.status) {
-						this.$message.success(res.msg, 5);
+						this.$message.success(res.data, 5);
 						this.reset();
 						this.$closePage(this.$route.path);
 						this.$router.go(-1);

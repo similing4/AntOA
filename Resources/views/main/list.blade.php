@@ -405,7 +405,7 @@
                         for(let i in res.data)
                             this.createFormModal.form[i] = res.data[i];
                         if(res.msg)
-                            this.$message.success(res.msg);
+                            this.$message.success(res.data);
                     } catch (e) {
                         this.$message.error(e + "", 5);
                     }
@@ -670,7 +670,7 @@
                                 this.richHtmlModal.html = res.html;
                                 this.richHtmlModal.isShow = true;
                             } else {
-                                that.$message.success(res.msg);
+                                that.$message.success(res.data);
                                 that.createFormModal.isShow = false;
                                 that.loadPage();
                             }

@@ -76,6 +76,12 @@ module.exports = {
 		if (isProd) {
 			config.externals = assetsCDN.externals
 		}
+
+		config.module.rule('pug')
+			.test(/\.pug$/)
+			.use('pug-html-loader')
+			.loader('pug-html-loader')
+			.end()
 	},
 	chainWebpack: config => {
 		// 生产环境下关闭css压缩的 colormin 项，因为此项优化与主题色替换功能冲突

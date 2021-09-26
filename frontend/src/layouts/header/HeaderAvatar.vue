@@ -1,7 +1,7 @@
 <template>
 	<a-dropdown>
 		<div class="header-avatar" style="cursor: pointer">
-			<a-avatar class="avatar" size="small" shape="circle" :src="user.avatar" />
+			<a-avatar class="avatar" size="small" shape="circle" />
 			<span class="name">后台用户</span>
 		</div>
 		<a-menu :class="['avatar-menu']" slot="overlay">

@@ -122,6 +122,11 @@
 						v-if="formTip[column.col] !== undefined" :column="column" :api="api" pagetype="edit"></column-children-choose>
                     <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
 				</a-form-item>
+                <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                             v-if="column.type == 'COLUMN_TREE_CHECKBOX'" v-show="displayColumns.includes(column.col)">
+                    <a-tree-select v-model="form[column.col]" :tree-data="column.extra" style="width: 100%" tree-checkable :search-placeholder="'请选择' + column.tip"></a-tree-select>
+                    <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">{{getApiButtonByColumn(column.col).title}}</a-button>
+                </a-form-item>
 			</template>
 			<a-form-item style="display: flex;justify-content: center;">
 				<a-button type="primary" @click="submit">修改</a-button>
@@ -177,7 +182,7 @@
 				};
 				tableObj.columns.map((col) => {
 					this.displayColumns.push(col.col);
-					if (col.type === 'COLUMN_CHECKBOX' || col.type === 'COLUMN_PICTURES' || col.type === 'COLUMN_FILES' || col.type === 'COLUMN_CHOOSE')
+					if (col.type === 'COLUMN_CHECKBOX' || col.type === 'COLUMN_PICTURES' || col.type === 'COLUMN_FILES' || col.type === 'COLUMN_CHOOSE' || col.type === 'COLUMN_TREE_CHECKBOX')
 						form[col.col] = (getQueryString(col.col) !== '' ? JSON.parse(getQueryString(col.col)) :
 							[]);
 					else if (col.type === 'COLUMN_TIMESTAMP')
@@ -234,7 +239,7 @@
 						for (let i in this.columns) {
 							if (res.data[this.columns[i].col] !== undefined) {
 								if (this.columns[i].type === 'COLUMN_CHECKBOX' || this.columns[i].type ===
-									'COLUMN_PICTURES' || this.columns[i].type === 'COLUMN_FILES' || this.columns[i].type === 'COLUMN_CHOOSE')
+									'COLUMN_PICTURES' || this.columns[i].type === 'COLUMN_FILES' || this.columns[i].type === 'COLUMN_CHOOSE' || this.columns[i].type === 'COLUMN_TREE_CHECKBOX')
 									this.form[this.columns[i].col] = JSON.parse(res.data[this.columns[i].col]);
 								else if (this.columns[i].type === 'COLUMN_TIMESTAMP')
 									this.form[this.columns[i].col] = moment(res.data[this.columns[i].col],
@@ -325,7 +330,7 @@
 						for (let i in this.columns) {
 							if (res.data[this.columns[i].col] !== undefined) {
 								if (this.columns[i].type === 'COLUMN_CHECKBOX' || this.columns[i].type ===
-									'COLUMN_PICTURES' || this.columns[i].type === 'COLUMN_FILES' || this.columns[i].type === 'COLUMN_CHOOSE')
+									'COLUMN_PICTURES' || this.columns[i].type === 'COLUMN_FILES' || this.columns[i].type === 'COLUMN_CHOOSE' || this.columns[i].type === 'COLUMN_TREE_CHECKBOX')
 									this.form[this.columns[i].col] = JSON.parse(res.data[this.columns[i].col]);
 								else if (this.columns[i].type === 'COLUMN_TIMESTAMP')
 									this.form[this.columns[i].col] = moment(res.data[this.columns[i].col],

@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils;
 
+
 use Illuminate\Support\Facades\DB;
 use JsonSerializable;
 use Modules\AntOA\Http\Utils\hook\CreateOrEditColumnChangeHook;
@@ -22,6 +23,7 @@ class GridCreateForm implements JsonSerializable {
     const COLUMN_SELECT = "COLUMN_SELECT"; //下拉单选
     const COLUMN_RADIO = "COLUMN_RADIO"; //Radio单选
     const COLUMN_CHECKBOX = "COLUMN_CHECKBOX"; //多选
+    const COLUMN_CHECKBOX = "COLUMN_TREE_CHECKBOX"; //树形结构多选
     const COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"; //时间选择
     const COLUMN_RICHTEXT = "COLUMN_RICHTEXT"; //富文本
     const COLUMN_PICTURE = "COLUMN_PICTURE"; //图片

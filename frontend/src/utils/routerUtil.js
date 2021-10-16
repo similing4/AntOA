@@ -2,11 +2,11 @@ import routerMap from '@/router/async/router.map'
 import Router from 'vue-router'
 import deepMerge from 'deepmerge'
 import basicOptions from '@/router/async/config.async'
-import routerConfig from '@/router/config'
+
 //应用配置
 let appOptions = {
   router: undefined,
-  store: undefined,
+  store: undefined
 }
 
 /**
@@ -14,7 +14,7 @@ let appOptions = {
  * @param options
  */
 function setAppOptions(options) {
-  const { router, store } = options
+  const {router, store} = options
   appOptions.router = router
   appOptions.store = store
 }
@@ -28,18 +28,17 @@ function parseRoutes(routesConfig, routerMap) {
   let routes = []
   routesConfig.forEach(item => {
     // 获取注册在 routerMap 中的 router，初始化 routeCfg
-    let router = undefined,
-      routeCfg = {}
+    let router = undefined, routeCfg = {}
     if (typeof item === 'string') {
       router = routerMap[item]
-      routeCfg = { path: (router && router.path) || item, router: item }
+      routeCfg = {path: (router && router.path) || item, router: item}
     } else if (typeof item === 'object') {
       router = routerMap[item.router]
       routeCfg = item
     }
     if (!router) {
       console.warn(`can't find register for router ${routeCfg.router}, please register it in advance.`)
-      router = typeof item === 'string' ? { path: item, name: item } : item
+      router = typeof item === 'string' ? {path: item, name: item} : item
     }
     // 从 router 和 routeCfg 解析路由
     const route = {
@@ -49,10 +48,10 @@ function parseRoutes(routesConfig, routerMap) {
       redirect: routeCfg.redirect || router.redirect,
       meta: {
         authority: routeCfg.authority || router.authority || routeCfg.meta?.authority || router.meta?.authority || '*',
-        icon: routeCfg.icon || router.icon || routeCfg.meta?.icon || router.meta?.icon,
-        page: routeCfg.page || router.page || routeCfg.meta?.page || router.meta?.page,
-        link: routeCfg.link || router.link || routeCfg.meta?.link || router.meta?.link,
-      },
+        icon: routeCfg.icon || router.icon ||  routeCfg.meta?.icon || router.meta?.icon,
+        page: routeCfg.page || router.page ||  routeCfg.meta?.page || router.meta?.page,
+        link: routeCfg.link || router.link ||  routeCfg.meta?.link || router.meta?.link
+      }
     }
     if (routeCfg.invisible || router.invisible) {
       route.meta.invisible = true
@@ -83,7 +82,7 @@ function loadRoutes(routesConfig) {
   /*************** 兼容 version < v0.6.1 *****************/
 
   // 应用配置
-  const { router, store } = appOptions
+  const {router, store} = appOptions
 
   // 如果 routesConfig 有值，则更新到本地，否则从本地获取
   if (routesConfig) {
@@ -98,15 +97,14 @@ function loadRoutes(routesConfig) {
       const routes = parseRoutes(routesConfig, routerMap)
       const finalRoutes = mergeRoutes(basicOptions.routes, routes)
       formatRoutes(finalRoutes)
-      router.options = { ...router.options, routes: finalRoutes }
-      router.matcher = new Router({ ...router.options, routes: [] }).matcher
+      router.options = {...router.options, routes: finalRoutes}
+      router.matcher = new Router({...router.options, routes:[]}).matcher
       router.addRoutes(finalRoutes)
     }
   }
   // 初始化Admin后台菜单数据
   const rootRoute = router.options.routes.find(item => item.path === '/')
   const menuRoutes = rootRoute && rootRoute.children
-  console.log(menuRoutes)
   if (menuRoutes) {
     store.commit('setting/setMenuData', menuRoutes)
   }
@@ -120,8 +118,8 @@ function loadRoutes(routesConfig) {
  */
 function mergeRoutes(target, source) {
   const routesMap = {}
-  target.forEach(item => (routesMap[item.path] = item))
-  source.forEach(item => (routesMap[item.path] = item))
+  target.forEach(item => routesMap[item.path] = item)
+  source.forEach(item => routesMap[item.path] = item)
   return Object.values(routesMap)
 }
 
@@ -138,7 +136,7 @@ function deepMergeRoutes(target, source) {
     routes.forEach(item => {
       routesMap[item.path] = {
         ...item,
-        children: item.children ? mapRoutes(item.children) : undefined,
+        children: item.children ? mapRoutes(item.children) : undefined
       }
     })
     return routesMap
@@ -169,7 +167,7 @@ function deepMergeRoutes(target, source) {
  */
 function formatRoutes(routes) {
   routes.forEach(route => {
-    const { path } = route
+    const {path} = route
     if (!path.startsWith('/') && path !== '*') {
       route.path = '/' + path
     }
@@ -185,16 +183,16 @@ function formatRoutes(routes) {
 function formatAuthority(routes, pAuthorities = []) {
   routes.forEach(route => {
     const meta = route.meta
-    const defaultAuthority = pAuthorities[pAuthorities.length - 1] || { permission: '*' }
+    const defaultAuthority = pAuthorities[pAuthorities.length - 1] || {permission: '*'}
     if (meta) {
       let authority = {}
       if (!meta.authority) {
         authority = defaultAuthority
-      } else if (typeof meta.authority === 'string') {
+      }else if (typeof meta.authority === 'string') {
         authority.permission = meta.authority
       } else if (typeof meta.authority === 'object') {
         authority = meta.authority
-        const { role } = authority
+        const {role} = authority
         if (typeof role === 'string') {
           authority.role = [role]
         }
@@ -205,7 +203,7 @@ function formatAuthority(routes, pAuthorities = []) {
       meta.authority = authority
     } else {
       const authority = defaultAuthority
-      route.meta = { authority }
+      route.meta = {authority}
     }
     route.meta.pAuthorities = pAuthorities
     if (route.children) {
@@ -220,8 +218,8 @@ function formatAuthority(routes, pAuthorities = []) {
  * @param options
  */
 function loadGuards(guards, options) {
-  const { beforeEach, afterEach } = guards
-  const { router } = options
+  const {beforeEach, afterEach} = guards
+  const {router} = options
   beforeEach.forEach(guard => {
     if (guard && typeof guard === 'function') {
       router.beforeEach((to, from, next) => guard(to, from, next, options))
@@ -234,4 +232,4 @@ function loadGuards(guards, options) {
   })
 }
 
-export { parseRoutes, loadRoutes, formatAuthority, loadGuards, deepMergeRoutes, formatRoutes, setAppOptions }
+export {parseRoutes, loadRoutes, formatAuthority, loadGuards, deepMergeRoutes, formatRoutes, setAppOptions}

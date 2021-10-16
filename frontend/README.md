@@ -44,7 +44,9 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
 }
 ```
 
-src/pages/login/Login.vue
+### 你可以将菜单的路由JSON改为本地的JSON用于调试：
+
+修改这个文件：src/pages/login/Login.vue
 
 更改 goHome 方法为如下
 

@@ -1,0 +1,320 @@
+{
+	"status": 1,
+	"host": "https:\/\/qnhdpw.whuying.com\/",
+	"menu": [{
+		"title": "首页",
+		"isHome": true,
+		"vue_api": "",
+		"role_limit": [],
+		"children": []
+	}, {
+		"title": "用户管理",
+		"role_limit": [1],
+		"children": [{
+			"uri": "\/admin\/user\/list",
+			"title": "用户管理",
+			"breadcrumbTitle": "用户管理列表页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/user\/create",
+			"title": "用户创建页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/user\/edit",
+			"title": "用户编辑页",
+			"role_limit": [1]
+		}]
+	}, {
+		"title": "商品管理",
+		"role_limit": [1],
+		"children": [{
+			"uri": "\/admin\/vip_category\/list",
+			"title": "平台分类管理",
+			"breadcrumbTitle": "平台分类列表页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/vip_category\/edit",
+			"title": "平台分类管理编辑页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/vip_category\/create",
+			"title": "平台分类管理创建页",
+			"role_limit": [1]
+		}, {
+			"uri": "\/admin\/vip_platform\/list",
+			"title": "平台管理",
+			"breadcrumbTitle": "平台列表页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/vip_platform\/edit",
+			"title": "平台管理编辑页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/vip_platform\/create",
+			"title": "平台管理创建页",
+			"role_limit": [1]
+		}, {
+			"uri": "\/admin\/vip_goods\/list",
+			"title": "商品管理",
+			"breadcrumbTitle": "商品管理列表页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/vip_goods\/edit",
+			"title": "商品管理编辑页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/vip_goods\/create",
+			"title": "商品管理创建页",
+			"role_limit": [1]
+		}]
+	}, {
+		"title": "订单管理",
+		"role_limit": [1],
+		"children": [{
+			"uri": "\/admin\/vip_order\/list",
+			"title": "订单管理",
+			"breadcrumbTitle": "订单列表页",
+			"role_limit": [1]
+		}]
+	}, {
+		"title": "配置管理",
+		"role_limit": [1],
+		"children": [{
+			"uri": "\/admin\/vip_banner\/list",
+			"title": "轮播图管理",
+			"breadcrumbTitle": "轮播图列表页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/vip_banner\/edit",
+			"title": "轮播图管理编辑页",
+			"role_limit": [1]
+		}, {
+			"visible": false,
+			"uri": "\/admin\/vip_banner\/create",
+			"title": "轮播图管理创建页",
+			"role_limit": [1]
+		}]
+	}],
+	"token": "KyTdJJXQD1X6Vx3gWQDstILkrqIBNJIbG-SVp12M:kOOAw3LA4fCoRWzGHoICOyGI-h0=:eyJkZXRlY3RNaW1lIjozLCJzYXZlS2V5IjoiJChldGFnKSQoZXh0KSIsInNjb3BlIjoiaGRwdyIsImRlYWRsaW5lIjoxNjM0MzU5NDg2fQ==",
+	"routes": [{
+		"router": "root",
+		"children": [{
+			"router": "bparent",
+			"name": "首页",
+			"meta": {
+				"vue_api": "",
+				"is_home": true
+			},
+			"children": ["home"]
+		}, {
+			"path": "\/parent\/2",
+			"router": "bparent",
+			"name": "用户管理",
+			"children": [{
+				"router": "list",
+				"name": "用户管理",
+				"path": "\/admin\/user\/list",
+				"invisible": false,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "用户管理", "用户管理列表页"]
+					}
+				}
+			}, {
+				"router": "create",
+				"name": "用户创建页",
+				"path": "\/admin\/user\/create",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "用户管理", "用户创建页"]
+					}
+				}
+			}, {
+				"router": "edit",
+				"name": "用户编辑页",
+				"path": "\/admin\/user\/edit",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "用户管理", "用户编辑页"]
+					}
+				}
+			}],
+			"invisible": false
+		}, {
+			"path": "\/parent\/3",
+			"router": "bparent",
+			"name": "商品管理",
+			"children": [{
+				"router": "list",
+				"name": "平台分类管理",
+				"path": "\/admin\/vip_category\/list",
+				"invisible": false,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "平台分类列表页"]
+					}
+				}
+			}, {
+				"router": "edit",
+				"name": "平台分类管理编辑页",
+				"path": "\/admin\/vip_category\/edit",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "平台分类管理编辑页"]
+					}
+				}
+			}, {
+				"router": "create",
+				"name": "平台分类管理创建页",
+				"path": "\/admin\/vip_category\/create",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "平台分类管理创建页"]
+					}
+				}
+			}, {
+				"router": "list",
+				"name": "平台管理",
+				"path": "\/admin\/vip_platform\/list",
+				"invisible": false,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "平台列表页"]
+					}
+				}
+			}, {
+				"router": "edit",
+				"name": "平台管理编辑页",
+				"path": "\/admin\/vip_platform\/edit",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "平台管理编辑页"]
+					}
+				}
+			}, {
+				"router": "create",
+				"name": "平台管理创建页",
+				"path": "\/admin\/vip_platform\/create",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "平台管理创建页"]
+					}
+				}
+			}, {
+				"router": "list",
+				"name": "商品管理",
+				"path": "\/admin\/vip_goods\/list",
+				"invisible": false,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "商品管理列表页"]
+					}
+				}
+			}, {
+				"router": "edit",
+				"name": "商品管理编辑页",
+				"path": "\/admin\/vip_goods\/edit",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "商品管理编辑页"]
+					}
+				}
+			}, {
+				"router": "create",
+				"name": "商品管理创建页",
+				"path": "\/admin\/vip_goods\/create",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "商品管理", "商品管理创建页"]
+					}
+				}
+			}],
+			"invisible": false
+		}, {
+			"path": "\/parent\/4",
+			"router": "bparent",
+			"name": "订单管理",
+			"children": [{
+				"router": "list",
+				"name": "订单管理",
+				"path": "\/admin\/vip_order\/list",
+				"invisible": false,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "订单管理", "订单列表页"]
+					}
+				}
+			}],
+			"invisible": false
+		}, {
+			"path": "\/parent\/5",
+			"router": "bparent",
+			"name": "配置管理",
+			"children": [{
+				"router": "list",
+				"name": "轮播图管理",
+				"path": "\/admin\/vip_banner\/list",
+				"invisible": false,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "配置管理", "轮播图列表页"]
+					}
+				}
+			}, {
+				"router": "edit",
+				"name": "轮播图管理编辑页",
+				"path": "\/admin\/vip_banner\/edit",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "配置管理", "轮播图管理编辑页"]
+					}
+				}
+			}, {
+				"router": "create",
+				"name": "轮播图管理创建页",
+				"path": "\/admin\/vip_banner\/create",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "配置管理", "轮播图管理创建页"]
+					}
+				}
+			}],
+			"invisible": false
+		}, {
+			"path": "\/parent\/6",
+			"router": "bparent",
+			"name": "修改密码",
+			"children": [{
+				"router": "create",
+				"name": "轮播图管理创建页",
+				"path": "\/admin\/vip_banner\/create",
+				"invisible": true,
+				"meta": {
+					"page": {
+						"breadcrumb": ["首页", "修改密码", "轮播图管理创建页"]
+					}
+				}
+			}],
+			"invisible": true
+		}]
+	}]
+}

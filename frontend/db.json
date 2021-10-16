@@ -1,0 +1,62 @@
+{
+  "menu_config": {
+    "status": 1,
+    "code": 20000,
+    "msg": "ok",
+    "data": {
+      "status": 1,
+      "host": "https://qnhdpw.whuying.com/",
+      "menu": [
+        {
+          "title": "首页",
+          "isHome": true,
+          "vue_api": "",
+          "role_limit": [],
+          "children": []
+        },
+        {
+          "title": "首页2",
+          "isHome": false,
+          "vue_api": "",
+          "role_limit": [],
+          "children": []
+        }
+      ],
+      "token": "KyTdJJXQD1X6Vx3gWQDstILkrqIBNJIbG-SVp12M:kOOAw3LA4fCoRWzGHoICOyGI-h0=:eyJkZXRlY3RNaW1lIjozLCJzYXZlS2V5IjoiJChldGFnKSQoZXh0KSIsInNjb3BlIjoiaGRwdyIsImRlYWRsaW5lIjoxNjM0MzU5NDg2fQ==",
+      "routes": [
+        {
+          "router": "root",
+          "children": [
+            {
+              "router": "bparent",
+              "name": "首页",
+              "meta": {
+                "vue_api": "",
+                "is_home": true
+              },
+              "children": ["home"]
+            },
+            {
+              "path": "/parent/3",
+              "router": "bparent",
+              "name": "商品管理",
+              "children": [
+                {
+                  "router": "list",
+                  "name": "平台分类管理",
+                  "path": "/admin/vip_category/list",
+                  "invisible": false,
+                  "meta": {
+                    "page": {
+                      "breadcrumb": ["首页", "商品管理", "平台分类列表页"]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

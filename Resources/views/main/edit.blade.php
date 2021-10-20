@@ -300,7 +300,7 @@
                         for(let i in res.data)
                             this.form[i] = res.data[i];
                         if(res.msg)
-                            this.$message.success(res.data);
+                            this.$message.success(res.msg);
                     } catch (e) {
                         this.$message.error(e + "", 5);
                     }

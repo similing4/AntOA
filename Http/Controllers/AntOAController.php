@@ -498,6 +498,7 @@ abstract class AntOAController extends Controller {
                         ->paginate(8);
                     $res = json_decode(json_encode($res), true);
                     $res['status'] = 1;
+                    $res['columns'] = $config['columns'];
                     return json_encode($res);
                 }
             }

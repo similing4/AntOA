@@ -499,6 +499,7 @@ abstract class AntOAController extends Controller {
                     $res = json_decode(json_encode($res), true);
                     $res['status'] = 1;
                     $res['columns'] = $config['columns'];
+                    $res['displayColumn'] = $config['displayColumn'];
                     return json_encode($res);
                 }
             }

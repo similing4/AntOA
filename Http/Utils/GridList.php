@@ -186,8 +186,8 @@ class GridList implements JsonSerializable {
             "col"   => $col,
             "tip"   => $colTip,
             "extra" => [
-                "width"  => $width,
-                "height" => $height
+                "width"  => $width . "px",
+                "height" => $height . "px"
             ]
         ];
         return $this;

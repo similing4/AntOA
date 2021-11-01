@@ -112,6 +112,7 @@ class GridList implements JsonSerializable {
      * @param String $colTip 在列表页该列的的表头名称
      * @param array $extra 该列类型的对应额外数据
      * @return GridList 返回this以便链式调用
+     * @deprecated
      */
     public function column($columnType, $col, $colTip, $extra = []) {
         $this->columns[] = [
@@ -119,6 +120,188 @@ class GridList implements JsonSerializable {
             "col"   => $col,
             "tip"   => $colTip,
             "extra" => $extra
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定文本列
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function columnText($col, $colTip) {
+        $this->columns[] = [
+            "type"  => self::TEXT,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定展示列，可通过HOOK设置其展示值
+     * @param String $col 列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function columnDisplay($col, $colTip) {
+        $this->columns[] = [
+            "type"  => self::DISPLAY,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定富文本展示列，可通过HOOK设置其展示值
+     * @param String $col 列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function columnRichDisplay($col, $colTip) {
+        $this->columns[] = [
+            "type"  => self::RICH_DISPLAY,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定图片列
+     * @param String $col 列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param Number $width 图片的展示宽度，单位px
+     * @param Number $height 图片的展示宽度，单位px
+     * @return GridList 返回this以便链式调用
+     */
+    public function columnPicture($col, $colTip, $width, $height) {
+        $this->columns[] = [
+            "type"  => self::PICTURE,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => [
+                "width"  => $width,
+                "height" => $height
+            ]
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定单选列
+     * @param String $col 列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param array $keyValMap ENUM的键值对数组，键为数据库的字段值，值为展示值
+     * @return GridList 返回this以便链式调用
+     */
+    public function columnEnum($col, $colTip, array $keyValMap) {
+        $this->columns[] = [
+            "type"  => self::ENUM,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => $keyValMap
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定富文本列
+     * @param String $col 列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function columnRichText($col, $colTip) {
+        $this->columns[] = [
+            "type"  => self::RICH_TEXT,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定隐藏类型筛选列，用于外部传入
+     * @param String $col 筛选的列名
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterHidden($col) {
+        $this->filter_columns[] = [
+            "type"  => self::FILTER_HIDDEN,
+            "col"   => $col,
+            "tip"   => "",
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定文本类型筛选列
+     * @param String $col 筛选的列名
+     * @param String $colTip 筛选项的名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterText($col, $colTip) {
+        $this->filter_columns[] = [
+            "type"  => self::FILTER_TEXT,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定开始时间筛选列
+     * @param String $col 筛选的列名
+     * @param String $colTip 筛选项的名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterStartTime($col, $colTip) {
+        $this->filter_columns[] = [
+            "type"  => self::FILTER_STARTTIME,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定结束时间筛选列
+     * @param String $col 筛选的列名
+     * @param String $colTip 筛选项的名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterEndTime($col, $colTip) {
+        $this->filter_columns[] = [
+            "type"  => self::FILTER_ENDTIME,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定单选类型筛选列
+     * @param String $col 筛选的列名
+     * @param String $colTip 筛选项的名称
+     * @param array $keyValMap ENUM的键值对数组，键为数据库的字段值，值为展示值
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterEnum($col, $colTip, array $keyValMap) {
+        $this->filter_columns[] = [
+            "type"  => self::FILTER_ENUM,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => $keyValMap
         ];
         return $this;
     }
@@ -155,6 +338,7 @@ class GridList implements JsonSerializable {
 
     /**
      * 创建一个筛选项
+     * @deprecated
      * @param String $columnType 筛选类型，可选类型为GridList对应的FILTER_开头的静态属性
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该筛选项的名称

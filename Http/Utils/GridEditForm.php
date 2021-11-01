@@ -157,7 +157,7 @@ class GridEditForm implements JsonSerializable {
             "type"  => self::COLUMN_SELECT,
             "col"   => $col,
             "tip"   => $colTip,
-            "extra" => $keyValMap
+            "extra" => (object)$keyValMap
         ];
         return $this;
     }
@@ -174,7 +174,7 @@ class GridEditForm implements JsonSerializable {
             "type"  => self::COLUMN_RADIO,
             "col"   => $col,
             "tip"   => $colTip,
-            "extra" => $keyValMap
+            "extra" => (object)$keyValMap
         ];
         return $this;
     }
@@ -191,7 +191,7 @@ class GridEditForm implements JsonSerializable {
             "type"  => self::COLUMN_CHECKBOX,
             "col"   => $col,
             "tip"   => $colTip,
-            "extra" => $keyValMap
+            "extra" => (object)$keyValMap
         ];
         return $this;
     }

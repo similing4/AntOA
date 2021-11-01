@@ -205,7 +205,7 @@ class GridList implements JsonSerializable {
             "type"  => self::ENUM,
             "col"   => $col,
             "tip"   => $colTip,
-            "extra" => $keyValMap
+            "extra" => (object)$keyValMap
         ];
         return $this;
     }

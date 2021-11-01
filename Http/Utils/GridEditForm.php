@@ -330,14 +330,15 @@ class GridEditForm implements JsonSerializable {
      * 指定一个展示框，不会被提交
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $noContentVal 没有对应的查询值时的默认值
      * @return GridEditForm 返回this以便链式调用
      */
-    public function columnDisplay($col, $colTip) {
+    public function columnDisplay($col, $colTip, $noContentVal = "") {
         $this->columns[] = [
             "type"  => self::COLUMN_DISPLAY,
             "col"   => $col,
             "tip"   => $colTip,
-            "extra" => []
+            "extra" => $noContentVal === "" ? [] : $noContentVal
         ];
         return $this;
     }

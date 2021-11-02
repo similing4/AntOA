@@ -81,6 +81,9 @@
 						<div v-if="templateItem.type == 'ENUM'">
 							<div>{{(templateItem.extra)[record[templateItem.col]+'']}}</div>
 						</div>
+                        <div v-if="templateItem.type == 'DIVIDE_NUMBER'">
+                            <div>{{parseFloat(record[templateItem.col]) / templateItem.extra.divide}} {{templateItem.extra.unit}}</div>
+                        </div>
 						<div v-if="templateItem.type == 'RICH_TEXT' || templateItem.type == 'RICH_DISPLAY'">
 							<div v-html="record[templateItem.col]"></div>
 						</div>

@@ -44,6 +44,12 @@
                             <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
                         </a-form-item>
                         <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
+                                     v-if="column.type == 'COLUMN_NUMBER_DIVIDE'" v-show="displayColumns.includes(column.col)">
+                            <a-input :placeholder="'请填写' + column.tip" v-model="form[column.col]"></a-input>
+                            <a-input-number v-model="form[column.col]"></a-input-number> @{{column.extra.unit}}
+                            <a-button v-if="getApiButtonByColumn(column.col)" :type="getApiButtonByColumn(column.col).type" @click="callApi(getApiButtonByColumn(column.col).url)">@{{getApiButtonByColumn(column.col).title}}</a-button>
+                        </a-form-item>
+                        <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}"
                                      v-if="column.type == 'COLUMN_TEXTAREA'" v-show="displayColumns.includes(column.col)">
                             <a-textarea :placeholder="'请填写' + column.tip" v-model="form[column.col]" rows="20"
                                         allow-clear></a-textarea>
@@ -229,6 +235,8 @@
                     this.columns.map((col) => {
                         if (col.type === 'COLUMN_DISPLAY')
                             return;
+                        if(col.type === 'COLUMN_NUMBER_DIVIDE')
+                            param[col.col] = parseFloat(this.form[col.col]) * col.divide;
                         param[col.col] = this.form[col.col];
                     });
                     for (let i in param) {

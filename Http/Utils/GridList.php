@@ -18,6 +18,7 @@ use Modules\AntOA\Http\Utils\hook\ButtonCondition;
 
 class GridList implements JsonSerializable {
     const TEXT = "TEXT"; //文本类型展示
+    const DIVIDE_NUMBER = "DIVIDE_NUMBER"; //数字类型除以指定数值后展示
     const DISPLAY = "DISPLAY"; //文本类型展示，且不从数据库查询。需要通过HOOK设置
     const RICH_DISPLAY = "RICH_DISPLAY"; //富文本类型展示，且不从数据库查询。需要通过HOOK设置
     const PICTURE = "PICTURE"; //图片类型展示，需在extra中指定图片宽高
@@ -227,6 +228,23 @@ class GridList implements JsonSerializable {
     }
 
     /**
+     * 指定除以指定数值后展示的列
+     * @param String $col 列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param Number $divide 除数
+     * @return GridList 返回this以便链式调用
+     */
+    public function columnDivideNumber($col, $colTip, $divide) {
+        $this->columns[] = [
+            "type"  => self::DIVIDE_NUMBER,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => $divide
+        ];
+        return $this;
+    }
+
+    /**
      * 指定隐藏类型筛选列，用于外部传入
      * @param String $col 筛选的列名
      * @return GridList 返回this以便链式调用
@@ -338,12 +356,12 @@ class GridList implements JsonSerializable {
 
     /**
      * 创建一个筛选项
-     * @deprecated
      * @param String $columnType 筛选类型，可选类型为GridList对应的FILTER_开头的静态属性
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该筛选项的名称
      * @param array $extra 该列类型的对应额外数据
      * @return GridList 返回this以便链式调用
+     * @deprecated
      */
     public function filter($columnType, $col, $colTip, $extra = []) {
         $this->filter_columns[] = [

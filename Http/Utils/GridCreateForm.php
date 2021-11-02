@@ -133,14 +133,18 @@ class GridCreateForm implements JsonSerializable {
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
      * @param Number $divide 除数
+     * @param string $unit 单位，默认为空
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnNumberDivide($col, $colTip, $divide) {
+    public function columnNumberDivide($col, $colTip, $divide, $unit = '') {
         $this->columns[] = [
             "type"  => self::COLUMN_NUMBER_DIVIDE,
             "col"   => $col,
             "tip"   => $colTip,
-            "extra" => $divide
+            "extra" => [
+                "divide" => $divide,
+                "unit"   => $unit
+            ]
         ];
         return $this;
     }

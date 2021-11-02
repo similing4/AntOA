@@ -17,6 +17,7 @@ use Modules\AntOA\Http\Utils\hook\CreateOrEditColumnChangeHook;
 class GridEditForm implements JsonSerializable {
     private $_table;
     const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据
+    const COLUMN_NUMBER_DIVIDE = "COLUMN_NUMBER_DIVIDE"; //进行预除运算的数字数据，提交时会乘回来
     const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据
     const COLUMN_PASSWORD = "COLUMN_PASSWORD"; //密码数据
     const COLUMN_SELECT = "COLUMN_SELECT"; //下拉单选
@@ -109,6 +110,23 @@ class GridEditForm implements JsonSerializable {
             "col"   => $col,
             "tip"   => $colTip,
             "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 指定一个进行预除运算的数字字段，提交时会乘回来
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param Number $divide 除数
+     * @return GridEditForm 返回this以便链式调用
+     */
+    public function columnNumberDivide($col, $colTip, $divide) {
+        $this->columns[] = [
+            "type"  => self::COLUMN_NUMBER_DIVIDE,
+            "col"   => $col,
+            "tip"   => $colTip,
+            "extra" => $divide
         ];
         return $this;
     }

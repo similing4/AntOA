@@ -232,14 +232,18 @@ class GridList implements JsonSerializable {
      * @param String $col 列名
      * @param String $colTip 在列表页该列的的表头名称
      * @param Number $divide 除数
+     * @param String $unit 单位，默认为空
      * @return GridList 返回this以便链式调用
      */
-    public function columnDivideNumber($col, $colTip, $divide) {
+    public function columnDivideNumber($col, $colTip, $divide, $unit = '') {
         $this->columns[] = [
             "type"  => self::DIVIDE_NUMBER,
             "col"   => $col,
             "tip"   => $colTip,
-            "extra" => $divide
+            "extra" => [
+                "divide" => $divide,
+                "unit"   => $unit
+            ]
         ];
         return $this;
     }

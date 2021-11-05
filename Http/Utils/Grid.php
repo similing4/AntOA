@@ -75,7 +75,7 @@ class Grid {
 
     /**
      * 初始化GridCreateForm对象用于创建页及其接口渲染
-     * @param String $table 表接口
+     * @param DBCreateOperator $table 表接口
      * @return GridCreateForm 返回GridCreateForm对象
      */
     public function createForm($table) {

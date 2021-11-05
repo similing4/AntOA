@@ -434,9 +434,6 @@
 					};
 					let params = {};
 					for (let key in headerButtonItem.dest_col) {
-						if (record[key] !== undefined)
-							params[headerButtonItem.dest_col[key]] = record[key];
-						else
 							params[headerButtonItem.dest_col[key]] = this.$route.query[key];
 					}
 					if (headerButtonItem.url.includes("?"))

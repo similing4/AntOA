@@ -382,14 +382,13 @@ class GridCreateForm implements JsonSerializable {
     /**
      * 指定一个隐藏的行，会被提交，可以用来接其它页面传来的参数
      * @param String $col 数据库列名
-     * @param String $colTip 在列表页该列的的表头名称
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnHidden($col, $colTip) {
+    public function columnHidden($col) {
         $this->columns[] = [
             "type"  => self::COLUMN_HIDDEN,
             "col"   => $col,
-            "tip"   => $colTip,
+            "tip"   => "",
             "extra" => []
         ];
         return $this;
@@ -452,7 +451,7 @@ class GridCreateForm implements JsonSerializable {
 
     /**
      * 添加内容变更钩子
-     * @param string $cols 监听的列列表
+     * @param array<string> $cols 监听的列列表
      * @param CreateOrEditColumnChangeHook $hook 行数据变更时的钩子
      * @return GridCreateForm 返回this以便链式调用
      */

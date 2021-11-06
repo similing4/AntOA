@@ -431,7 +431,7 @@ class GridList implements JsonSerializable {
      * @param String $buttonName 按钮的内容文字
      * @param String $url 按钮的跳转链接
      * @param String $buttonType 按钮的type属性，默认为primary
-     * @param String|array $buttonDestColumn 跳转携带ID到目标页面的参数名，默认为id。如果传入为键值对数组，则对应将页面及行对应的参数（行优先）按照值对应的键传入新页面
+     * @param String|array|NavigateParamHook $buttonDestColumn 跳转携带ID到目标页面的参数名，默认为id。如果传入为键值对数组，则对应将页面及行对应的参数（行优先）按照值对应的键传入新页面
      * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      */

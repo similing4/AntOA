@@ -203,6 +203,12 @@ abstract class AntOAController extends Controller {
                 ->select($columns)
                 ->paginate(15);
             $res = json_decode(json_encode($res), true);
+            foreach ($config['header_buttons'] as $headerButtonItem) {
+                if ($headerButtonItem['dest_col'] instanceof NavigateParamHook) {
+                    $headerButtonItem['dest_col'] = $headerButtonItem['dest_col']->hook([], $request);
+                    $headerButtonItem['dest_col_full'] = true;
+                }
+            }
             foreach ($res['data'] as &$resi) {
                 $resi['BUTTON_CONDITION_DATA'] = [];
                 foreach ($config['columns'] as $column)
@@ -213,8 +219,10 @@ abstract class AntOAController extends Controller {
                         $resi['BUTTON_CONDITION_DATA'][] = true;
                     else
                         $resi['BUTTON_CONDITION_DATA'][] = $rowButtonItem['show_condition']->isShow($resi);
-                    if($rowButtonItem['dest_col'] instanceof NavigateParamHook)
-                        $rowButtonItem['dest_col'] = $rowButtonItem['dest_col']->hook($resi);
+                    if ($rowButtonItem['dest_col'] instanceof NavigateParamHook) {
+                        $rowButtonItem['dest_col'] = $rowButtonItem['dest_col']->hook($resi, $request);
+                        $rowButtonItem['dest_col_full'] = true;
+                    }
                 }
             }
             $res['status'] = 1;
@@ -298,7 +306,7 @@ abstract class AntOAController extends Controller {
                 $tableObj['table']->insert($param);
             return json_encode([
                 "status" => 1,
-                "data"    => "创建成功"
+                "data"   => "创建成功"
             ]);
         } catch (Exception $e2) {
             return json_encode([
@@ -422,7 +430,7 @@ abstract class AntOAController extends Controller {
                 $tableObj['table']->onUpdate($tableObj['columns'], $param);
             return json_encode([
                 "status" => 1,
-                "data"    => "保存成功"
+                "data"   => "保存成功"
             ]);
         } catch (Exception $e2) {
             return json_encode([

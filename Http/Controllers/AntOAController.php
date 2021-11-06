@@ -223,7 +223,8 @@ abstract class AntOAController extends Controller {
                     if ($rowButtonItem['dest_col'] instanceof NavigateParamHook) {
                         $resi['BUTTON_NAVIGATE_DATA'][] = $rowButtonItem['dest_col']->hook($resi, $request);
                         $rowButtonItem['dest_col'] = "NavigateParamHook";
-                    }
+                    } else
+                        $resi['BUTTON_NAVIGATE_DATA'][] = "";
                 }
             }
             $res['status'] = 1;

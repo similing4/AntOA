@@ -99,7 +99,7 @@
 						<a-button @click="onDeleteClick(record[columns[0].dataIndex])" type="danger"
 							v-if="tableObj.hasDelete" style="margin: 5px;">删除
 						</a-button>
-						<a-button @click="onRowButtonClick(rowButton,record,record[columns[0].dataIndex])"
+						<a-button @click="onRowButtonClick(rowButton,record,record[columns[0].dataIndex],index)"
 							:type="rowButton.type" v-for="(rowButton,index) in tableObj.row_buttons" :key="index"
 							v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
 							{{ rowButton.title }}
@@ -472,7 +472,7 @@
 					}
 				}
 			},
-			async onRowButtonClick(rowButtonItem, record, id) {
+			async onRowButtonClick(rowButtonItem, record, id, btnIndex) {
 				if (rowButtonItem.btn_do_type === "api") {
 					let res = await this.$api(rowButtonItem.url).method("GET").param({
 						id: id
@@ -496,9 +496,9 @@
 				} else if (rowButtonItem.btn_do_type === "navigate") {
 					if (rowButtonItem.dest_col === "NavigateParamHook") {
                         if (rowButtonItem.url.includes("?"))
-                            this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col);
+                            this.openurl(rowButtonItem.url + "&" + record.BUTTON_NAVIGATE_DATA[btnIndex]);
                         else
-                            this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col);
+                            this.openurl(rowButtonItem.url + "?" + record.BUTTON_NAVIGATE_DATA[btnIndex]);
                     } else if (typeof(rowButtonItem.dest_col) === "string") {
 						if (rowButtonItem.url.includes("?"))
 							this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
@@ -525,9 +525,9 @@
 						let params = {};
 						if (rowButtonItem.dest_col === "NavigateParamHook") {
                             if (rowButtonItem.url.includes("?"))
-                                this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col);
+                                this.openurl(rowButtonItem.url + "&" + record.BUTTON_NAVIGATE_DATA[btnIndex]);
                             else
-                                this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col);
+                                this.openurl(rowButtonItem.url + "?" + record.BUTTON_NAVIGATE_DATA[btnIndex]);
                         }else {
                             for (let key in rowButtonItem.dest_col) {
                                 if (record[key] !== undefined)

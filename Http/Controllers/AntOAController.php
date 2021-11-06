@@ -12,6 +12,7 @@ use Modules\AntOA\Http\Utils\Grid;
 use Modules\AntOA\Http\Utils\GridCreateForm;
 use Modules\AntOA\Http\Utils\GridEditForm;
 use Modules\AntOA\Http\Utils\GridList;
+use Modules\AntOA\Http\Utils\NavigateParamHook;
 
 /**
  * NameSpace: Modules\AntOA\Http\Controllers
@@ -212,6 +213,8 @@ abstract class AntOAController extends Controller {
                         $resi['BUTTON_CONDITION_DATA'][] = true;
                     else
                         $resi['BUTTON_CONDITION_DATA'][] = $rowButtonItem['show_condition']->isShow($resi);
+                    if($rowButtonItem['dest_col'] instanceof NavigateParamHook)
+                        $rowButtonItem['dest_col'] = $rowButtonItem['dest_col']->hook($resi);
                 }
             }
             $res['status'] = 1;
@@ -223,7 +226,7 @@ abstract class AntOAController extends Controller {
         } catch (Exception $e2) {
             return json_encode([
                 "status" => 0,
-                "msg"    => $e2->getMessage() . $e2->getLine()
+                "msg"    => $e2->getMessage()
             ]);
         }
     }

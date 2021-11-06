@@ -24,6 +24,7 @@ class GridList implements JsonSerializable {
     const PICTURE = "PICTURE"; //图片类型展示，需在extra中指定图片宽高
     const ENUM = "ENUM"; //枚举类型展示，需要指定键值对用于确定ENUM对应关系
     const RICH_TEXT = "RICH_TEXT"; //富文本类型展示
+    const HIDDEN = "HIDDEN"; //隐藏列，只是查询出来但不展示
     const FILTER_HIDDEN = "FILTER_HIDDEN"; //隐藏类型筛选，用于外部传入
     const FILTER_TEXT = "FILTER_TEXT"; //文本类型筛选，筛选方式为%keyword%
     const FILTER_STARTTIME = "FILTER_STARTTIME"; //开始时间类型筛选，筛选结果为大于等于该结束时间的行
@@ -222,6 +223,21 @@ class GridList implements JsonSerializable {
             "type"  => self::RICH_TEXT,
             "col"   => $col,
             "tip"   => $colTip,
+            "extra" => []
+        ];
+        return $this;
+    }
+
+    /**
+     * 隐藏列，查询出来但不展示
+     * @param String $col 列名
+     * @return GridList 返回this以便链式调用
+     */
+    public function columnHidden($col) {
+        $this->columns[] = [
+            "type"  => self::HIDDEN,
+            "col"   => $col,
+            "tip"   => "",
             "extra" => []
         ];
         return $this;

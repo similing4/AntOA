@@ -640,7 +640,7 @@
                             this.loadPage();
                         });
                     } else if (rowButtonItem.btn_do_type === "navigate") {
-                        if (rowButtonItem.dest_col === "NavigateParamHook") {
+                        if (JSON.stringify(rowButtonItem.dest_col) === "{}") {
                             if (rowButtonItem.url.includes("?"))
                                 window.open(rowButtonItem.url + "&" + record.BUTTON_NAVIGATE_DATA[btnIndex]);
                             else
@@ -667,7 +667,7 @@
                                 return paramStr;
                             };
                             let params = {};
-                            if (rowButtonItem.dest_col === "NavigateParamHook") {
+                            if (JSON.stringify(rowButtonItem.dest_col) === "{}") {
                                 if (rowButtonItem.url.includes("?"))
                                     window.open(rowButtonItem.url + "&" + record.BUTTON_NAVIGATE_DATA[btnIndex]);
                                 else

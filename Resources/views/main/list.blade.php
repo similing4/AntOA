@@ -109,7 +109,9 @@
                                 <div>@{{(templateItem.extra)[record[templateItem.col]+'']}}</div>
                             </div>
                             <div v-if="templateItem.type == 'DIVIDE_NUMBER'">
-                                <div>@{{parseFloat(record[templateItem.col]) / templateItem.extra.divide}} @{{templateItem.extra.unit}}</div>
+                                <div>@{{parseFloat(record[templateItem.col]) / templateItem.extra.divide}}
+                                    @{{templateItem.extra.unit}}
+                                </div>
                             </div>
                             <div v-if="templateItem.type == 'RICH_TEXT' || templateItem.type == 'RICH_DISPLAY'">
                                 <div v-html="record[templateItem.col]"></div>
@@ -578,13 +580,20 @@
                             return paramStr;
                         };
                         let params = {};
-                        for (let key in headerButtonItem.dest_col) {
-                            params[headerButtonItem.dest_col[key]] = getQueryString(key);
+                        if (headerButtonItem.dest_col_full) {
+                            if (headerButtonItem.url.includes("?"))
+                                window.open(headerButtonItem.url + "&" + headerButtonItem.dest_col);
+                            else
+                                window.open(headerButtonItem.url + "?" + headerButtonItem.dest_col);
+                        } else {
+                            for (let key in headerButtonItem.dest_col) {
+                                params[headerButtonItem.dest_col[key]] = getQueryString(key);
+                            }
+                            if (headerButtonItem.url.includes("?"))
+                                window.open(headerButtonItem.url + "&" + urlEncode(params));
+                            else
+                                window.open(headerButtonItem.url + "?" + urlEncode(params));
                         }
-                        if (headerButtonItem.url.includes("?"))
-                            window.open(headerButtonItem.url + "&" + urlEncode(params));
-                        else
-                            window.open(headerButtonItem.url + "?" + urlEncode(params));
                     } else if (headerButtonItem.btn_do_type === "api_form") {
                         this.showCreateFormModal(headerButtonItem, null);
                     } else if (headerButtonItem.btn_do_type === "rich_text") {
@@ -631,7 +640,12 @@
                             this.loadPage();
                         });
                     } else if (rowButtonItem.btn_do_type === "navigate") {
-                        if (typeof (rowButtonItem.dest_col) === "string") {
+                        if (rowButtonItem.dest_col === "NavigateParamHook") {
+                            if (rowButtonItem.url.includes("?"))
+                                window.open(rowButtonItem.url + "&" + rowButtonItem.dest_col);
+                            else
+                                window.open(rowButtonItem.url + "?" + rowButtonItem.dest_col);
+                        } else if (typeof (rowButtonItem.dest_col) === "string") {
                             if (rowButtonItem.url.includes("?"))
                                 window.open(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
                             else
@@ -653,16 +667,23 @@
                                 return paramStr;
                             };
                             let params = {};
-                            for (let key in rowButtonItem.dest_col) {
-                                if (record[key] !== undefined)
-                                    params[rowButtonItem.dest_col[key]] = record[key];
+                            if (rowButtonItem.dest_col === "NavigateParamHook") {
+                                if (rowButtonItem.url.includes("?"))
+                                    window.open(rowButtonItem.url + "&" + rowButtonItem.dest_col);
                                 else
-                                    params[rowButtonItem.dest_col[key]] = getQueryString(key);
+                                    window.open(rowButtonItem.url + "?" + rowButtonItem.dest_col);
+                            } else {
+                                for (let key in rowButtonItem.dest_col) {
+                                    if (record[key] !== undefined)
+                                        params[rowButtonItem.dest_col[key]] = record[key];
+                                    else
+                                        params[rowButtonItem.dest_col[key]] = getQueryString(key);
+                                }
+                                if (rowButtonItem.url.includes("?"))
+                                    window.open(rowButtonItem.url + "&" + urlEncode(params));
+                                else
+                                    window.open(rowButtonItem.url + "?" + urlEncode(params));
                             }
-                            if (rowButtonItem.url.includes("?"))
-                                window.open(rowButtonItem.url + "&" + urlEncode(params));
-                            else
-                                window.open(rowButtonItem.url + "?" + urlEncode(params));
                         }
                     } else if (rowButtonItem.btn_do_type === "api_form") {
                         this.showCreateFormModal(rowButtonItem, record);

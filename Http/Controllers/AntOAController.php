@@ -203,7 +203,7 @@ abstract class AntOAController extends Controller {
                 ->select($columns)
                 ->paginate(15);
             $res = json_decode(json_encode($res), true);
-            foreach ($config['header_buttons'] as $headerButtonItem) {
+            foreach ($config['header_buttons'] as &$headerButtonItem) {
                 if ($headerButtonItem['dest_col'] instanceof NavigateParamHook) {
                     $headerButtonItem['dest_col'] = $headerButtonItem['dest_col']->hook([], $request);
                     $headerButtonItem['dest_col_full'] = true;
@@ -211,17 +211,18 @@ abstract class AntOAController extends Controller {
             }
             foreach ($res['data'] as &$resi) {
                 $resi['BUTTON_CONDITION_DATA'] = [];
+                $resi['BUTTON_NAVIGATE_DATA'] = [];
                 foreach ($config['columns'] as $column)
                     if ($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
                         $resi[$column['col']] = '';
-                foreach ($config['row_buttons'] as $rowButtonItem) {
+                foreach ($config['row_buttons'] as &$rowButtonItem) {
                     if ($rowButtonItem['show_condition'] == null)
                         $resi['BUTTON_CONDITION_DATA'][] = true;
                     else
                         $resi['BUTTON_CONDITION_DATA'][] = $rowButtonItem['show_condition']->isShow($resi);
                     if ($rowButtonItem['dest_col'] instanceof NavigateParamHook) {
-                        $rowButtonItem['dest_col'] = $rowButtonItem['dest_col']->hook($resi, $request);
-                        $rowButtonItem['dest_col_full'] = true;
+                        $rowButtonItem['dest_col'] = "NavigateParamHook";
+                        $resi['BUTTON_NAVIGATE_DATA'][] = $rowButtonItem['dest_col']->hook($resi, $request);
                     }
                 }
             }

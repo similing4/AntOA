@@ -433,13 +433,20 @@
 						return paramStr;
 					};
 					let params = {};
-					for (let key in headerButtonItem.dest_col) {
-							params[headerButtonItem.dest_col[key]] = this.$route.query[key];
-					}
-					if (headerButtonItem.url.includes("?"))
-						this.openurl(headerButtonItem.url + "&" + urlEncode(params));
-					else
-						this.openurl(headerButtonItem.url + "?" + urlEncode(params));
+                    if (headerButtonItem.dest_col_full) {
+                        if (headerButtonItem.url.includes("?"))
+                            this.openurl(headerButtonItem.url + "&" + headerButtonItem.dest_col);
+                        else
+                            this.openurl(headerButtonItem.url + "?" + headerButtonItem.dest_col);
+                    } else {
+                        for (let key in headerButtonItem.dest_col) {
+                            params[headerButtonItem.dest_col[key]] = this.$route.query[key];
+                        }
+                        if (headerButtonItem.url.includes("?"))
+                            this.openurl(headerButtonItem.url + "&" + urlEncode(params));
+                        else
+                            this.openurl(headerButtonItem.url + "?" + urlEncode(params));
+                    }
 				} else if (headerButtonItem.btn_do_type === "api_form") {
 					this.showCreateFormModal(headerButtonItem, null);
 				} else if (headerButtonItem.btn_do_type === "rich_text") {
@@ -487,7 +494,12 @@
 						this.loadPage();
 					});
 				} else if (rowButtonItem.btn_do_type === "navigate") {
-					if (typeof(rowButtonItem.dest_col) === "string") {
+					if (rowButtonItem.dest_col === "NavigateParamHook") {
+                        if (rowButtonItem.url.includes("?"))
+                            this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col);
+                        else
+                            this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col);
+                    } else if (typeof(rowButtonItem.dest_col) === "string") {
 						if (rowButtonItem.url.includes("?"))
 							this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col + "=" + id);
 						else
@@ -511,16 +523,23 @@
 							return paramStr;
 						};
 						let params = {};
-						for (let key in rowButtonItem.dest_col) {
-							if (record[key] !== undefined)
-								params[rowButtonItem.dest_col[key]] = record[key];
-							else
-								params[rowButtonItem.dest_col[key]] = this.$route.query[key];
-						}
-						if (rowButtonItem.url.includes("?"))
-							this.openurl(rowButtonItem.url + "&" + urlEncode(params));
-						else
-							this.openurl(rowButtonItem.url + "?" + urlEncode(params));
+						if (rowButtonItem.dest_col === "NavigateParamHook") {
+                            if (rowButtonItem.url.includes("?"))
+                                this.openurl(rowButtonItem.url + "&" + rowButtonItem.dest_col);
+                            else
+                                this.openurl(rowButtonItem.url + "?" + rowButtonItem.dest_col);
+                        }else {
+                            for (let key in rowButtonItem.dest_col) {
+                                if (record[key] !== undefined)
+                                    params[rowButtonItem.dest_col[key]] = record[key];
+                                else
+                                    params[rowButtonItem.dest_col[key]] = this.$route.query[key];
+                            }
+                            if (rowButtonItem.url.includes("?"))
+                                this.openurl(rowButtonItem.url + "&" + urlEncode(params));
+                            else
+                                this.openurl(rowButtonItem.url + "?" + urlEncode(params));
+                        }
 					}
 				} else if (rowButtonItem.btn_do_type === "api_form") {
 					this.showCreateFormModal(rowButtonItem, record);

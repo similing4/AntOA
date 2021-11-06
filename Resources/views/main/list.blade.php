@@ -579,10 +579,7 @@
                         };
                         let params = {};
                         for (let key in headerButtonItem.dest_col) {
-                            if (record[key] !== undefined)
-                                params[headerButtonItem.dest_col[key]] = record[key];
-                            else
-                                params[headerButtonItem.dest_col[key]] = getQueryString(key);
+                            params[headerButtonItem.dest_col[key]] = getQueryString(key);
                         }
                         if (headerButtonItem.url.includes("?"))
                             window.open(headerButtonItem.url + "&" + urlEncode(params));

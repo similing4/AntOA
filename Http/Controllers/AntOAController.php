@@ -204,7 +204,7 @@ abstract class AntOAController extends Controller {
                 ->paginate(15);
             $res = json_decode(json_encode($res), true);
             foreach ($config['header_buttons'] as &$headerButtonItem) {
-                if ($headerButtonItem['dest_col'] instanceof NavigateParamHook) {
+                if (array_key_exists('dest_col',$headerButtonItem) && $headerButtonItem['dest_col'] instanceof NavigateParamHook) {
                     $headerButtonItem['dest_col'] = $headerButtonItem['dest_col']->hook([], $request);
                     $headerButtonItem['dest_col_full'] = true;
                 }

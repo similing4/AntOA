@@ -613,7 +613,7 @@ abstract class AntOAController extends Controller {
                 throw new Exception("非法操作");
             if ($hookConfig == null)
                 throw new Exception("页面配置信息不存在");
-            $data = $hookConfig['hook']->hook($content['form']);
+            $data = $hookConfig['hook']->hook($content['form'], $content['col']);
             return json_encode([
                 "status" => 1,
                 "data"   => $data

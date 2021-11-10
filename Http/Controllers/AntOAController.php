@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\AntOA\Http\Utils\AuthInterface;
+use Modules\AntOA\Http\Utils\DBListOperator;
 use Modules\AntOA\Http\Utils\Grid;
 use Modules\AntOA\Http\Utils\GridCreateForm;
 use Modules\AntOA\Http\Utils\GridEditForm;
@@ -22,6 +23,10 @@ use Modules\AntOA\Http\Utils\NavigateParamHook;
 abstract class AntOAController extends Controller {
     protected $gridObj = null; //grid对象
     protected $auth = null; //Auth对象，如果你需要自己实现授权Token，你可以在Service文件夹下实现AuthInterface接口并在AntOAServiceProvider中修改接口实现类绑定。
+    /**
+     * @var DBListOperator 类型统计statistic方法可以直接使用的List页面对应的Builder对象
+     */
+    protected $listStatistic = null;
 
     public function __construct(AuthInterface $auth) {
         $this->auth = $auth;
@@ -200,8 +205,9 @@ abstract class AntOAController extends Controller {
             if ($config['orderBy'] != null)
                 $list = $list->orderBy($config['orderBy'][0], $config['orderBy'][1]);
             $res = $list
-                ->select($columns)
-                ->paginate(15);
+                ->select($columns);
+            $this->listStatistic = clone $list;
+            $res = $list->paginate(15);
             $res = json_decode(json_encode($res), true);
             foreach ($config['header_buttons'] as &$headerButtonItem) {
                 if (array_key_exists('dest_col', $headerButtonItem) && $headerButtonItem['dest_col'] instanceof NavigateParamHook) {

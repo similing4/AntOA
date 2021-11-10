@@ -220,7 +220,7 @@ abstract class AntOAController extends Controller {
                         $resi['BUTTON_CONDITION_DATA'][] = true;
                     else
                         $resi['BUTTON_CONDITION_DATA'][] = $rowButtonItem['show_condition']->isShow($resi);
-                    if ($rowButtonItem['dest_col'] instanceof NavigateParamHook)
+                    if (array_key_exists('dest_col',$rowButtonItem) && $rowButtonItem['dest_col'] instanceof NavigateParamHook)
                         $resi['BUTTON_NAVIGATE_DATA'][] = $rowButtonItem['dest_col']->hook($resi, $request);
                     else
                         $resi['BUTTON_NAVIGATE_DATA'][] = "";

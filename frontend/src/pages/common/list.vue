@@ -359,6 +359,11 @@
                         form: param
                     }).call();
                     if (res.status) {
+                        var extras = res.select;
+                        for(let i in this.tableObj.filter_columns){
+                            if(Object.keys(extras).includes(this.tableObj.filter_columns[i].col))
+                                this.tableObj.filter_columns[i].extra = extras[this.tableObj.filter_columns[i].col];
+                        }
                         res = res.data;
                         for (let i in this.tableObj.filter_columns) {
                             if (res.data[this.tableObj.filter_columns[i].col] !== undefined) {

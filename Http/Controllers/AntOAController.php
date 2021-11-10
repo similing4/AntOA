@@ -204,7 +204,7 @@ abstract class AntOAController extends Controller {
                 ->paginate(15);
             $res = json_decode(json_encode($res), true);
             foreach ($config['header_buttons'] as &$headerButtonItem) {
-                if (array_key_exists('dest_col',$headerButtonItem) && $headerButtonItem['dest_col'] instanceof NavigateParamHook) {
+                if (array_key_exists('dest_col', $headerButtonItem) && $headerButtonItem['dest_col'] instanceof NavigateParamHook) {
                     $headerButtonItem['dest_col'] = $headerButtonItem['dest_col']->hook([], $request);
                     $headerButtonItem['dest_col_full'] = true;
                 }
@@ -220,7 +220,7 @@ abstract class AntOAController extends Controller {
                         $resi['BUTTON_CONDITION_DATA'][] = true;
                     else
                         $resi['BUTTON_CONDITION_DATA'][] = $rowButtonItem['show_condition']->isShow($resi);
-                    if (array_key_exists('dest_col',$rowButtonItem) && $rowButtonItem['dest_col'] instanceof NavigateParamHook)
+                    if (array_key_exists('dest_col', $rowButtonItem) && $rowButtonItem['dest_col'] instanceof NavigateParamHook)
                         $resi['BUTTON_NAVIGATE_DATA'][] = $rowButtonItem['dest_col']->hook($resi, $request);
                     else
                         $resi['BUTTON_NAVIGATE_DATA'][] = "";
@@ -580,7 +580,7 @@ abstract class AntOAController extends Controller {
     }
 
     /**
-     * 创建页与编辑页响应变化的API
+     * 列表筛选项、创建页与编辑页响应变化的API
      * @param Request $request
      * @return String 详见CreateOrEditColumnChangeHook
      */
@@ -597,7 +597,11 @@ abstract class AntOAController extends Controller {
             if (!array_key_exists("type", $content) || !array_key_exists("form", $content))
                 throw new Exception("非法操作");
             $type = $content['type'];
-            if ($type == "create") {
+            if ($type == "list") {
+                if ($this->gridObj->getGridList() == null)
+                    throw new Exception("页面配置信息不存在");
+                $hookConfig = $this->gridObj->getGridList()->getArr()["change_hook"];
+            } else if ($type == "create") {
                 if ($this->gridObj->getCreateForm() == null)
                     throw new Exception("页面配置信息不存在");
                 $hookConfig = $this->gridObj->getCreateForm()->getArr()["change_hook"];

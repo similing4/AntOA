@@ -449,13 +449,13 @@
                     if (!this.tableObj.change_hook)
                         return;
                     this.onHookCall();
-                    this.tableObj.change_hook.map((col) => {
+                    this.tableObj.change_hook.columns.map((col) => {
                         this.$watch("searchObj." + col, () => {
-                            this.onHookCall();
+                            this.onHookCall(col);
                         });
                     });
                 },
-                async onHookCall() {
+                async onHookCall(hookCol) {
                     const param = {};
                     Object.assign(param, this.searchObj);
                     for (let i in param) {
@@ -467,15 +467,16 @@
                     try {
                         let res = await this.$api(this.api.api_column_change).method("POST").param({
                             type: "list",
-                            form: param
+                            form: param,
+                            col: hookCol
                         }).call();
                         if (res.status) {
-                            var extras = res.select;
+                            res = res.data;
+                            let extras = res.select;
                             for(let i in this.tableObj.filter_columns){
                                 if(Object.keys(extras).includes(this.tableObj.filter_columns[i].col))
                                     this.tableObj.filter_columns[i].extra = extras[this.tableObj.filter_columns[i].col];
                             }
-                            res = res.data;
                             for (let i in this.tableObj.filter_columns) {
                                 if (res.data[this.tableObj.filter_columns[i].col] !== undefined) {
                                     if (this.tableObj.filter_columns[i].type === 'FILTER_STARTTIME' || this.tableObj.filter_columns[i].type === 'FILTER_ENDTIME')

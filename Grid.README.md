@@ -23,7 +23,23 @@ $grid->list(new class(new DB::table("user")) extends DBListOperator {
 
 这里的匿名类用于对应处理数据库操作，详情请见DBListOperator类。
 
-### (2)column操作
+如果您希望进行多表联查，AntOA内部集成了一个DBListOperator的子类MultiTableDBListOperator来实现该功能。使用方法如下：
+```php
+$grid->list(new MultiTableDBListOperator("cinema_user_order", [
+    new JoinTable("antoa_user", "id", "cinema_user_order", "uid"),
+    new JoinTable("user_user_level", "uid", "antoa_user", "id"),
+    new JoinTable("user_level","id","cinema_user_order","buyer_level")
+], [
+    TableColumns::create("cinema_user_order","*")
+        ->table("antoa_user", ["username"])
+        ->table("user_user_level", ["nickname"])
+]));
+```
+其中MultiTableDBListOperator的构造方法第一个参数为主表表名，第二个参数为需要做连接查询的表的JoinTable对象数组，第三个参数为需要的字段的TableColumns对象数组。
+new JoinTable("antoa_user", "id", "cinema_user_order", "uid")意为left join lw_antoa_user on lw_antoa_user.id = cinema_user_order.uid。 
+TableColumns::create与其table方法参数含义一致。第一个参数意为需要的表名，而第二个参数意为需要查询的字段。如果需要全部字段可直接传字符串"*"。
+
+### (2)column操作（弃用，请改用column后带有指定类型的方法，详见对应方法注释）
 column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
 ```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {

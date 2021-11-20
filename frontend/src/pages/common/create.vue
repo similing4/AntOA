@@ -386,7 +386,7 @@
 					else if (this.columns[i].type === 'COLUMN_TIMESTAMP')
 						this.form[this.columns[i].col] = moment();
 					else
-						this.form[i] = "";
+						this.form[this.columns[i].col] = "";
 					if (this.columns[i].type === 'COLUMN_CHILDREN_CHOOSE')
 						this.formTip[this.columns[i].col] = "";
 				}

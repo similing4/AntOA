@@ -70,13 +70,13 @@
                 password: ""
             }
         },
-        async created(){
+        async created() {
             try {
-                if (!localStorage.token)
+                if (!Cookie.get('AuthToken'))
                     throw "登录失败";
                 const res = await this.$api("/api/antoa/auth/auth")
                     .param({
-                        token: localStorage.token
+                        token: Cookie.get('AuthToken')
                     })
                     .method("POST")
                     .call();
@@ -95,7 +95,7 @@
                 usernameAndPassword = JSON.parse(usernameAndPassword);
                 this.username = usernameAndPassword.username;
                 this.password = usernameAndPassword.password;
-            } catch(e) {
+            } catch (e) {
                 console.log(e);
             }
         },
@@ -123,10 +123,10 @@
                         .call();
                     if (!res.status)
                         throw res.msg;
-                    localStorage.token = res.data;
+                    Cookie.set('AuthToken', res.data);
                     this.logging = false;
                     location.href = "/antoa/home/home";
-                }catch (e) {
+                } catch (e) {
                     this.$message.error(e + "");
                     this.logging = false;
                 }

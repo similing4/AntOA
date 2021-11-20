@@ -396,6 +396,23 @@
 						this.reset();
 						this.$closePage(this.$route.path);
 						this.$router.go(-1);
+						try {
+							let beforePage = localStorage.beforePage
+							if (!beforePage) {
+								throw "";
+							} else {
+								beforePage = JSON.parse(beforePage);
+								let res = beforePage.filter((t) => {
+									return t.after == this.$route.fullPath
+								});
+								if (res.length == 0)
+									throw "";
+								this.$closePage(this.$route.path, res[0].before);
+							}
+						} catch (e2) {
+							this.$closePage(this.$route.path);
+							this.$router.go(-1);
+						}
 					} else
 						throw res.msg;
 				} catch (e) {

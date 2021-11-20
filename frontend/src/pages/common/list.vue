@@ -390,8 +390,8 @@
 				if (!beforePage)
 					beforePage = "[]";
 				beforePage = JSON.parse(beforePage);
-				beforePage = beforePage.filter(()=>{
-					return beforePage[i].after != url;
+				beforePage = beforePage.filter((item)=>{
+					return item.after != url;
 				});
 				beforePage.push({
 					before: this.$route.fullPath,

@@ -27,7 +27,7 @@ import Menu from 'ant-design-vue/es/menu'
 import Icon from 'ant-design-vue/es/icon'
 import fastEqual from 'fast-deep-equal'
 
-const {Item, SubMenu} = Menu
+const { Item, SubMenu } = Menu
 
 export default {
   name: 'IMenu',
@@ -53,7 +53,7 @@ export default {
     },
     openKeys: Array
   },
-  data () {
+  data() {
     return {
       selectedKeys: [],
       sOpenKeys: [],
@@ -65,7 +65,7 @@ export default {
       return this.theme == 'light' ? this.theme : 'dark'
     }
   },
-  created () {
+  created() {
     this.updateMenu()
     if (this.options.length > 0 && !this.options[0].fullPath) {
       this.formatOptions(this.options, '')
@@ -77,7 +77,7 @@ export default {
         this.formatOptions(this.options, '')
       }
     },
-    collapsed (val) {
+    collapsed(val) {
       if (val) {
         this.cachedOpenKeys = this.sOpenKeys
         this.sOpenKeys = []
@@ -85,7 +85,7 @@ export default {
         this.sOpenKeys = this.cachedOpenKeys
       }
     },
-    '$route': function () {
+    '$route': function() {
       this.updateMenu()
     },
     sOpenKeys(val) {
@@ -94,26 +94,26 @@ export default {
     }
   },
   methods: {
-    renderIcon: function (h, icon, key) {
+    renderIcon: function(h, icon, key) {
       if (this.$scopedSlots.icon && icon && icon !== 'none') {
-        const vnodes = this.$scopedSlots.icon({icon, key})
+        const vnodes = this.$scopedSlots.icon({ icon, key })
         vnodes.forEach(vnode => {
           vnode.data.class = vnode.data.class ? vnode.data.class : []
           vnode.data.class.push('anticon')
         })
         return vnodes
       }
-      return !icon || icon == 'none' ? null : h(Icon, {props: {type:  icon}})
+      return !icon || icon == 'none' ? null : h(Icon, { props: { type: icon } })
     },
-    renderMenuItem: function (h, menu) {
+    renderMenuItem: function(h, menu) {
       let tag = 'router-link'
-      let config = {props: {to: menu.fullPath}, attrs: {style: 'overflow:hidden;white-space:normal;text-overflow:clip;'}}
+      let config = { props: { to: menu.fullPath }, attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;' } }
       if (menu.meta && menu.meta.link) {
         tag = 'a'
-        config = {attrs: {style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: menu.meta.link, target: '_blank'}}
+        config = { attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: menu.meta.link, target: '_blank' } }
       }
       return h(
-        Item, {key: menu.fullPath},
+        Item, { key: menu.fullPath },
         [
           h(tag, config,
             [
@@ -124,23 +124,23 @@ export default {
         ]
       )
     },
-    renderSubMenu: function (h, menu) {
+    renderSubMenu: function(h, menu) {
       let this_ = this
-      let subItem = [h('span', {slot: 'title', attrs: {style: 'overflow:hidden;white-space:normal;text-overflow:clip;'}},
+      let subItem = [h('span', { slot: 'title', attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;' } },
         [
           this.renderIcon(h, menu.meta ? menu.meta.icon : 'none', menu.fullPath),
           menu.name
         ]
       )]
       let itemArr = []
-      menu.children.forEach(function (item) {
+      menu.children.forEach(function(item) {
         itemArr.push(this_.renderItem(h, item))
       })
-      return h(SubMenu, {key: menu.fullPath},
+      return h(SubMenu, { key: menu.fullPath },
         subItem.concat(itemArr)
       )
     },
-    renderItem: function (h, menu) {
+    renderItem: function(h, menu) {
       const meta = menu.meta
       if (!meta || !meta.invisible) {
         let renderChildren = false
@@ -157,40 +157,41 @@ export default {
         return (menu.children && renderChildren) ? this.renderSubMenu(h, menu) : this.renderMenuItem(h, menu)
       }
     },
-    renderMenu: function (h, menuTree) {
+    renderMenu: function(h, menuTree) {
       let this_ = this
       let menuArr = []
-      menuTree.forEach(function (menu, i) {
+      menuTree.forEach(function(menu, i) {
         menuArr.push(this_.renderItem(h, menu, '0', i))
       })
       return menuArr
     },
     formatOptions(options, parentPath) {
       options.forEach(route => {
-        let isFullPath = route.path.substring(0, 1) == '/'
-        route.fullPath = isFullPath ? route.path : parentPath + '/' + route.path
+        if (route.path) {
+          let isFullPath = route.path.substring(0, 1) == '/'
+          route.fullPath = isFullPath ? route.path : parentPath + '/' + route.path
+        }
         if (route.children) {
           this.formatOptions(route.children, route.fullPath)
         }
       })
     },
-    updateMenu () {
+    updateMenu() {
       const matchedRoutes = this.$route.matched.filter(item => item.path !== '')
       this.selectedKeys = this.getSelectedKey(this.$route)
-      let openKeys = matchedRoutes.map(item => item.path)
-      openKeys = openKeys.slice(0, openKeys.length -1)
+      let openKeys = matchedRoutes.map((item,index) => item.path ? item.path : index)
+      openKeys = openKeys.slice(0, openKeys.length - 1)
       if (!fastEqual(openKeys, this.sOpenKeys)) {
         this.collapsed || this.mode === 'horizontal' ? this.cachedOpenKeys = openKeys : this.sOpenKeys = openKeys
       }
     },
-    getSelectedKey (route) {
+    getSelectedKey(route) {
       return route.matched.map(item => item.path)
     }
   },
-  render (h) {
+  render(h) {
     return h(
-      Menu,
-      {
+      Menu, {
         props: {
           theme: this.menuTheme,
           mode: this.$props.mode,

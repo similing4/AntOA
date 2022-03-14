@@ -1,12 +1,7 @@
 import axios from "axios";
-import Cookie from 'js-cookie'
-import {
-	setAuthorization,
-	removeAuthorization,
-	checkAuthorization
-} from "../utils/request.js"
+const serverURL = process.env.VUE_APP_API_BASE_URL;
 
-class mod {
+class DataModel {
 	_method = "POST";
 	_param = {};
 	isBlob = false;
@@ -25,8 +20,8 @@ class mod {
 		this._method = method.toUpperCase();
 		return this;
 	}
-	
-	setBlob(bool){
+
+	setBlob(bool) {
 		this.isBlob = bool;
 		return this;
 	}
@@ -38,24 +33,17 @@ class mod {
 		return itemArr.join("&");
 	}
 
-	setLoginToken(token) {
-		return setAuthorization({token: token});
-	}
-
-	removeLoginToken() {
-		return removeAuthorization();
-	}
-	checkAuthorization(){
-		return checkAuthorization();
+	checkAuthorization() {
+		return !!localStorage.AuthToken;
 	}
 
 	async call() {
 		const headers = {};
-		if (Cookie.get("AuthToken"))
-			headers.Authorization = Cookie.get("AuthToken");
+		if (localStorage.AuthToken)
+			headers.Authorization = localStorage.AuthToken;
 		let res;
-		const config = {headers: headers};
-		if(this.isBlob)
+		const config = { headers: headers };
+		if (this.isBlob)
 			config.responseType = 'blob';
 		if (this._method === "POST")
 			res = await axios.post(this._url, this._param, config);
@@ -71,9 +59,15 @@ class mod {
 
 const install = (Vue) => {
 	Vue.prototype.$api = (url) => {
-		return new mod(url);
+		return new DataModel(serverURL + url);
 	};
-}
+	Vue.prototype.$api.setLoginToken = (token) => {
+		localStorage.AuthToken = token;
+	};
+	Vue.prototype.$api.removeLoginToken = () => {
+		delete localStorage.AuthToken;
+	};
+};
 export default {
 	install
 };

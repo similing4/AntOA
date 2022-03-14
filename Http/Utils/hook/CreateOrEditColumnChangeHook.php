@@ -20,8 +20,7 @@ interface CreateOrEditColumnChangeHook {
     /**
      * 创建页或编辑页指定数据变更钩子，页面初次加载时及指定行数据变更时回调。
      * @param array $formData 正在编辑的所有数据
-     * @param String $column 筛选中被修改的字段
      * @return array 返回数据的data域将被Object.assign到form中填充字段，而display域将指定要展示的列数组（要包括自身），如果display字段为null或false则展示全部表单项。
      */
-    public function hook($formData, $column);
+    public function hook($formData);
 }

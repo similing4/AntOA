@@ -225,11 +225,11 @@
                     this.onHookCall();
                     tableObj.change_hook.map((col)=>{
                         this.$watch("form." + col,()=>{
-                            this.onHookCall(col);
+                            this.onHookCall();
                         });
                     });
                 },
-                async onHookCall(hookCol){
+                async onHookCall(){
                     const param = {};
                     this.columns.map((col) => {
                         if (col.type === 'COLUMN_DISPLAY')
@@ -247,8 +247,7 @@
                     try {
                         let res = await this.$api(this.api.api_column_change).method("POST").param({
                             type: "create",
-                            form: param,
-                            col: hookCol
+                            form: param
                         }).call();
                         if (res.status){
                             res = res.data;

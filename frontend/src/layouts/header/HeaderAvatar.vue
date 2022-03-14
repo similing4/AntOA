@@ -34,7 +34,7 @@
 		},
 		methods: {
 			logout() {
-				this.$api().removeLoginToken();
+				this.$api.removeLoginToken();
 				this.$router.push('/login')
 			},
 			goHome(){

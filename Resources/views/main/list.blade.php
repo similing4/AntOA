@@ -432,9 +432,7 @@
                 };
             },
             mounted() {
-                this.loadPage().then(() => {
-                    this.setWatchHook();
-                });;
+                this.loadPage();
                 document.addEventListener('visibilitychange', () => {
                     if (document.visibilityState === 'visible')
                         this.loadPage();
@@ -445,52 +443,6 @@
                             this.onHeaderButtonClick(tableObj.header_buttons[i]);
             },
             methods: {
-                setWatchHook() {
-                    if (!this.tableObj.change_hook)
-                        return;
-                    this.onHookCall();
-                    this.tableObj.change_hook.columns.map((col) => {
-                        this.$watch("searchObj." + col, () => {
-                            this.onHookCall(col);
-                        });
-                    });
-                },
-                async onHookCall(hookCol) {
-                    const param = {};
-                    Object.assign(param, this.searchObj);
-                    for (let i in param) {
-                        if (param[i] instanceof moment)
-                            param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
-                        if (param[i] instanceof Array)
-                            param[i] = JSON.stringify(param[i]);
-                    }
-                    try {
-                        let res = await this.$api(this.api.api_column_change).method("POST").param({
-                            type: "list",
-                            form: param,
-                            col: hookCol
-                        }).call();
-                        if (res.status) {
-                            res = res.data;
-                            let extras = res.select;
-                            for(let i in this.tableObj.filter_columns){
-                                if(Object.keys(extras).includes(this.tableObj.filter_columns[i].col))
-                                    this.tableObj.filter_columns[i].extra = extras[this.tableObj.filter_columns[i].col];
-                            }
-                            for (let i in this.tableObj.filter_columns) {
-                                if (res.data[this.tableObj.filter_columns[i].col] !== undefined) {
-                                    if (this.tableObj.filter_columns[i].type === 'FILTER_STARTTIME' || this.tableObj.filter_columns[i].type === 'FILTER_ENDTIME')
-                                        this.searchObj[this.tableObj.filter_columns[i].col] = moment(res.data[this.tableObj.filter_columns[i].col],
-                                            "YYYY-MM-DD HH:mm:ss");
-                                    else
-                                        this.searchObj[this.tableObj.filter_columns[i].col] = res.data[this.tableObj.filter_columns[i].col] + "";
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        this.$message.error(e + "", 5);
-                    }
-                },
                 getApiButtonByColumn(col) {
                     let ret = this.createFormModal.apiButtons.filter((item) => {
                         return item.column === col;

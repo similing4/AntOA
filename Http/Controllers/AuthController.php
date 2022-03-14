@@ -26,36 +26,6 @@ class AuthController {
     }
 
     /**
-     * 登录页面
-     * @return View
-     */
-    public function page_login() {
-        return view('antoa::auth/login');
-    }
-
-    /**
-     * 后台首页
-     * @param Request $request
-     * @return View
-     */
-    public function page_home(Request $request) {
-        return view('antoa::main/home', ["api" => ["path" => $request->path()]]);
-    }
-
-
-    /**
-     * 注销页面
-     * @param Request $request
-     * token：token
-     */
-    public function page_logout(Request $request) {
-        $auth = $this->auth;
-        $auth->removeToken($request->get("token"));
-        header("Location:/antoa/auth/login");
-        exit;
-    }
-
-    /**
      * 登录授权
      * @param Request $request
      * username：用户名
@@ -125,7 +95,6 @@ class AuthController {
             if (!$uid)
                 throw new Exception("登录失效");
             $qiniu = config("antoa.config.qiniu");
-            $menu = $this->getConfigMenu($uid);
             $accessKey = $qiniu['access_key'];
             $secretKey = $qiniu['secret_key'];
             $bucketName = $qiniu['bucket'];
@@ -138,7 +107,6 @@ class AuthController {
             return json_encode([
                 "status" => 1,
                 "host"   => $qiniu['url'],
-                "menu"   => $menu,
                 "token"  => $token,
                 "routes" => $routes
             ]);
@@ -154,170 +122,38 @@ class AuthController {
         $user = DB::table("antoa_user")->where("id", $uid)->first();
         if (!$user)
             throw new Exception("登录失效");
-        $roles = json_decode($user->role, true);
+        $user = json_encode($user);
+        $user = json_decode($user, true);
         $configRoutes = config('antoa.menu_routes');
         $configRoutes[] = [
-            "title"      => "修改密码",
+            "name"      => "修改密码",
             "visible"    => false,
             "children"   => [
                 [
                     "visible"    => false,
-                    "uri"        => "/antoa/user/change_password",
-                    "title"      => "修改密码",
-                    "role_limit" => []
+                    "path"       => "/antoa/user/change_password",
+                    "name"       => "修改密码"
                 ]
-            ],
-            "role_limit" => []
+            ]
         ];
-        foreach ($configRoutes as &$fmenu) {
-            if (!array_key_exists("role_limit", $fmenu))
-                $fmenu['role_limit'] = [];
-            if (array_key_exists("children", $fmenu))
-                foreach ($fmenu['children'] as &$child) {
-                    if (!array_key_exists("role_limit", $child))
-                        $child['role_limit'] = [];
-                }
-        }
-        $routes = [];
-        $id = 0;
-        foreach ($configRoutes as $r2) {
-            if (count($r2['role_limit']) !== 0 && count(array_intersect($r2['role_limit'], $roles)) == 0)
-                continue;
-            $id++;
-            $ra = [
-                "path"      => "/parent/" . $id,
-                "router"    => 'bparent',
-                "name"      => $r2['title'],
-                "children"  => [],
-                "invisible" => array_key_exists('visible', $r2) ? !$r2['visible'] : false
-            ];
-            if (array_key_exists('uri', $r2))
-                $ra["path"] = $r2['uri'];
-            if (array_key_exists('isHome', $r2) && $r2['isHome']) {
-                $ra = [
-                    "router"   => 'bparent',
-                    "name"     => $r2['title'],
-                    "meta"     => [
-                        'vue_api' => array_key_exists('vue_api', $r2) ? $r2['vue_api'] : "",
-                        'is_home' => true
-                    ],
-                    "children" => ['home']
-                ];
-                $routes[] = $ra;
-                continue;
+        foreach ($configRoutes as &$configRoutesItem){
+            if(array_key_exists('children',$configRoutesItem)){
+                $configRoutesItem['children'] = array_filter($configRoutesItem['children'], function($r) use($user) {
+                    $limitVailed = true;
+                    if(array_key_exists('role_limit',$r))
+                        $limitVailed = $r['role_limit']($user);
+                    return (!array_key_exists("visible",$r) || $r['visible']) && $limitVailed;
+                });
             }
-            if (array_key_exists("children", $r2))
-                foreach ($r2['children'] as $child) {
-                    if (count($child['role_limit']) !== 0 && count(array_intersect($child['role_limit'], $roles)) == 0)
-                        continue;
-                    $router = $this->getRouterFromPath($child['uri']);
-                    $breadcrumb = [
-                        "首页",
-                        array_key_exists('breadcrumbTitle', $r2) ? $r2['breadcrumbTitle'] : $r2['title'],
-                        array_key_exists('breadcrumbTitle', $child) ? $child['breadcrumbTitle'] : $child['title']
-                    ];
-                    $ra['children'][] = [
-                        "router"    => $router['router'],
-                        "name"      => $child['title'],
-                        "path"      => $router['path'],
-                        "invisible" => array_key_exists('visible', $child) ? !$child['visible'] : false,
-                        "meta"      => [
-                            "page" => [
-                                "breadcrumb" => $breadcrumb
-                            ]
-                        ]
-                    ];
-                }
-            else {
-                $router = $this->getRouterFromPath($r2['uri']);
-                $breadcrumb = [
-                    "首页",
-                    array_key_exists('breadcrumbTitle', $r2) ? $r2['breadcrumbTitle'] : $r2['title'],
-                ];
-                $ra = [
-                    "router" => $router['router'],
-                    "name"   => $r2['title'],
-                    "path"   => $router['path'],
-                    "meta"   => [
-                        "page" => [
-                            "breadcrumb" => $breadcrumb
-                        ]
-                    ]
-                ];
-            }
-            $routes[] = $ra;
-        }
-        $root = ['router' => 'root', 'children' => $routes];
-        return [$root];
-    }
-
-    private function getRouterFromPath($uri) {
-        $startsWith = function ($haystack, $needle) {
-            return strncmp($haystack, $needle, strlen($needle)) === 0;
-        };
-        $endsWith = function ($haystack, $needle) {
-            return $needle === '' || substr_compare($haystack, $needle, -strlen($needle)) === 0;
-        };
-        if ($startsWith($uri, "http") === 0)
-            return [
-                "router" => "url",
-                "path"   => "/url?url=" . $uri
-            ];
-        $url = parse_url($uri);
-        $path = $url['path'];
-        if ($endsWith($path, "/create")) {
-            return [
-                "router" => "create",
-                "path"   => $path
-            ];
-        }
-        if ($endsWith($path, "/edit")) {
-            return [
-                "router" => "edit",
-                "path"   => $path
-            ];
-        }
-        if ($endsWith($path, "/list")) {
-            return [
-                "router" => "list",
-                "path"   => $path
-            ];
-        }
-        return [
-            "router" => $path,
-            "path"   => $uri,
-        ];
-    }
-
-    private function getConfigMenu($uid) {
-        $user = DB::table("antoa_user")->where("id", $uid)->first();
-        if (!$user)
-            throw new Exception("登录失效");
-        $roles = json_decode($user->role, true);
-        $menus = config('antoa.menu_routes');
-        $menu_return = [];
-        foreach ($menus as &$fmenu) {
-            if (!array_key_exists("role_limit", $fmenu))
-                $fmenu['role_limit'] = [];
-            if (!array_key_exists("children", $fmenu))
-                $fmenu['children'] = [];
-            foreach ($fmenu['children'] as &$child) {
-                if (!array_key_exists("role_limit", $child))
-                    $child['role_limit'] = [];
+            if(array_key_exists('isHome',$configRoutesItem) && $configRoutesItem['isHome']){
+                $configRoutesItem['children'] = [];
+                unset($configRoutesItem['children']);
+                $configRoutesItem['path'] = "/home";
             }
         }
-        $menus = json_decode(json_encode($menus), true);
-        foreach ($menus as $fmenu2) {
-            if (count($fmenu2['role_limit']) === 0 || count(array_intersect($fmenu2['role_limit'], $roles)) > 0) {
-                $menu_item = json_decode(json_encode($fmenu2), true);
-                $menu_item['children'] = [];
-                foreach ($fmenu2['children'] as $child) {
-                    if (count($child['role_limit']) === 0 || count(array_intersect($child['role_limit'], $roles)) > 0)
-                        $menu_item['children'][] = $child;
-                }
-                $menu_return[] = $menu_item;
-            }
-        }
-        return $menu_return;
+        $configRoutes = array_filter($configRoutes, function($r) {
+            return !array_key_exists("visible",$r) || $r['visible'];
+        });
+        return $configRoutes;
     }
 }

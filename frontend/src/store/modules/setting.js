@@ -1,7 +1,6 @@
 import config from '@/config'
-import {ADMIN} from '@/config/default'
-import {filterMenu} from '@/utils/authority-utils'
-import {getLocalSetting} from '@/utils/themeUtil'
+import { ADMIN } from '@/config/default'
+import { getLocalSetting } from '@/utils/themeUtil'
 
 const localSetting = getLocalSetting(true)
 const customTitlesStr = sessionStorage.getItem(process.env.VUE_APP_TBAS_TITLES_KEY)
@@ -22,40 +21,38 @@ export default {
   },
   getters: {
     menuData(state, getters, rootState) {
-      if (state.filterMenu) {
-        const {permissions, roles} = rootState.account
-        return filterMenu(state.menuData, permissions, roles)
-      }
+      if(!state.menuData || state.menuData.length == 0)
+        state.menuData = JSON.parse(localStorage.antOAMenuData)
       return state.menuData
     },
     firstMenu(state) {
-      const {menuData} = state
+      const { menuData } = state
       return menuData.map(item => {
-        const menuItem = {...item}
+        const menuItem = { ...item }
         delete menuItem.children
         return menuItem
       })
     },
     subMenu(state) {
-      const {menuData, activatedFirst} = state
+      const { menuData, activatedFirst } = state
       const current = menuData.find(menu => menu.fullPath === activatedFirst)
       return current && current.children || []
     }
   },
   mutations: {
-    setDevice (state, isMobile) {
+    setDevice(state, isMobile) {
       state.isMobile = isMobile
     },
-    setTheme (state, theme) {
+    setTheme(state, theme) {
       state.theme = theme
     },
-    setLayout (state, layout) {
+    setLayout(state, layout) {
       state.layout = layout
     },
-    setMultiPage (state, multiPage) {
+    setMultiPage(state, multiPage) {
       state.multiPage = multiPage
     },
-    setAnimate (state, animate) {
+    setAnimate(state, animate) {
       state.animate = animate
     },
     setWeekMode(state, weekMode) {
@@ -77,6 +74,7 @@ export default {
       state.pageMinHeight += minHeight
     },
     setMenuData(state, menuData) {
+      localStorage.antOAMenuData = JSON.stringify(menuData)
       state.menuData = menuData
     },
     setAsyncRoutes(state, asyncRoutes) {
@@ -91,13 +89,13 @@ export default {
     setFixedTabs(state, fixedTabs) {
       state.fixedTabs = fixedTabs
     },
-    setCustomTitle(state, {path, title}) {
+    setCustomTitle(state, { path, title }) {
       if (title) {
         const obj = state.customTitles.find(item => item.path === path)
         if (obj) {
           obj.title = title
         } else {
-          state.customTitles.push({path, title})
+          state.customTitles.push({ path, title })
         }
         sessionStorage.setItem(process.env.VUE_APP_TBAS_TITLES_KEY, JSON.stringify(state.customTitles))
       }

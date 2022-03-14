@@ -14,7 +14,6 @@ use \Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use JsonSerializable;
 use Modules\AntOA\Http\Utils\hook\ButtonCondition;
-use Modules\AntOA\Http\Utils\hook\ListChangeHook;
 
 
 class GridList implements JsonSerializable {
@@ -43,8 +42,7 @@ class GridList implements JsonSerializable {
     private $hasDelete = true; //列表页是否有删除按钮
     private $_list = null; //DBListOperator对象
     private $displayColumn = null; //编辑页与创建页中使用的字段
-    private $_order = null; //排序规则
-    private $changeHook = null; // 筛选项变更钩子
+    private $_order = []; //排序规则
 
     /**
      * 构造方法
@@ -80,8 +78,7 @@ class GridList implements JsonSerializable {
             "hasEdit"        => $this->hasEdit,
             "hasDelete"      => $this->hasDelete,
             "displayColumn"  => $this->displayColumn,
-            "orderBy"        => $this->_order,
-            "change_hook"    => $this->changeHook
+            "orderBy"        => $this->_order
         ];
     }
 
@@ -98,8 +95,7 @@ class GridList implements JsonSerializable {
             "hasCreate"      => $this->hasCreate,
             "hasEdit"        => $this->hasEdit,
             "hasDelete"      => $this->hasDelete,
-            "displayColumn"  => $this->displayColumn,
-            "change_hook"    => $this->changeHook
+            "displayColumn"  => $this->displayColumn
         ]);
     }
 
@@ -654,21 +650,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function order($col, $type) {
-        $this->_order = [$col, $type];
-        return $this;
-    }
-
-    /**
-     * 添加内容变更钩子
-     * @param array $cols 监听的列列表
-     * @param ListChangeHook $hook 筛选数据变更时的钩子
-     * @return GridList 返回this以便链式调用
-     */
-    public function setChangeHook($cols, ListChangeHook $hook) {
-        $this->changeHook = [
-            "columns" => $cols,
-            "hook"    => $hook
-        ];
+        $this->_order[] = [$col, $type];
         return $this;
     }
 }

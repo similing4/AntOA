@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\AntOA\Http\Utils\AuthInterface;
-use Modules\AntOA\Http\Utils\DBListOperator;
 use Modules\AntOA\Http\Utils\Grid;
 use Modules\AntOA\Http\Utils\GridCreateForm;
 use Modules\AntOA\Http\Utils\GridEditForm;
@@ -23,10 +22,6 @@ use Modules\AntOA\Http\Utils\NavigateParamHook;
 abstract class AntOAController extends Controller {
     protected $gridObj = null; //grid对象
     protected $auth = null; //Auth对象，如果你需要自己实现授权Token，你可以在Service文件夹下实现AuthInterface接口并在AntOAServiceProvider中修改接口实现类绑定。
-    /**
-     * @var DBListOperator 类型统计statistic方法可以直接使用的List页面对应的Builder对象
-     */
-    protected $listStatistic = null;
 
     public function __construct(AuthInterface $auth) {
         $this->auth = $auth;
@@ -202,15 +197,16 @@ abstract class AntOAController extends Controller {
                     continue;
                 $columns[] = $column['col'];
             }
-            if ($config['orderBy'] != null)
-                $list = $list->orderBy($config['orderBy'][0], $config['orderBy'][1]);
+            if ($config['orderBy'] != null){
+                foreach ($config['orderBy'] as $orderItem)
+                    $list = $list->orderBy($orderItem[0], $orderItem[1]);
+            }
             $res = $list
-                ->select($columns);
-            $this->listStatistic = clone $list;
-            $res = $list->paginate(15);
+                ->select($columns)
+                ->paginate(15);
             $res = json_decode(json_encode($res), true);
             foreach ($config['header_buttons'] as &$headerButtonItem) {
-                if (array_key_exists('dest_col', $headerButtonItem) && $headerButtonItem['dest_col'] instanceof NavigateParamHook) {
+                if (array_key_exists('dest_col',$headerButtonItem) && $headerButtonItem['dest_col'] instanceof NavigateParamHook) {
                     $headerButtonItem['dest_col'] = $headerButtonItem['dest_col']->hook([], $request);
                     $headerButtonItem['dest_col_full'] = true;
                 }
@@ -226,7 +222,7 @@ abstract class AntOAController extends Controller {
                         $resi['BUTTON_CONDITION_DATA'][] = true;
                     else
                         $resi['BUTTON_CONDITION_DATA'][] = $rowButtonItem['show_condition']->isShow($resi);
-                    if (array_key_exists('dest_col', $rowButtonItem) && $rowButtonItem['dest_col'] instanceof NavigateParamHook)
+                    if ($rowButtonItem['dest_col'] instanceof NavigateParamHook)
                         $resi['BUTTON_NAVIGATE_DATA'][] = $rowButtonItem['dest_col']->hook($resi, $request);
                     else
                         $resi['BUTTON_NAVIGATE_DATA'][] = "";
@@ -510,7 +506,8 @@ abstract class AntOAController extends Controller {
                     foreach ($columns as &$column)
                         $column = $column . " as " . $column;
                     if ($config['orderBy'] != null)
-                        $list = $list->orderBy($config['orderBy'][0], $config['orderBy'][1]);
+                        foreach ($config['orderBy'] as $orderItem)
+                            $list = $list->orderBy($orderItem[0], $orderItem[1]);
                     $res = $list
                         ->select($columns)
                         ->paginate(8);
@@ -586,7 +583,7 @@ abstract class AntOAController extends Controller {
     }
 
     /**
-     * 列表筛选项、创建页与编辑页响应变化的API
+     * 创建页与编辑页响应变化的API
      * @param Request $request
      * @return String 详见CreateOrEditColumnChangeHook
      */
@@ -603,11 +600,7 @@ abstract class AntOAController extends Controller {
             if (!array_key_exists("type", $content) || !array_key_exists("form", $content))
                 throw new Exception("非法操作");
             $type = $content['type'];
-            if ($type == "list") {
-                if ($this->gridObj->getGridList() == null)
-                    throw new Exception("页面配置信息不存在");
-                $hookConfig = $this->gridObj->getGridList()->getArr()["change_hook"];
-            } else if ($type == "create") {
+            if ($type == "create") {
                 if ($this->gridObj->getCreateForm() == null)
                     throw new Exception("页面配置信息不存在");
                 $hookConfig = $this->gridObj->getCreateForm()->getArr()["change_hook"];
@@ -619,7 +612,7 @@ abstract class AntOAController extends Controller {
                 throw new Exception("非法操作");
             if ($hookConfig == null)
                 throw new Exception("页面配置信息不存在");
-            $data = $hookConfig['hook']->hook($content['form'], $content['col']);
+            $data = $hookConfig['hook']->hook($content['form']);
             return json_encode([
                 "status" => 1,
                 "data"   => $data

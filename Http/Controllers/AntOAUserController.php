@@ -42,11 +42,7 @@ class AntOAUserController extends Controller {
             throw new Exception("账户已被封禁");
         return $uid;
     }
-
-    public function changePasswordPage(Request $request) {
-        return view("antoa::main.change_password", ["api" => ["path" => $request->path()]]);
-    }
-
+    
     public function changePassword(Request $request) {
         try {
             $uid = $this->getUserInfo($request);

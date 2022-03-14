@@ -93,45 +93,6 @@ abstract class AntOAController extends Controller {
     }
 
     /**
-     * 列表页
-     * @param Request $request
-     * @return Renderable 列表页页面
-     * @throws Exception
-     */
-    public function list(Request $request) {
-        if ($this->gridObj->getGridList() == null)
-            throw new Exception("页面配置信息不存在");
-        $data = $this->getCustomParam($request);
-        return view("antoa::main.list", $data);
-    }
-
-    /**
-     * 创建页
-     * @param Request $request
-     * @return Renderable 创建页页面
-     * @throws Exception
-     */
-    public function create(Request $request) {
-        if ($this->gridObj->getCreateForm() == null)
-            throw new Exception("页面配置信息不存在");
-        $data = $this->getCustomParam($request);
-        return view("antoa::main.create", $data);
-    }
-
-    /**
-     * 编辑页
-     * @param Request $request
-     * @return Renderable 编辑页页面
-     * @throws Exception
-     */
-    public function edit(Request $request) {
-        if ($this->gridObj->getEditForm() == null)
-            throw new Exception("页面配置信息不存在");
-        $data = $this->getCustomParam($request);
-        return view("antoa::main.edit", $data);
-    }
-
-    /**
      * 列表数据API
      * @param Request $request
      * @return String 列表页数据JSON

@@ -85,7 +85,7 @@ class Grid {
 
     /**
      * 初始化GridEditForm对象用于编辑页及其接口渲染
-     * @param String $table 表接口
+     * @param DBEditOperator $table 表接口
      * @return GridEditForm 返回GridEditForm对象
      */
     public function editForm($table) {

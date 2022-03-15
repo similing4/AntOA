@@ -12,6 +12,16 @@ use Modules\AntOA\Http\Utils\Grid;
 use Modules\AntOA\Http\Utils\GridCreateForm;
 use Modules\AntOA\Http\Utils\GridEditForm;
 use Modules\AntOA\Http\Utils\GridList;
+use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
+use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
+use Modules\AntOA\Http\Utils\Model\ListFilterHidden;
+use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
+use Modules\AntOA\Http\Utils\Model\ListFilterText;
+use Modules\AntOA\Http\Utils\Model\ListFilterUID;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnDisplay;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnRichDisplay;
+use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
+use Modules\AntOA\Http\Utils\Model\UrlParamCalculatorParamItem;
 use Modules\AntOA\Http\Utils\NavigateParamHook;
 
 /**
@@ -110,83 +120,52 @@ abstract class AntOAController extends Controller {
                     "msg"    => "登录失效"
                 ]);
             }
-            $list = $this->gridObj->getGridList()->getDBObject();
-            $config = $this->gridObj->getGridList()->getArr();
-            $val = $request->getContent();
-            $req = json_decode($val, true);
-            foreach ($config['filter_columns'] as $r) {
-                switch ($r['type']) {
-                    case GridList::FILTER_TEXT:
-                        if ($req[$r['col']] !== '')
-                            $list->where($r['col'], 'like', "%" . $request->post($r['col']) . "%");
-                        break;
-                    case GridList::FILTER_HIDDEN:
-                    case GridList::FILTER_ENUM:
-                        if ($req[$r['col']] !== '')
-                            $list->where($r['col'], $req[$r['col']]);
-                        break;
-                    case GridList::FILTER_STARTTIME:
-                        if ($req[$r['col'] . "_starttime"] !== '')
-                            $list->where($r['col'], ">", $req[$r['col'] . "_starttime"]);
-                        break;
-                    case GridList::FILTER_ENDTIME:
-                        if ($req[$r['col'] . "_endtime"] !== '')
-                            $list->where($r['col'], "<", $req[$r['col'] . "_endtime"]);
-                        break;
-                }
-            }
-            foreach ($config['filter_user'] as $r) {
-                switch ($r['type']) {
-                    case GridList::FILTER_TEXT:
-                        $list->where($r['col'], 'like', "%" . $uid . "%");
-                        break;
-                    case GridList::FILTER_HIDDEN:
-                    case GridList::FILTER_ENUM:
-                        $list->where($r['col'], $uid);
-                        break;
-                    case GridList::FILTER_STARTTIME:
-                        $list->where($r['col'], ">", $uid . "_starttime");
-                        break;
-                    case GridList::FILTER_ENDTIME:
-                        $list->where($r['col'], "<", $uid . "_endtime");
-                        break;
+            $gridListDbObject = $this->gridObj->getGridList()->getDBObject();
+            $gridList = $this->gridObj->getGridList();
+            $req = json_decode($request->getContent(), true);
+            $pageParams = [];
+            foreach ($req as $k => $v)
+                $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
+            $urlParamCalculator = new UrlParamCalculator($pageParams);
+            foreach ($gridList->getFilterList() as $r) { //ListFilterBase
+                $param = $urlParamCalculator->getPageParamByKey($r->col);
+                if ($r instanceof ListFilterText) {
+                    if ($param !== null && $param->val != '')
+                        $gridListDbObject->where($r->col, 'like', "%" . $param->val . "%");
+                } else if ($r instanceof ListFilterHidden || $r instanceof ListFilterEnum) {
+                    if ($param !== null && $param->val != '')
+                        $gridListDbObject->where($r->col, $param->val);
+                } else if ($r instanceof ListFilterStartTime) {
+                    $param = $urlParamCalculator->getPageParamByKey($r->col . "_starttime");
+                    if ($param !== null && $param->val != '')
+                        $gridListDbObject->where($r->col, ">", $param->val);
+                } else if ($r instanceof ListFilterEndTime) {
+                    $param = $urlParamCalculator->getPageParamByKey($r->col . "_endtime");
+                    if ($param !== null && $param->val != '')
+                        $gridListDbObject->where($r->col, "<", $param->val);
+                } else if ($r instanceof ListFilterUID) {
+                    $gridListDbObject->where($r->col, $uid);
                 }
             }
             $columns = [];
-            foreach ($config['columns'] as $column) {
-                if ($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
+            foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
+                if (($column instanceof ListTableColumnDisplay) || ($column instanceof ListTableColumnRichDisplay))
                     continue;
-                $columns[] = $column['col'];
+                $columns[] = $column->col;
             }
-            if ($config['orderBy'] != null){
-                foreach ($config['orderBy'] as $orderItem)
-                    $list = $list->orderBy($orderItem[0], $orderItem[1]);
-            }
-            $res = $list
-                ->select($columns)
-                ->paginate(15);
+            $res = $gridListDbObject->select($columns)->paginate(15);
             $res = json_decode(json_encode($res), true);
-            foreach ($config['header_buttons'] as &$headerButtonItem) {
-                if (array_key_exists('dest_col',$headerButtonItem) && $headerButtonItem['dest_col'] instanceof NavigateParamHook) {
-                    $headerButtonItem['dest_col'] = $headerButtonItem['dest_col']->hook([], $request);
-                    $headerButtonItem['dest_col_full'] = true;
-                }
-            }
-            foreach ($res['data'] as &$resi) {
-                $resi['BUTTON_CONDITION_DATA'] = [];
-                $resi['BUTTON_NAVIGATE_DATA'] = [];
-                foreach ($config['columns'] as $column)
-                    if ($column['type'] == "DISPLAY" || $column['type'] == "RICH_DISPLAY")
-                        $resi[$column['col']] = '';
-                foreach ($config['row_buttons'] as &$rowButtonItem) {
-                    if ($rowButtonItem['show_condition'] == null)
-                        $resi['BUTTON_CONDITION_DATA'][] = true;
-                    else
-                        $resi['BUTTON_CONDITION_DATA'][] = $rowButtonItem['show_condition']->isShow($resi);
-                    if ($rowButtonItem['dest_col'] instanceof NavigateParamHook)
-                        $resi['BUTTON_NAVIGATE_DATA'][] = $rowButtonItem['dest_col']->hook($resi, $request);
-                    else
-                        $resi['BUTTON_NAVIGATE_DATA'][] = "";
+            foreach ($gridList->getHeaderButtonList() as $headerButtonItem) //ListHeaderButtonBase
+                $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
+            foreach ($res['data'] as &$searchResultItem) {
+                $searchResultItem['BUTTON_CONDITION_DATA'] = [];
+                foreach ($gridList->getTableColumnList() as $column)
+                    if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
+                        $searchResultItem[$column->col] = '';
+                foreach ($gridList->getRowButtonList() as $rowButtonItem) {
+                    $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultItem);
+                    $rowButtonItem->finalUrl = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
+                    $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
                 }
             }
             $res['status'] = 1;

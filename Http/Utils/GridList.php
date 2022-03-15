@@ -10,13 +10,45 @@ declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils;
 
-use \Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\DB;
 use JsonSerializable;
+use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
+use Modules\AntOA\Http\Utils\AbstractModel\ListFilterCollection;
+use Modules\AntOA\Http\Utils\AbstractModel\ListHeaderButtonBase;
+use Modules\AntOA\Http\Utils\AbstractModel\ListHeaderButtonCollection;
+use Modules\AntOA\Http\Utils\AbstractModel\ListRowButtonBase;
+use Modules\AntOA\Http\Utils\AbstractModel\ListRowButtonCollection;
+use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase;
+use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnCollection;
 use Modules\AntOA\Http\Utils\hook\ButtonCondition;
+use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
+use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
+use Modules\AntOA\Http\Utils\Model\ListFilterHidden;
+use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
+use Modules\AntOA\Http\Utils\Model\ListFilterText;
+use Modules\AntOA\Http\Utils\Model\ListFilterUID;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApi;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApiWithConfirm;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonBlob;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonNavigate;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonRichText;
+use Modules\AntOA\Http\Utils\Model\ListRowButtonApi;
+use Modules\AntOA\Http\Utils\Model\ListRowButtonApiWithConfirm;
+use Modules\AntOA\Http\Utils\Model\ListRowButtonBlob;
+use Modules\AntOA\Http\Utils\Model\ListRowButtonNavigate;
+use Modules\AntOA\Http\Utils\Model\ListRowButtonRichText;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnDisplay;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnDivideNumber;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnEnum;
+use Modules\AntOA\Http\Utils\Model\EnumOption;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnHidden;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnPicture;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnRichDisplay;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnRichText;
+use Modules\AntOA\Http\Utils\Model\ListTableColumnText;
 
 
 class GridList implements JsonSerializable {
+    /*
     const TEXT = "TEXT"; //文本类型展示
     const DIVIDE_NUMBER = "DIVIDE_NUMBER"; //数字类型除以指定数值后展示
     const DISPLAY = "DISPLAY"; //文本类型展示，且不从数据库查询。需要通过HOOK设置
@@ -30,25 +62,53 @@ class GridList implements JsonSerializable {
     const FILTER_STARTTIME = "FILTER_STARTTIME"; //开始时间类型筛选，筛选结果为大于等于该结束时间的行
     const FILTER_ENDTIME = "FILTER_ENDTIME"; //结束时间类型筛选，筛选结果为小于等于该结束时间的行
     const FILTER_ENUM = "FILTER_ENUM"; //单选类型的筛选，需要指定键值对用于确定ENUM对应关系
-    private $columns = []; //列表的所有列（col）、注释（tip）、类型（type）、额外数据（extra）
-    private $filter_columns = []; //列表的所有筛选列（col）、注释（tip）、类型（type）、额外数据（extra）
-    private $filter_user = []; //列表页根据用户UID筛选的列（col）、类型（type）
-    private $header_buttons = []; //顶部创建外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
-    private $row_buttons = []; //每行编辑与删除外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
-    private $join = []; //左连接的所有表
-    private $delete_join = []; //删除表的时候这里面的所有相关表都会根据条件删除
-    private $hasCreate = true; //列表页是否有创建按钮
-    private $hasEdit = true; //列表页是否有编辑按钮
-    private $hasDelete = true; //列表页是否有删除按钮
-    private $_list = null; //DBListOperator对象
-    private $displayColumn = null; //编辑页与创建页中使用的字段
-    private $_order = []; //排序规则
+    */
+    /**
+     * @var ListFilterCollection
+     * 列表的所有筛选列（col）、注释（tip）、类型（type）、额外数据（extra）
+     */
+    private $listFilterCollection;
+    /**
+     * @var ListTableColumnCollection
+     * 列表的所有列（col）、注释（tip）、类型（type）、额外数据（extra）
+     */
+    private $listTableColumnCollection;
+    /**
+     * @var ListHeaderButtonCollection
+     * 顶部创建外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
+     */
+    private $listHeaderButtonCollection;
+    /**
+     * @var ListRowButtonCollection
+     * 每行编辑与删除外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
+     */
+    private $listRowButtonCollection;
+    /**
+     * @var DBListOperator
+     */
+    private $_list = null;
+    /**
+     * @var bool 列表页是否有创建按钮
+     */
+    private $hasCreate = true;
+    /**
+     * @var bool 列表页是否有编辑按钮
+     */
+    private $hasEdit = true;
+    /**
+     * @var bool 列表页是否有删除按钮
+     */
+    private $hasDelete = true;
 
     /**
      * 构造方法
      * @param DBListOperator $table 表接口
      */
-    public function __construct($table) {
+    public function __construct(DBListOperator $table) {
+        $this->listFilterCollection = new ListFilterCollection();
+        $this->listHeaderButtonCollection = new ListHeaderButtonCollection();
+        $this->listTableColumnCollection = new ListTableColumnCollection();
+        $this->listRowButtonCollection = new ListRowButtonCollection();
         $this->_list = $table;
     }
 
@@ -61,42 +121,32 @@ class GridList implements JsonSerializable {
     }
 
     /**
-     * 序列化对象为数组形式
-     * @return array 序列化后的数组
+     * 获取所有筛选对象
+     * @return array<ListFilterBase>
      */
-    public function getArr() {
-        return [
-            "_list"          => $this->_list,
-            "columns"        => $this->columns,
-            "join"           => $this->join,
-            "delete_join"    => $this->delete_join,
-            "filter_columns" => $this->filter_columns,
-            "filter_user"    => $this->filter_user,
-            "header_buttons" => $this->header_buttons,
-            "row_buttons"    => $this->row_buttons,
-            "hasCreate"      => $this->hasCreate,
-            "hasEdit"        => $this->hasEdit,
-            "hasDelete"      => $this->hasDelete,
-            "displayColumn"  => $this->displayColumn,
-            "orderBy"        => $this->_order
-        ];
+    public function getFilterList() {
+        return $this->listFilterCollection->getItems();
     }
-
     /**
-     * 序列化对象
-     * @return String 序列化后的JSON
+     * 获取所有列对象
+     * @return array<ListTableColumnBase>
      */
-    public function json() {
-        return json_encode([
-            "columns"        => $this->columns,
-            "filter_columns" => $this->filter_columns,
-            "header_buttons" => $this->header_buttons,
-            "row_buttons"    => $this->row_buttons,
-            "hasCreate"      => $this->hasCreate,
-            "hasEdit"        => $this->hasEdit,
-            "hasDelete"      => $this->hasDelete,
-            "displayColumn"  => $this->displayColumn
-        ]);
+    public function getTableColumnList() {
+        return $this->listTableColumnCollection->getItems();
+    }
+    /**
+     * 获取所有页面顶部按钮对象
+     * @return array<ListHeaderButtonBase>
+     */
+    public function getHeaderButtonList() {
+        return $this->listHeaderButtonCollection->getItems();
+    }
+    /**
+     * 获取所有列对象
+     * @return array<ListRowButtonBase>
+     */
+    public function getRowButtonList() {
+        return $this->listRowButtonCollection->getItems();
     }
 
     /**
@@ -104,25 +154,24 @@ class GridList implements JsonSerializable {
      * @return array 序列化后的JSON
      */
     public function jsonSerialize() {
-        return json_decode($this->json(), true);
+        return [
+            "listFilterCollection"       => $this->listFilterCollection,
+            "listTableColumnCollection"  => $this->listTableColumnCollection,
+            "listHeaderButtonCollection" => $this->listHeaderButtonCollection,
+            "listRowButtonCollection"    => $this->listRowButtonCollection,
+            "hasCreate"                  => $this->hasCreate,
+            "hasEdit"                    => $this->hasEdit,
+            "hasDelete"                  => $this->hasDelete
+        ];
     }
 
     /**
      * 指定一列
-     * @param String $columnType 列表类型，可选类型为GridList对应的非FILTER_开头的静态属性
-     * @param String $col 数据库列名
-     * @param String $colTip 在列表页该列的的表头名称
-     * @param array $extra 该列类型的对应额外数据
+     * @param ListTableColumnBase $column 列对象实例
      * @return GridList 返回this以便链式调用
-     * @deprecated
      */
-    public function column($columnType, $col, $colTip, $extra = []) {
-        $this->columns[] = [
-            "type"  => $columnType,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => $extra
-        ];
+    public function column($column) {
+        $this->listTableColumnCollection->addItem($column);
         return $this;
     }
 
@@ -133,12 +182,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function columnText($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::TEXT,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+        $this->listTableColumnCollection->addItem(new ListTableColumnText($col, $colTip));
         return $this;
     }
 
@@ -149,12 +193,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function columnDisplay($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::DISPLAY,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+        $this->listTableColumnCollection->addItem(new ListTableColumnDisplay($col, $colTip));
         return $this;
     }
 
@@ -165,12 +204,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function columnRichDisplay($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::RICH_DISPLAY,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+        $this->listTableColumnCollection->addItem(new ListTableColumnRichDisplay($col, $colTip));
         return $this;
     }
 
@@ -178,20 +212,16 @@ class GridList implements JsonSerializable {
      * 指定图片列
      * @param String $col 列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param Number $width 图片的展示宽度，单位px
-     * @param Number $height 图片的展示宽度，单位px
+     * @param Number $width 图片的展示宽度，不填写单位的情况下默认单位为px
+     * @param Number $height 图片的展示宽度，不填写单位的情况下默认单位为px
      * @return GridList 返回this以便链式调用
      */
     public function columnPicture($col, $colTip, $width, $height) {
-        $this->columns[] = [
-            "type"  => self::PICTURE,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => [
-                "width"  => $width . "px",
-                "height" => $height . "px"
-            ]
-        ];
+        if (is_numeric($width))
+            $width .= "px";
+        if (is_numeric($height))
+            $height .= "px";
+        $this->listTableColumnCollection->addItem(new ListTableColumnPicture($col, $colTip, $width, $height));
         return $this;
     }
 
@@ -199,16 +229,11 @@ class GridList implements JsonSerializable {
      * 指定单选列
      * @param String $col 列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param array $keyValMap ENUM的键值对数组，键为数据库的字段值，值为展示值
+     * @param array<EnumOption> $options ENUM的选项数组
      * @return GridList 返回this以便链式调用
      */
-    public function columnEnum($col, $colTip, array $keyValMap) {
-        $this->columns[] = [
-            "type"  => self::ENUM,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => (object)$keyValMap
-        ];
+    public function columnEnum($col, $colTip, array $options) {
+        $this->listTableColumnCollection->addItem(new ListTableColumnEnum($col, $colTip, $options));
         return $this;
     }
 
@@ -219,12 +244,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function columnRichText($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::RICH_TEXT,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+        $this->listTableColumnCollection->addItem(new ListTableColumnRichText($col, $colTip));
         return $this;
     }
 
@@ -234,12 +254,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function columnHidden($col) {
-        $this->columns[] = [
-            "type"  => self::HIDDEN,
-            "col"   => $col,
-            "tip"   => "",
-            "extra" => []
-        ];
+        $this->listTableColumnCollection->addItem(new ListTableColumnHidden($col));
         return $this;
     }
 
@@ -252,15 +267,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function columnDivideNumber($col, $colTip, $divide, $unit = '') {
-        $this->columns[] = [
-            "type"  => self::DIVIDE_NUMBER,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => [
-                "divide" => $divide,
-                "unit"   => $unit
-            ]
-        ];
+        $this->listTableColumnCollection->addItem(new ListTableColumnDivideNumber($col, $colTip, $divide, $unit));
         return $this;
     }
 
@@ -270,12 +277,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function filterHidden($col) {
-        $this->filter_columns[] = [
-            "type"  => self::FILTER_HIDDEN,
-            "col"   => $col,
-            "tip"   => "",
-            "extra" => []
-        ];
+        $this->listFilterCollection->addItem(new ListFilterHidden($col));
         return $this;
     }
 
@@ -286,12 +288,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function filterText($col, $colTip) {
-        $this->filter_columns[] = [
-            "type"  => self::FILTER_TEXT,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+        $this->listFilterCollection->addItem(new ListFilterText($col, $colTip));
         return $this;
     }
 
@@ -302,12 +299,7 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function filterStartTime($col, $colTip) {
-        $this->filter_columns[] = [
-            "type"  => self::FILTER_STARTTIME,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+        $this->listFilterCollection->addItem(new ListFilterStartTime($col, $colTip));
         return $this;
     }
 
@@ -318,29 +310,40 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function filterEndTime($col, $colTip) {
-        $this->filter_columns[] = [
-            "type"  => self::FILTER_ENDTIME,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+        $this->listFilterCollection->addItem(new ListFilterEndTime($col, $colTip));
         return $this;
     }
 
     /**
      * 指定单选类型筛选列
-     * @param String $col 筛选的列名
-     * @param String $colTip 筛选项的名称
-     * @param array $keyValMap ENUM的键值对数组，键为数据库的字段值，值为展示值
+     * @param String $col 列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param array<EnumOption> $options ENUM的选项数组
      * @return GridList 返回this以便链式调用
      */
-    public function filterEnum($col, $colTip, array $keyValMap) {
-        $this->filter_columns[] = [
-            "type"  => self::FILTER_ENUM,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => $keyValMap
-        ];
+    public function filterEnum($col, $colTip, array $options) {
+        $this->listFilterCollection->addItem(new ListFilterEnum($col, $colTip, $options));
+        return $this;
+    }
+
+    /**
+     * 创建一个筛选项
+     * @param ListFilterBase $filterItem 筛选对象
+     * @return GridList 返回this以便链式调用
+     * @deprecated
+     */
+    public function filter($filterItem) {
+        $this->listFilterCollection->addItem($filterItem);
+        return $this;
+    }
+
+    /**
+     * 设置uid筛选项
+     * @param String $col 数据库列名
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterUid($col) {
+        $this->listFilterCollection->addItem(new ListFilterUID($col));
         return $this;
     }
 
@@ -375,203 +378,105 @@ class GridList implements JsonSerializable {
     }
 
     /**
-     * 创建一个筛选项
-     * @param String $columnType 筛选类型，可选类型为GridList对应的FILTER_开头的静态属性
-     * @param String $col 数据库列名
-     * @param String $colTip 在列表页该筛选项的名称
-     * @param array $extra 该列类型的对应额外数据
-     * @return GridList 返回this以便链式调用
-     * @deprecated
-     */
-    public function filter($columnType, $col, $colTip, $extra = []) {
-        $this->filter_columns[] = [
-            "type"  => $columnType,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => $extra
-        ];
-        return $this;
-    }
-
-    /**
-     * 设置uid筛选项
-     * @param String $columnType 筛选类型，可选类型为GridList对应的FILTER_开头的静态属性
-     * @param String $col 数据库列名
-     * @return GridList 返回this以便链式调用
-     */
-    public function filterUid($columnType, $col) {
-        $this->filter_user[] = [
-            "type" => $columnType,
-            "col"  => $col
-        ];
-        return $this;
-    }
-
-    /**
      * 创建一个头部页面跳转按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 按钮的跳转链接
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @param array|NavigateParamHook $buttonDestColumn 跳转携带到目标页面的键值对数组，将页面的参数按照值对应的键传入新页面
+     * @param ListHeaderButtonNavigate $listHeaderButtonItem 按钮项
      * @return GridList 返回this以便链式调用
      */
-    public function navigateButton($buttonName, $url, $buttonType = 'primary', $buttonDestColumn = []) {
-        $this->header_buttons[] = [
-            "btn_do_type" => "navigate",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "dest_col"    => $buttonDestColumn,
-            "type"        => $buttonType
-        ];
+    public function headerNavigateButton(ListHeaderButtonNavigate $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
         return $this;
     }
 
     /**
      * 创建一个每行页面跳转按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 按钮的跳转链接
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @param String|array|NavigateParamHook $buttonDestColumn 跳转携带ID到目标页面的参数名，默认为id。如果传入为键值对数组，则对应将页面及行对应的参数（行优先）按照值对应的键传入新页面
-     * @param ButtonCondition|null $condition 是否显示该按钮的回调
+     * @param ListRowButtonNavigate $listRowButtonItem 按钮项
      * @return GridList 返回this以便链式调用
      */
-    public function rowNavigateButton($buttonName, $url, $buttonType = 'primary', $buttonDestColumn = 'id', $condition = null) {
-        $this->row_buttons[] = [
-            "btn_do_type"    => "navigate",
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType,
-            "dest_col"       => $buttonDestColumn,
-            "show_condition" => $condition
-        ];
+    public function rowNavigateButton(ListRowButtonNavigate $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
         return $this;
     }
 
     /**
      * 创建一个头部API调用按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 按钮调用的链接
-     * @param String $buttonType 按钮的type属性，默认为primary
+     * @param ListHeaderButtonApi $listHeaderButtonItem 按钮项
      * @return GridList 返回this以便链式调用
      */
-    public function apiButton($buttonName, $url, $buttonType = 'primary') {
-        $this->header_buttons[] = [
-            "btn_do_type" => "api",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
-        ];
-        return $this;
-    }
-
-    /**
-     * 创建一个头部文件BLOB下载调用按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 按钮调用的接口链接
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @param String $file_name 按钮弹出下载时的文件名，默认为"文件"
-     * @return GridList 返回this以便链式调用
-     */
-    public function blobButton($buttonName, $url, $buttonType = 'primary', $file_name = "文件") {
-        $this->header_buttons[] = [
-            "btn_do_type" => "blob:" . $file_name,
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
-        ];
-        return $this;
-    }
-
-    /**
-     * 创建一个需要弹窗确认的头部API调用按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 按钮调用的链接
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @return GridList 返回this以便链式调用
-     */
-    public function apiButtonWithConfirm($buttonName, $url, $buttonType = 'primary') {
-        $this->header_buttons[] = [
-            "btn_do_type" => "api_confirm",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType
-        ];
-        return $this;
-    }
-
-    /**
-     * 创建一个需要弹窗输入内容的头部API调用按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 表单提交的目标链接，post请求
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @param GridCreateForm $gridCreateForm GridCreateForm对象，待展示的表单
-     * @return GridList 返回this以便链式调用
-     */
-    public function apiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null) {
-        $this->header_buttons[] = [
-            "btn_do_type" => "api_form",
-            "title"       => $buttonName,
-            "url"         => $url,
-            "type"        => $buttonType,
-            "extra"       => $gridCreateForm
-        ];
-        return $this;
-    }
-
-    /**
-     * 创建一个头部弹窗展示富文本的模态框的按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $html 展示富文本的接口url
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @return GridList 返回this以便链式调用
-     */
-    public function richTextButton($buttonName, $html, $buttonType = 'primary') {
-        $this->header_buttons[] = [
-            "btn_do_type" => "rich_text",
-            "title"       => $buttonName,
-            "html"        => $html,
-            "type"        => $buttonType
-        ];
+    public function headerApiButton(ListHeaderButtonApi $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
         return $this;
     }
 
     /**
      * 创建一个每行API调用按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 按钮调用的链接
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @param ButtonCondition|null $condition 是否显示该按钮的回调
+     * @param ListRowButtonApi $listRowButtonItem 按钮项
      * @return GridList 返回this以便链式调用
      */
-    public function rowApiButton($buttonName, $url, $buttonType = 'primary', $condition = null) {
-        $this->row_buttons[] = [
-            "btn_do_type"    => "api",
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType,
-            "show_condition" => $condition
-        ];
+    public function rowApiButton(ListRowButtonApi $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个头部文件BLOB下载调用按钮
+     * @param ListHeaderButtonBlob $listHeaderButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function headerBlobButton(ListHeaderButtonBlob $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行文件BLOB下载调用按钮
+     * @param ListRowButtonBlob $listRowButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function rowBlobButton(ListRowButtonBlob $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个需要弹窗确认的头部API调用按钮
+     * @param ListHeaderButtonApiWithConfirm $listHeaderButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function headerApiButtonWithConfirm(ListHeaderButtonApiWithConfirm $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
         return $this;
     }
 
     /**
      * 创建一个需要弹窗确认的每行API调用按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 按钮调用的链接
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @param ButtonCondition|null $condition 是否显示该按钮的回调
+     * @param ListRowButtonApiWithConfirm $listRowButtonItem 按钮项
      * @return GridList 返回this以便链式调用
      */
-    public function rowApiButtonWithConfirm($buttonName, $url, $buttonType = 'primary', $condition = null) {
-        $this->row_buttons[] = [
-            "btn_do_type"    => "api_confirm",
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType,
-            "show_condition" => $condition
-        ];
+    public function rowApiButtonWithConfirm(ListRowButtonApiWithConfirm $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
         return $this;
     }
+
+    /**
+     * 创建一个头部弹窗展示富文本的模态框的按钮
+     * @param ListHeaderButtonRichText $listHeaderButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function richTextButton(ListHeaderButtonRichText $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行弹窗展示富文本的模态框的按钮
+     * @param ListRowButtonRichText $listRowButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function rowRichTextButton(ListRowButtonRichText $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
+        return $this;
+    }
+
 
     /**
      * 创建一个需要弹窗输入内容的每行API调用按钮
@@ -581,7 +486,7 @@ class GridList implements JsonSerializable {
      * @param GridCreateForm $gridCreateForm GridCreateForm对象，待展示的表单
      * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
-     */
+     *//*
     public function rowApiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null, $condition = null) {
         $this->row_buttons[] = [
             "btn_do_type"    => "api_form",
@@ -592,65 +497,24 @@ class GridList implements JsonSerializable {
             "show_condition" => $condition
         ];
         return $this;
-    }
+    }*/
 
     /**
-     * 创建一个每行弹窗展示富文本的模态框的按钮
+     * 创建一个需要弹窗输入内容的头部API调用按钮
      * @param String $buttonName 按钮的内容文字
-     * @param String $html 展示富文本的接口url，每行会带有行参数
+     * @param String $url 表单提交的目标链接，post请求
      * @param String $buttonType 按钮的type属性，默认为primary
-     * @param ButtonCondition|null $condition 是否显示该按钮的回调
+     * @param GridCreateForm $gridCreateForm GridCreateForm对象，待展示的表单
      * @return GridList 返回this以便链式调用
-     */
-    public function rowRichTextButton($buttonName, $html, $buttonType = 'primary', $condition = null) {
-        $this->row_buttons[] = [
-            "btn_do_type"    => "rich_text",
-            "title"          => $buttonName,
-            "html"           => $html,
-            "type"           => $buttonType,
-            "show_condition" => $condition
+     *//*
+    public function apiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null) {
+        $this->header_buttons[] = [
+            "btn_do_type" => "api_form",
+            "title"       => $buttonName,
+            "url"         => $url,
+            "type"        => $buttonType,
+            "extra"       => $gridCreateForm
         ];
         return $this;
-    }
-
-    /**
-     * 创建一个每行文件BLOB下载调用按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 按钮调用的接口链接
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @param String $file_name 按钮弹出下载时的文件名，默认为"文件"
-     * @param ButtonCondition|null $condition 是否显示该按钮的回调
-     * @return GridList 返回this以便链式调用
-     */
-    public function rowBlobButton($buttonName, $url, $buttonType = 'primary', $file_name = "文件", $condition = null) {
-        $this->row_buttons[] = [
-            "btn_do_type"    => "blob:" . $file_name,
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType,
-            "show_condition" => $condition
-        ];
-        return $this;
-    }
-
-    /**
-     * 设置创建/编辑页选中后展示的列
-     * @param String $col 展示的列
-     * @return GridList 返回this以便链式调用
-     */
-    public function setDisplayColumn($col) {
-        $this->displayColumn = $col;
-        return $this;
-    }
-
-    /**
-     * 设置列表的排序规则
-     * @param String $col 排序的列
-     * @param String $type 排序方式，如DESC，ASC
-     * @return GridList 返回this以便链式调用
-     */
-    public function order($col, $type) {
-        $this->_order[] = [$col, $type];
-        return $this;
-    }
+    }*/
 }

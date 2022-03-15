@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<a-card v-if="tableObj != null">
+		<a-card v-if="isLoadOk">
 			<div style="margin-bottom: 16px">
 				<a-row>
 					<a-col :md="12" :sm="24" v-for="(filterItem,indexT) in tableObj.filter_columns" :key="indexT">
@@ -17,7 +17,7 @@
 			</div>
 			<div>
 				<a-space class="antoa-list-operator">
-					<a-button @click="onAddClick" type="primary" v-if="tableObj.hasCreate">创建</a-button>
+					<a-button @click="onAddClick" type="primary" v-if="gridListObject.hasCreate">创建</a-button>
 					<a-button @click="onHeaderButtonClick(headerButton)" :type="headerButton.type" v-for="(headerButton,index) in tableObj.header_buttons" :key="index">
 						{{headerButton.title }}
 					</a-button>
@@ -37,7 +37,7 @@
 					</a-alert>
 				</div>
 				<standard-table :columns="columns" :data-source="dataSource" :selected-rows.sync="selectedRows" :pagination="pagination" :row-key="columns[0].dataIndex" @change="onDataChange">
-					<template :slot="templateItem.col" slot-scope="{text, record}" v-for="templateItem in templates">
+					<template :slot="templateItem.col" slot-scope="{text, record}" v-for="templateItem in gridListObject.listTableColumnCollection">
 						<div v-if="templateItem.type == 'ENUM'">
 							<div>{{(templateItem.extra)[record[templateItem.col]+'']}}</div>
 						</div>
@@ -169,6 +169,7 @@ import confirmDialog from "@/components/tool/ConfirmDialog.vue";
 export default {
 	data() {
 		return {
+			isLoadOk: false,
 			gridPath: "",
 			gridConfigUrl: "",
 			gridApiObject: {
@@ -194,13 +195,12 @@ export default {
 				"hasDelete": false
 			},
 
+			tableModel:{
+				columns: [],
+				searchObj: {},
+			},
 
-
-
-			columns: null,
-			searchObj: null,
 			api: null,
-			templates: null,
 			statistic: "",
 			dataSource: [],
 			selectedRows: [],
@@ -238,106 +238,42 @@ export default {
 			const gridConfigRes = await this.$api(configUrl).method("GET").call();
 			if (!gridConfigRes.status)
 				throw gridConfigRes.msg;
+			Object.assign(this.gridApiObject, gridConfigRes.api);
 			Object.assign(this.gridListObject, gridConfigRes.grid.list);
-			const api = configRes.api;
-			this.columns = tableObj.columns.map((col) => {
-				if (col.type === "TEXT" || col.type == "DISPLAY")
-					return {
-						"title": col.tip,
-						"dataIndex": col.col
-					};
-				else
-					return {
-						"title": col.tip,
-						"scopedSlots": {
-							"customRender": col.col
-						}
-					};
+			this.generateTableObject();
+			this.generateSearchObject();
+			await this.loadPage();
+			this.isLoadOk = true;
+		} catch (e) {
+			this.$message.error("配置加载错误：" + e, 5);
+		}
+	},
+	methods: {
+		generateSearchObject(){
+			let searchObj = {};
+			this.gridListObject.listFilterCollection.map((col) => {
+				if (col.type === "ListFilterStartTime")
+					return searchObj[col.col + "_starttime"] = (this.$route.query[col.col + "_starttime"] ? this.$route.query[col.col + "_starttime"] : '');
+				if (col.type === "ListFilterEndTime")
+					return searchObj[col.col + "_endtime"] = (this.$route.query[col.col + "_endtime"] ? this.$route.query[col.col + "_endtime"] : '');
+				return searchObj[col.col] = (this.$route.query[col.col] ? this.$route.query[col.col] : '');
+			});
+			this.tableModel.searchObj = searchObj;
+		},
+		generateTableObject(){
+			this.tableModel.columns = this.gridListObject.listTableColumnCollection.map((col) => {
+				return {
+					"title": col.tip,
+					"scopedSlots": {
+						"customRender": col.col
+					}
+				};
 			}).concat([{
 				"title": "操作",
 				"scopedSlots": {
 					"customRender": "action"
 				}
 			}]);
-			this.templates = tableObj.columns.filter((col) => {
-				return col.type !== "TEXT";
-			});
-			const searchObj = {};
-			tableObj.filter_columns.map((col) => {
-				if (col.type === "FILTER_STARTTIME")
-					return searchObj[col.col + "_starttime"] = (this.$route.query[col.col + "_starttime"] ?
-						this.$route.query[col.col + "_starttime"] : '');
-				if (col.type === "FILTER_ENDTIME")
-					return searchObj[col.col + "_endtime"] = (this.$route.query[col.col + "_endtime"] ?
-						this.$route.query[col.col + "_endtime"] : '');
-				return searchObj[col.col] = (this.$route.query[col.col] ? this.$route.query[col.col] : '');
-			});
-			this.searchObj = searchObj;
-			this.api = api;
-			this.tableObj = tableObj;
-			this.loadPage().then(() => {
-				this.setWatchHook();
-			});
-			if (this.$route.query.click_header_button)
-				for (var i in tableObj.header_buttons)
-					if (tableObj.header_buttons[i].title == this.$route.query.click_header_button)
-						this.onHeaderButtonClick(tableObj.header_buttons[i]);
-		} catch (e) {
-			this.$message.error("配置加载错误：" + e, 5);
-		}
-	},
-	methods: {
-		log(t) {
-			console.log(t);
-		},
-		setWatchHook() {
-			if (!this.tableObj.change_hook)
-				return;
-			this.onHookCall();
-			this.tableObj.change_hook.columns.map((col) => {
-				this.$watch("searchObj." + col, () => {
-					this.onHookCall(col);
-				});
-			});
-		},
-		async onHookCall(hookCol) {
-			const param = {};
-			Object.assign(param, this.searchObj);
-			for (let i in param) {
-				if (param[i] instanceof moment)
-					param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
-				if (param[i] instanceof Array)
-					param[i] = JSON.stringify(param[i]);
-			}
-			try {
-				let res = await this.$api(this.api.api_column_change).method("POST").param({
-					type: "list",
-					form: param,
-					col: hookCol
-				}).call();
-				if (res.status) {
-					var extras = res.select;
-					for (let i in this.tableObj.filter_columns) {
-						if (Object.keys(extras).includes(this.tableObj.filter_columns[i].col))
-							this.tableObj.filter_columns[i].extra = extras[this.tableObj.filter_columns[i].col];
-					}
-					res = res.data;
-					for (let i in this.tableObj.filter_columns) {
-						if (res.data[this.tableObj.filter_columns[i].col] !== undefined) {
-							if (this.tableObj.filter_columns[i].type === 'FILTER_STARTTIME' || this.tableObj
-								.filter_columns[i].type === 'FILTER_ENDTIME')
-								this.searchObj[this.tableObj.filter_columns[i].col] = moment(res.data[this.tableObj
-										.filter_columns[i].col],
-									"YYYY-MM-DD HH:mm:ss");
-							else
-								this.searchObj[this.tableObj.filter_columns[i].col] = res.data[this.tableObj
-									.filter_columns[i].col] + "";
-						}
-					}
-				}
-			} catch (e) {
-				this.$message.error(e + "", 5);
-			}
 		},
 		onShow() {
 			this.loadPage();

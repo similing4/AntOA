@@ -169,7 +169,34 @@ import confirmDialog from "@/components/tool/ConfirmDialog.vue";
 export default {
 	data() {
 		return {
-			tableObj: null,
+			gridPath: "",
+			gridConfigUrl: "",
+			gridApiObject: {
+				api_column_change: "",
+				create: "",
+				create_page: "",
+				delete: "",
+				detail: "",
+				detail_column_list: "",
+				edit_page: "",
+				list: "",
+				list_page: "",
+				path: "",
+				save: ""
+			},
+			gridListObject: {
+				"listFilterCollection": [], //{"type": "ListFilterText","col": "name","tip": "比赛名称"}
+				"listTableColumnCollection": [], //{"type": "ListTableColumnText","col": "id","tip": "ID"}
+				"listHeaderButtonCollection": [],
+				"listRowButtonCollection": [], //{"type": "ListRowButtonNavigate","buttonText": "报名记录","buttonType": "primary","baseUrl": "\/race\/register\/list","finalUrl": null}
+				"hasCreate": false,
+				"hasEdit": false,
+				"hasDelete": false
+			},
+
+
+
+
 			columns: null,
 			searchObj: null,
 			api: null,
@@ -206,12 +233,12 @@ export default {
 	},
 	async mounted() {
 		try {
-			var path = this.$route.path.substring(0, this.$route.path.length - "/list".length);
-			const configUrl = "/api" + path + "/grid_config";
-			const configRes = await this.$api(configUrl).method("GET").call();
-			if (!configRes.status)
-				throw configRes.msg;
-			const tableObj = configRes.grid.list;
+			this.gridPath = this.$route.path.substring(0, this.$route.path.length - "/list".length);
+			this.gridConfigUrl = "/api" + this.gridPath + "/grid_config";
+			const gridConfigRes = await this.$api(configUrl).method("GET").call();
+			if (!gridConfigRes.status)
+				throw gridConfigRes.msg;
+			Object.assign(this.gridListObject, gridConfigRes.grid.list);
 			const api = configRes.api;
 			this.columns = tableObj.columns.map((col) => {
 				if (col.type === "TEXT" || col.type == "DISPLAY")

@@ -40,7 +40,7 @@ export default {
 		return {};
 	},
 	computed: {
-		options() {
+		options() {console.log(this.item);
 			return [{ title: '不筛选', value: '' }].concat(this.item.enum);
 		}
 	},

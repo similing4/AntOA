@@ -21,9 +21,10 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
 class ListFilterText extends ListFilterBase {
     public function jsonSerialize() {
         return [
-            "type" => "ListFilterText",
-            "col" => $this->col,
-            "tip" => $this->tip
+            "type"    => "ListFilterText",
+            "col"     => $this->col,
+            "tip"     => $this->tip,
+            "default" => $this->defaultVal
         ];
     }
 }

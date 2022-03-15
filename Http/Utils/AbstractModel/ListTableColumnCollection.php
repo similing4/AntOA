@@ -10,17 +10,24 @@ declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils\AbstractModel;
 
+use JsonSerializable;
 
-class ListTableColumnCollection {
+class ListTableColumnCollection implements JsonSerializable {
     private $array = [];
-    public function addItem(ListTableColumnBase $item){
+
+    public function addItem(ListTableColumnBase $item) {
         $this->array[] = $item;
     }
+
     /**
      * 获取所有列对象
      * @return array<ListTableColumnBase>
      */
-    public function getItems(){
+    public function getItems() {
+        return $this->array;
+    }
+
+    public function jsonSerialize() {
         return $this->array;
     }
 }

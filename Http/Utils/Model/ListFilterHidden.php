@@ -19,15 +19,16 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
  * 描述: 根据页面传入的参数进行筛选
  */
 class ListFilterHidden extends ListFilterBase {
-    public function __construct($col) {
-        parent::__construct($col, "");
+    public function __construct($col, $defaultVal = "") {
+        parent::__construct($col, "", $defaultVal);
     }
 
     public function jsonSerialize() {
         return [
-            "type" => "ListFilterHidden",
-            "col" => $this->col,
-            "tip" => $this->tip
+            "type"    => "ListFilterHidden",
+            "col"     => $this->col,
+            "tip"     => $this->tip,
+            "default" => $this->defaultVal
         ];
     }
 }

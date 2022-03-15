@@ -22,9 +22,10 @@ class ListFilterStartTime extends ListFilterBase {
 
     public function jsonSerialize() {
         return [
-            "type" => "ListFilterStartTime",
-            "col" => $this->col,
-            "tip" => $this->tip
+            "type"    => "ListFilterStartTime",
+            "col"     => $this->col,
+            "tip"     => $this->tip,
+            "default" => $this->defaultVal
         ];
     }
 }

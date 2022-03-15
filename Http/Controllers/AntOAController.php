@@ -22,7 +22,6 @@ use Modules\AntOA\Http\Utils\Model\ListTableColumnDisplay;
 use Modules\AntOA\Http\Utils\Model\ListTableColumnRichDisplay;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculatorParamItem;
-use Modules\AntOA\Http\Utils\NavigateParamHook;
 
 /**
  * NameSpace: Modules\AntOA\Http\Controllers
@@ -159,11 +158,14 @@ abstract class AntOAController extends Controller {
                 $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
             foreach ($res['data'] as &$searchResultItem) {
                 $searchResultItem['BUTTON_CONDITION_DATA'] = [];
-                foreach ($gridList->getTableColumnList() as $column)
+                $searchResultParams = [];
+                foreach ($gridList->getTableColumnList() as $column) {
                     if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
                         $searchResultItem[$column->col] = '';
+                    $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
+                }
+                $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
                 foreach ($gridList->getRowButtonList() as $rowButtonItem) {
-                    $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultItem);
                     $rowButtonItem->finalUrl = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
                     $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
                 }
@@ -177,7 +179,7 @@ abstract class AntOAController extends Controller {
         } catch (Exception $e2) {
             return json_encode([
                 "status" => 0,
-                "msg"    => $e2->getMessage()
+                "msg"    => $e2->getMessage() . " at row " . $e2->getLine()
             ]);
         }
     }
@@ -200,7 +202,7 @@ abstract class AntOAController extends Controller {
         $gridCreate = $this->gridObj->getCreateForm();
         $gridEdit = $this->gridObj->getEditForm();
         if ($gridList)
-            $gridList = $gridList->json();
+            $gridList = json_encode($gridList);
         if ($gridCreate)
             $gridCreate = $gridCreate->json();
         if ($gridEdit)

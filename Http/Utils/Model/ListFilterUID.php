@@ -29,9 +29,10 @@ class ListFilterUID extends ListFilterBase {
 
     public function jsonSerialize() {
         return [
-            "type" => "ListFilterUID",
-            "col" => $this->col,
-            "tip" => $this->tip
+            "type"    => "ListFilterUID",
+            "col"     => $this->col,
+            "tip"     => $this->tip,
+            "default" => $this->defaultVal
         ];
     }
 }

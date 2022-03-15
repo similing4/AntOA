@@ -3,11 +3,11 @@
 		<a-card v-if="isLoadOk">
 			<div style="margin-bottom: 16px">
 				<a-row>
-					<a-col :md="12" :sm="24" v-for="(filterItem,indexT) in tableObj.filter_columns" :key="indexT">
-						<FILTER_ENUM v-if="filterItem.type == 'FILTER_ENUM'" :item="filterItem" v-model="searchObj[filterItem.col]" />
-						<FILTER_STARTTIME v-if="filterItem.type == 'FILTER_STARTTIME'" :item="filterItem" v-model="searchObj[filterItem.col+ '_starttime']" />
-						<FILTER_ENDTIME v-if="filterItem.type == 'FILTER_ENDTIME'" :item="filterItem" v-model="searchObj[filterItem.col+  '_endtime']" />
-						<FILTER_TEXT v-if="filterItem.type == 'FILTER_TEXT'" :item="filterItem" v-model="searchObj[filterItem.col]" />
+					<a-col :md="12" :sm="24" v-for="(filterItem,indexT) in gridListObject.listFilterCollection" :key="indexT">
+						<ListFilterEnum v-if="filterItem.type == 'ListFilterEnum'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
+						<ListFilterStartTime v-if="filterItem.type == 'ListFilterStartTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+ '_starttime']" />
+						<ListFilterEndTime v-if="filterItem.type == 'ListFilterEndTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+  '_endtime']" />
+						<ListFilterText v-if="filterItem.type == 'ListFilterText'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 					</a-col>
 					<span style="float: right; margin-top: 3px;">
 						<a-button type="primary" @click="doSearch">查询</a-button>
@@ -18,14 +18,14 @@
 			<div>
 				<a-space class="antoa-list-operator">
 					<a-button @click="onAddClick" type="primary" v-if="gridListObject.hasCreate">创建</a-button>
-					<a-button @click="onHeaderButtonClick(headerButton)" :type="headerButton.type" v-for="(headerButton,index) in tableObj.header_buttons" :key="index">
-						{{headerButton.title }}
+					<a-button @click="onHeaderButtonClick(headerButton)" :type="headerButton.type" v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index">
+						{{headerButton.buttonText }}
 					</a-button>
 				</a-space>
 				<div style="margin-bottom: 16px">
 					<a-alert type="info" :show-icon="true">
 						<div class="message" slot="message">
-							共计&nbsp;<a style="font-weight: 600">{{pagination.total}}</a>&nbsp;行
+							共计&nbsp;<a style="font-weight: 600">{{tableModel.pagination.total}}</a>&nbsp;行
 						</div>
 					</a-alert>
 				</div>
@@ -36,31 +36,23 @@
 						</div>
 					</a-alert>
 				</div>
-				<standard-table :columns="columns" :data-source="dataSource" :selected-rows.sync="selectedRows" :pagination="pagination" :row-key="columns[0].dataIndex" @change="onDataChange">
+				<standard-table :columns="tableModel.columns" :data-source="tableModel.dataSource" :selected-rows.sync="tableModel.selectedRows" :pagination="tableModel.pagination" @change="onDataChange">
 					<template :slot="templateItem.col" slot-scope="{text, record}" v-for="templateItem in gridListObject.listTableColumnCollection">
-						<div v-if="templateItem.type == 'ENUM'">
-							<div>{{(templateItem.extra)[record[templateItem.col]+'']}}</div>
-						</div>
-						<div v-if="templateItem.type == 'DIVIDE_NUMBER'">
-							<div>{{parseFloat(record[templateItem.col]) / templateItem.extra.divide}}
-								{{templateItem.extra.unit}}
-							</div>
-						</div>
-						<div v-if="templateItem.type == 'RICH_TEXT' || templateItem.type == 'RICH_DISPLAY'">
-							<div v-html="record[templateItem.col]"></div>
-						</div>
-						<div v-if="templateItem.type == 'PICTURE'">
-							<div><img :src="record[templateItem.col]" :style="templateItem.extra" /></div>
-						</div>
+						<ListTableColumnEnum :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnEnum'" />
+						<ListTableColumnDivideNumber :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnDivideNumber'" />
+						<ListTableColumnRichText :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnRichText'" />
+						<ListTableColumnRichDisplay :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnRichDisplay'" />
+						<ListTableColumnText :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnText'" />
+						<ListTableColumnPicture :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnPicture'" />
 					</template>
 					<div slot="action" slot-scope="{text, record}">
-						<a-button @click="onEditClick(record[columns[0].dataIndex])" type="primary" v-if="tableObj.hasEdit" style="margin: 5px;">
+						<a-button @click="onEditClick(record[columns[0].dataIndex])" type="primary" v-if="gridListObject.hasEdit" style="margin: 5px;">
 							编辑
 						</a-button>
-						<a-button @click="onDeleteClick(record[columns[0].dataIndex])" type="danger" v-if="tableObj.hasDelete" style="margin: 5px;">删除
+						<a-button @click="onDeleteClick(record[columns[0].dataIndex])" type="danger" v-if="gridListObject.hasDelete" style="margin: 5px;">删除
 						</a-button>
-						<a-button @click="onRowButtonClick(rowButton,record,record[columns[0].dataIndex],index)" :type="rowButton.type" v-for="(rowButton,index) in tableObj.row_buttons" :key="index" v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
-							{{ rowButton.title }}
+						<a-button @click="onRowButtonClick(rowButton,record,record[columns[0].dataIndex],index)" :type="rowButton.type" v-for="(rowButton,index) in gridListObject.listRowButtonCollection" :key="index" v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
+							{{ rowButton.buttonText }}
 						</a-button>
 					</div>
 				</standard-table>
@@ -158,10 +150,16 @@
 	</div>
 </template>
 <script>
-import FILTER_STARTTIME from "./components/list/filter/FILTER_STARTTIME.vue";
-import FILTER_ENDTIME from "./components/list/filter/FILTER_ENDTIME.vue";
-import FILTER_ENUM from "./components/list/filter/FILTER_ENUM.vue";
-import FILTER_TEXT from "./components/list/filter/FILTER_TEXT.vue";
+import ListFilterStartTime from "./components/list/filter/ListFilterStartTime.vue";
+import ListFilterEndTime from "./components/list/filter/ListFilterEndTime.vue";
+import ListFilterEnum from "./components/list/filter/ListFilterEnum.vue";
+import ListFilterText from "./components/list/filter/ListFilterText.vue";
+import ListTableColumnEnum from "./components/list/table_column/ListTableColumnEnum.vue";
+import ListTableColumnDivideNumber from "./components/list/table_column/ListTableColumnDivideNumber.vue";
+import ListTableColumnRichText from "./components/list/table_column/ListTableColumnRichText.vue";
+import ListTableColumnRichDisplay from "./components/list/table_column/ListTableColumnRichDisplay.vue";
+import ListTableColumnPicture from "./components/list/table_column/ListTableColumnPicture.vue";
+import ListTableColumnText from "./components/list/table_column/ListTableColumnText.vue";
 import moment from "moment";
 import StandardTable from "@/components/table/StandardTable.vue";
 import confirmDialog from "@/components/tool/ConfirmDialog.vue";
@@ -198,17 +196,15 @@ export default {
 			tableModel:{
 				columns: [],
 				searchObj: {},
+				dataSource: [],
+				selectedRows: [],
+				pagination: {
+					current: 1,
+					total: 0,
+					pageSize: 15
+				},
 			},
-
-			api: null,
 			statistic: "",
-			dataSource: [],
-			selectedRows: [],
-			pagination: {
-				current: 1,
-				total: 0,
-				pageSize: 15
-			},
 			createFormModal: {
 				columns: [],
 				form: {},
@@ -224,10 +220,16 @@ export default {
 		};
 	},
 	components: {
-		FILTER_ENUM,
-		FILTER_STARTTIME,
-		FILTER_ENDTIME,
-		FILTER_TEXT,
+		ListFilterEnum,
+		ListFilterStartTime,
+		ListFilterEndTime,
+		ListFilterText,
+		ListTableColumnText,
+		ListTableColumnEnum,
+		ListTableColumnDivideNumber,
+		ListTableColumnRichText,
+		ListTableColumnRichDisplay,
+		ListTableColumnPicture,
 		StandardTable,
 		confirmDialog
 	},
@@ -235,7 +237,7 @@ export default {
 		try {
 			this.gridPath = this.$route.path.substring(0, this.$route.path.length - "/list".length);
 			this.gridConfigUrl = "/api" + this.gridPath + "/grid_config";
-			const gridConfigRes = await this.$api(configUrl).method("GET").call();
+			const gridConfigRes = await this.$api(this.gridConfigUrl).method("GET").call();
 			if (!gridConfigRes.status)
 				throw gridConfigRes.msg;
 			Object.assign(this.gridApiObject, gridConfigRes.api);
@@ -299,18 +301,18 @@ export default {
 			return this.loadPage();
 		},
 		resetSearch() {
-			for (const i in this.searchObj)
-				this.searchObj[i] = (this.$route.query[i] ? this.$route.query[i] : '');
+			for (const i in this.tableModel.searchObj)
+				this.tableModel.searchObj[i] = (this.$route.query[i] ? this.$route.query[i] : '');
 			this.doSearch();
 		},
 		onDataChange(pagination) {
-			this.pagination = pagination;
+			this.tableModel.pagination = pagination;
 			this.loadPage();
 		},
 		async loadPage() {
 			let param = {};
-			Object.assign(param, this.searchObj, {
-				page: this.pagination.current
+			Object.assign(param, this.tableModel.searchObj, {
+				page: this.tableModel.pagination.current
 			});
 			for (let i in param) {
 				if (param[i] instanceof moment)
@@ -318,30 +320,32 @@ export default {
 				if (param[i] === null || param[i] === undefined)
 					param[i] = "";
 			}
-			let res = await this.$api(this.api.list).method("POST").param(param).call();
-			this.pagination.total = res.total;
-			this.pagination.pageSize = res.per_page;
-			this.dataSource = res.data;
+			let res = await this.$api(this.gridApiObject.list).method("POST").param(param).call();
+			if(res.status == 0)
+				throw res.msg;
+			this.tableModel.pagination.total = res.total;
+			this.tableModel.pagination.pageSize = res.per_page;
+			this.tableModel.dataSource = res.data;
 			this.statistic = res.statistic;
 		},
 		onAddClick() {
-			var params = [];
-			for (var i in this.searchObj)
-				params.push(i + "=" + this.searchObj[i]);
+			let params = [];
+			for (let i in this.tableModel.searchObj)
+				params.push(i + "=" + this.tableModel.searchObj[i]);
 			this.openurl(this.api.create_page + "?" + params.join("&"));
 		},
 		onEditClick(id) {
-			var params = [];
-			for (var i in this.searchObj) {
+			let params = [];
+			for (let i in this.tableModel.searchObj) {
 				if (i == "id")
 					continue;
-				params.push(i + "=" + this.searchObj[i]);
+				params.push(i + "=" + this.tableModel.searchObj[i]);
 			}
 			this.openurl(this.api.edit_page + "?id=" + id + "&" + params.join("&"));
 		},
 		onDeleteClick(id) {
 			this.$refs.confirmDialog.confirm("确认要删除这条记录么？").then(async () => {
-				let e = await this.$api(this.api.delete).method("GET").param({
+				let e = await this.$api(this.gridApiObject.delete).method("GET").param({
 					id: id
 				}).call();
 				if (e.status) {
@@ -352,10 +356,19 @@ export default {
 				}
 			});
 		},
+
+
+
+
+
+
+
+
+
 		async onHeaderButtonClick(headerButtonItem) {
 			let param = {};
-			Object.assign(param, this.searchObj, {
-				page: this.pagination.current
+			Object.assign(param, this.tableModel.searchObj, {
+				page: this.tableModel.pagination.current
 			});
 			for (let i in param)
 				if (param[i] instanceof moment)

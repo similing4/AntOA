@@ -10,10 +10,12 @@ declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils\AbstractModel;
 
+use JsonSerializable;
 
-class ListRowButtonCollection {
+class ListRowButtonCollection implements JsonSerializable {
     private $array = [];
-    public function addItem(ListRowButtonBase $item){
+
+    public function addItem(ListRowButtonBase $item) {
         $this->array[] = $item;
     }
 
@@ -21,7 +23,11 @@ class ListRowButtonCollection {
      * 获取所有行按钮对象
      * @return array<ListRowButtonBase>
      */
-    public function getItems(){
+    public function getItems() {
+        return $this->array;
+    }
+
+    public function jsonSerialize() {
         return $this->array;
     }
 }

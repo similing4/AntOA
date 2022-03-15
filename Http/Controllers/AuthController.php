@@ -12,9 +12,7 @@ namespace Modules\AntOA\Http\Controllers;
 
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
 use Modules\AntOA\Http\Utils\AuthInterface;
 use Modules\AntOA\Http\Utils\Qiniu\Auth as QiniuAuth;
 

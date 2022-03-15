@@ -10,10 +10,12 @@ declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils\AbstractModel;
 
+use JsonSerializable;
 
-class ListFilterCollection {
+class ListFilterCollection implements JsonSerializable {
     private $array = [];
-    public function addItem(ListFilterBase $item){
+
+    public function addItem(ListFilterBase $item) {
         $this->array[] = $item;
     }
 
@@ -21,7 +23,11 @@ class ListFilterCollection {
      * 获取所有筛选项对象
      * @return array<ListFilterBase>
      */
-    public function getItems(){
+    public function getItems() {
+        return $this->array;
+    }
+
+    public function jsonSerialize() {
         return $this->array;
     }
 }

@@ -29,17 +29,20 @@ class ListFilterEnum extends ListFilterBase {
      * @param String $col 列对应的字段
      * @param String $tip 列对应的字段Label
      * @param array<EnumOption> $options 单选选项数组
+     * @param string $defaultVal 默认值
      */
-    public function __construct($col, $tip, $options) {
-        parent::__construct($col, $tip);
+    public function __construct($col, $tip, $options, $defaultVal = "") {
+        parent::__construct($col, $tip, $defaultVal);
         $this->options = $options;
     }
 
     public function jsonSerialize() {
         return [
-            "type" => "ListFilterEnum",
-            "col"  => $this->col,
-            "tip"  => $this->tip
+            "type"    => "ListFilterEnum",
+            "col"     => $this->col,
+            "tip"     => $this->tip,
+            "default" => $this->defaultVal,
+            "enum" => $this->options
         ];
     }
 }

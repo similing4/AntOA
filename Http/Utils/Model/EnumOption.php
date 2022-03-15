@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils\Model;
 
+use JsonSerializable;
+
 /**
  * NameSpace: Modules\AntOA\Http\Utils\Model
  * ClassName: ListTableColumnEnumOption

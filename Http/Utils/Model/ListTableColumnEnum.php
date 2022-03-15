@@ -39,7 +39,8 @@ class ListTableColumnEnum extends ListTableColumnBase {
         return [
             "type" => "ListTableColumnEnum",
             "col"  => $this->col,
-            "tip"  => $this->tip
+            "tip"  => $this->tip,
+            "enum" => $this->options
         ];
     }
 }

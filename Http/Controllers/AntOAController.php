@@ -154,10 +154,9 @@ abstract class AntOAController extends Controller {
             }
             $res = $gridListDbObject->select($columns)->paginate(15);
             $res = json_decode(json_encode($res), true);
-            foreach ($gridList->getHeaderButtonList() as $headerButtonItem) //ListHeaderButtonBase
-                $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
             foreach ($res['data'] as &$searchResultItem) {
                 $searchResultItem['BUTTON_CONDITION_DATA'] = [];
+                $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
                 $searchResultParams = [];
                 foreach ($gridList->getTableColumnList() as $column) {
                     if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
@@ -166,7 +165,7 @@ abstract class AntOAController extends Controller {
                 }
                 $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
                 foreach ($gridList->getRowButtonList() as $rowButtonItem) {
-                    $rowButtonItem->finalUrl = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
+                    $searchResultItem['BUTTON_FINAL_URL_DATA'][] = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
                     $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
                 }
             }
@@ -201,6 +200,14 @@ abstract class AntOAController extends Controller {
         $gridList = $this->gridObj->getGridList();
         $gridCreate = $this->gridObj->getCreateForm();
         $gridEdit = $this->gridObj->getEditForm();
+
+        $req = json_decode($request->getContent(), true);
+        $pageParams = [];
+        foreach ($req as $k => $v)
+            $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
+        $urlParamCalculator = new UrlParamCalculator($pageParams);
+        foreach ($gridList->getHeaderButtonList() as $headerButtonItem) //ListHeaderButtonBase
+            $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
         if ($gridList)
             $gridList = json_encode($gridList);
         if ($gridCreate)

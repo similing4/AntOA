@@ -30,6 +30,6 @@ class RouteRegister {
         Route::post($route . "/save", $controller . "@api_save");
         Route::get($route . "/delete", $controller . "@api_delete");
         Route::post($route . "/column_change", $controller . "@api_column_change");
-        Route::get($route . "/grid_config", $controller . "@api_grid_config");
+        Route::post($route . "/grid_config", $controller . "@api_grid_config");
     }
 }

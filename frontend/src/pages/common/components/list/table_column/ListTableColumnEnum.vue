@@ -28,7 +28,7 @@ export default {
 	},
 	computed: {
 		renderVal() {
-			for (let i = 0; i < this.render.enum; i++) {
+			for (let i = 0; i < this.render.enum.length; i++) {
 				if (this.render.enum[i].value + "" == this.value + "")
 					return this.render.enum[i].title;
 			}

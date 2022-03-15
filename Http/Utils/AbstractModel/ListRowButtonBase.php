@@ -42,7 +42,7 @@ abstract class ListRowButtonBase implements JsonSerializable {
         $param = [];
         foreach ($this->calcButtonParam($calculator) as $item)
             $param[] = $item->key . "=" . $item->val;
-        $this->finalUrl = $this->baseUrl . "?" . join("&", $param);
+        return $this->baseUrl . "?" . join("&", $param);
     }
 
     /**

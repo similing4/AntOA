@@ -43,7 +43,7 @@ class ListTableColumnPicture extends ListTableColumnBase {
 
     public function jsonSerialize() {
         return [
-            "type" => "ListTableColumnPicture",
+            "type"   => "ListTableColumnPicture",
             "col"    => $this->col,
             "tip"    => $this->tip,
             "width"  => $this->width,

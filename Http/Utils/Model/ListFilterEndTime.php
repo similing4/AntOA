@@ -21,11 +21,8 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
 class ListFilterEndTime extends ListFilterBase {
 
     public function jsonSerialize() {
-        return [
-            "type"    => "ListFilterEndTime",
-            "col"     => $this->col,
-            "tip"     => $this->tip,
-            "default" => $this->defaultVal
-        ];
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListFilterEndTime"
+        ]);
     }
 }

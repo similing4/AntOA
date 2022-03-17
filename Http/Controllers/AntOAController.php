@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\AntOA\Http\Utils\AuthInterface;
 use Modules\AntOA\Http\Utils\Grid;
 use Modules\AntOA\Http\Utils\GridCreateForm;
-use Modules\AntOA\Http\Utils\GridEditForm;
-use Modules\AntOA\Http\Utils\GridList;
+use Modules\AntOA\Http\Utils\Model\CreateColumnChildrenChoose;
+use Modules\AntOA\Http\Utils\Model\EditColumnChildrenChoose;
 use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
 use Modules\AntOA\Http\Utils\Model\ListFilterHidden;
@@ -206,20 +206,19 @@ abstract class AntOAController extends Controller {
         foreach ($req as $k => $v)
             $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
         $urlParamCalculator = new UrlParamCalculator($pageParams);
-        foreach ($gridList->getHeaderButtonList() as $headerButtonItem) //ListHeaderButtonBase
+        $removeList = [];
+        foreach ($gridList->getHeaderButtonList() as $headerButtonItem) { //ListHeaderButtonBase
+            if (!$headerButtonItem->judgeIsShow($urlParamCalculator))
+                $removeList[] = $headerButtonItem;
             $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
-        if ($gridList)
-            $gridList = json_encode($gridList);
-        if ($gridCreate)
-            $gridCreate = $gridCreate->json();
-        if ($gridEdit)
-            $gridEdit = $gridEdit->json();
+        }
+        $gridList->removeHeaderButtons($removeList);
         return json_encode([
             "status" => 1,
             "grid"   => [
-                "list"   => json_decode($gridList, true),
-                "create" => json_decode($gridCreate, true),
-                "edit"   => json_decode($gridEdit, true)
+                "list"   => $gridList,
+                "create" => $gridCreate,
+                "edit"   => $gridEdit
             ],
             "api"    => $this->getCustomParam($request)['api']
         ]);
@@ -243,19 +242,15 @@ abstract class AntOAController extends Controller {
                 ]);
             }
             $req = json_decode($request->getContent(), true);
-            $tableObj = $this->gridObj->getCreateForm()->getArr();
+            $gridCreateForm = $this->gridObj->getCreateForm();
             $param = [];
-            foreach ($tableObj['columns'] as $col) {
-                if ($col['type'] === GridCreateForm::COLUMN_PASSWORD)
-                    $param[$col['col']] = md5($req[$col['col']]);
-                else if ($col['type'] !== GridCreateForm::COLUMN_DISPLAY)
-                    $param[$col['col']] = $req[$col['col']];
-            }
+            foreach ($gridCreateForm->getCreateColumnList() as $col) //EditColumnBase
+                $param[$col->col] = $col->onGuestVal($req[$col->col]);
             $hook = $this->gridObj->getCreateHook();
             if ($hook != null)
                 $param = $hook->hook($param);
             if ($param != null)
-                $tableObj['table']->insert($param);
+                $gridCreateForm->getDBObject()->insert($param);
             return json_encode([
                 "status" => 1,
                 "data"   => "创建成功"
@@ -285,60 +280,24 @@ abstract class AntOAController extends Controller {
                     "msg"    => "登录失效"
                 ]);
             }
-            $tableObj = $this->gridObj->getEditForm()->getArr();
-            $res = $tableObj['table']->find($request->get("id"));
+            $json = $request->getContent();
+            $req = json_decode($json, true);
+            $gridEditForm = $this->gridObj->getEditForm();
+            $res = $gridEditForm->getDBObject()->find($req[$gridEditForm->primaryKey]);
             if (!$res)
                 throw new Exception("该项目不存在");
             $res = json_decode(json_encode($res), true);
-            $needsTip = [];
-            foreach ($tableObj['columns'] as $col) {
-                if ($col['type'] === GridCreateForm::COLUMN_PASSWORD || $col['type'] === GridEditForm::COLUMN_PASSWORD)
-                    $res[$col['col']] = "";
-                if ($col['type'] === GridCreateForm::COLUMN_CHILDREN_CHOOSE || $col['type'] === GridEditForm::COLUMN_CHILDREN_CHOOSE) {
-                    $needsTip[] = $col;
-                }
-            }
-            $tip = [];
-            foreach ($needsTip as $needTip) {
-                $dbObj = $needTip['extra']->getDBObject();
-                $list = clone $dbObj;
-                foreach ($needTip['extra']->getArr()['filter_columns'] as $r) {
-                    switch ($r['type']) {
-                        case GridList::FILTER_TEXT:
-                            if ($request->get($r['col'], "") !== '')
-                                $list->where($r['col'], 'like', "%" . $request->post($r['col']) . "%");
-                            break;
-                        case GridList::FILTER_HIDDEN:
-                        case GridList::FILTER_ENUM:
-                            if ($request->get($r['col'], "") !== '')
-                                $list->where($r['col'], $request->get($r['col'], ""));
-                            break;
-                        case GridList::FILTER_STARTTIME:
-                            if ($request->get($r['col'] . "_starttime", "") !== '')
-                                $list->where($r['col'], ">", $request->get($r['col'] . "_starttime", ""));
-                            break;
-                        case GridList::FILTER_ENDTIME:
-                            if ($request->get($r['col'] . "_endtime", "") !== '')
-                                $list->where($r['col'], "<", $request->get($r['col'] . "_endtime", ""));
-                            break;
-                    }
-                }
-                $key = $needTip['extra']->getArr()['columns'][0]['col'];
-                $display = $needTip['extra']->getArr()['displayColumn'];
-                if ($res[$needTip['col']] != "")
-                    $tip[$needTip['col']] = $list->where($key, $res[$needTip['col']])->first();
-            }
+            foreach ($gridEditForm->getEditColumnList() as $col) //EditColumnBase
+                $res[$col->col] = $col->onServerVal($res[$col->col]);
             $hook = $this->gridObj->getDetailHook();
             if ($hook != null)
                 return json_encode($hook->hook([
                     "status" => 1,
-                    "data"   => $res,
-                    "tip"    => $tip
+                    "data"   => $res
                 ]));
             return json_encode([
                 "status" => 1,
-                "data"   => $res,
-                "tip"    => $tip
+                "data"   => $res
             ]);
         } catch (Exception $e2) {
             return json_encode([
@@ -366,20 +325,15 @@ abstract class AntOAController extends Controller {
                 ]);
             }
             $req = json_decode($request->getContent(), true);
-            $tableObj = $this->gridObj->getEditForm()->getArr();
+            $gridEditForm = $this->gridObj->getEditForm();
             $param = [];
-            foreach ($tableObj['columns'] as $col) {
-                if ($col['type'] === GridEditForm::COLUMN_PASSWORD) {
-                    if ($req[$col['col']] !== '')
-                        $param[$col['col']] = md5($req[$col['col']]);
-                } else if ($col['type'] !== GridEditForm::COLUMN_DISPLAY)
-                    $param[$col['col']] = $req[$col['col']];
-            }
+            foreach ($gridEditForm->getEditColumnList() as $col) //EditColumnBase
+                $param[$col->col] = $col->onGuestVal($req[$col->col]);
             $hook = $this->gridObj->getSaveHook();
             if ($hook != null)
                 $param = $hook->hook($param);
             if ($param != null)
-                $tableObj['table']->onUpdate($tableObj['columns'], $param);
+                $gridEditForm->getDBObject()->onUpdate($gridEditForm->primaryKey, $param);
             return json_encode([
                 "status" => 1,
                 "data"   => "保存成功"
@@ -398,8 +352,9 @@ abstract class AntOAController extends Controller {
      * @return String 通用成功失败返回
      */
     public function api_detail_column_list(Request $request) {
+        $uid = 0;
         try {
-            $this->getUserInfo($request);
+            $uid = $this->getUserInfo($request);
         } catch (Exception $e) {
             return json_encode([
                 "status" => 0,
@@ -408,6 +363,7 @@ abstract class AntOAController extends Controller {
         }
         $type = $request->get("type");
         $column = $request->get("col");
+        $vModelVal = $request->get("val");
         try {
             if ($this->gridObj->getEditForm() == null && $type == "edit")
                 throw new Exception("页面配置信息不存在");
@@ -419,51 +375,137 @@ abstract class AntOAController extends Controller {
                 "msg"    => $e->getMessage()
             ]);
         }
-        $formObj = null;
-        if ($type == "create")
-            $formObj = $this->gridObj->getCreateForm()->getArr();
-        else if ($type == "edit")
-            $formObj = $this->gridObj->getEditForm()->getArr();
-        if ($type != null) {
-            foreach ($formObj['columns'] as $r) {
-                if ((($r['type'] == GridCreateForm::COLUMN_CHILDREN_CHOOSE && $type == "create") || ($r['type'] == GridEditForm::COLUMN_CHILDREN_CHOOSE && $type == "edit")) && $column == $r['col']) {
-                    $list = $r['extra']->getDBObject();
-                    $config = $r['extra']->getArr();
+        if ($type == "create") {
+            foreach ($this->gridObj->getCreateForm()->getCreateColumnList() as $columnItem) {
+                if ($columnItem instanceof CreateColumnChildrenChoose && $column == $columnItem->col) {
                     $req = json_decode($request->getContent(), true);
-                    foreach ($config['filter_columns'] as $r) {
-                        switch ($r['type']) {
-                            case GridList::FILTER_TEXT:
-                                if ($req[$r['col']] !== '')
-                                    $list->where($r['col'], 'like', "%" . $request->post($r['col']) . "%");
-                                break;
-                            case GridList::FILTER_HIDDEN:
-                            case GridList::FILTER_ENUM:
-                                if ($req[$r['col']] !== '')
-                                    $list->where($r['col'], $req[$r['col']]);
-                                break;
-                            case GridList::FILTER_STARTTIME:
-                                if ($req[$r['col'] . "_starttime"] !== '')
-                                    $list->where($r['col'], ">", $req[$r['col'] . "_starttime"]);
-                                break;
-                            case GridList::FILTER_ENDTIME:
-                                if ($req[$r['col'] . "_endtime"] !== '')
-                                    $list->where($r['col'], "<", $req[$r['col'] . "_endtime"]);
-                                break;
+                    $pageParams = [];
+                    foreach ($req as $k => $v)
+                        $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
+                    $urlParamCalculator = new UrlParamCalculator($pageParams);
+                    $gridList = $columnItem->gridListEasy;
+                    $gridListDbObject = $gridList->getDBObject()->doClone();
+                    $req = json_decode($request->getContent(), true);
+                    foreach ($gridList->getFilterList() as $r) {
+                        $param = $urlParamCalculator->getPageParamByKey($r->col);
+                        if ($r instanceof ListFilterText) {
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, 'like', "%" . $param->val . "%");
+                        } else if ($r instanceof ListFilterHidden || $r instanceof ListFilterEnum) {
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, $param->val);
+                        } else if ($r instanceof ListFilterStartTime) {
+                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_starttime");
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, ">", $param->val);
+                        } else if ($r instanceof ListFilterEndTime) {
+                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_endtime");
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, "<", $param->val);
+                        } else if ($r instanceof ListFilterUID) {
+                            $gridListDbObject->where($r->col, $uid);
                         }
                     }
-                    $columns = array_column($config['columns'], 'col');
-                    foreach ($columns as &$column)
-                        $column = $column . " as " . $column;
-                    if ($config['orderBy'] != null)
-                        foreach ($config['orderBy'] as $orderItem)
-                            $list = $list->orderBy($orderItem[0], $orderItem[1]);
-                    $res = $list
-                        ->select($columns)
-                        ->paginate(8);
+                    $vModelValTip = $gridListDbObject->doClone()->where($columnItem->gridListVModelCol, $vModelVal)->first();
+                    if ($vModelValTip == null)
+                        $vModelValTip = "";
+                    else
+                        $vModelValTip = json_decode(json_encode($vModelValTip), true)[$columnItem->gridListDisplayCol];
+                    $columns = [];
+                    foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
+                        if (($column instanceof ListTableColumnDisplay) || ($column instanceof ListTableColumnRichDisplay))
+                            continue;
+                        $columns[] = $column->col;
+                    }
+                    $res = $gridListDbObject->select($columns)->paginate(8);
                     $res = json_decode(json_encode($res), true);
+                    foreach ($res['data'] as &$searchResultItem) {
+                        $searchResultItem['BUTTON_CONDITION_DATA'] = [];
+                        $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
+                        $searchResultParams = [];
+                        foreach ($gridList->getTableColumnList() as $column) {
+                            if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
+                                $searchResultItem[$column->col] = '';
+                            $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
+                        }
+                        $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
+                        foreach ($gridList->getRowButtonList() as $rowButtonItem) {
+                            $searchResultItem['BUTTON_FINAL_URL_DATA'][] = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
+                            $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
+                        }
+                    }
                     $res['status'] = 1;
-                    $res['columns'] = $config['columns'];
-                    $res['displayColumn'] = $config['displayColumn'];
+                    $res['vModelValTip'] = $vModelValTip;
+                    $hook = $columnItem->getHook();
+                    if ($hook != null)
+                        return json_encode($hook->hook($res));
+                    return json_encode($res);
+                }
+            }
+        } else if ($type == "edit") {
+            foreach ($this->gridObj->getEditForm()->getEditColumnList() as $columnItem) {
+                if ($columnItem instanceof EditColumnChildrenChoose && $column == $columnItem->col) {
+                    $req = json_decode($request->getContent(), true);
+                    $pageParams = [];
+                    foreach ($req as $k => $v)
+                        $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
+                    $urlParamCalculator = new UrlParamCalculator($pageParams);
+                    $gridList = $columnItem->gridListEasy;
+                    $gridListDbObject = $gridList->getDBObject()->doClone();
+                    $req = json_decode($request->getContent(), true);
+                    foreach ($gridList->getFilterList() as $r) {
+                        $param = $urlParamCalculator->getPageParamByKey($r->col);
+                        if ($r instanceof ListFilterText) {
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, 'like', "%" . $param->val . "%");
+                        } else if ($r instanceof ListFilterHidden || $r instanceof ListFilterEnum) {
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, $param->val);
+                        } else if ($r instanceof ListFilterStartTime) {
+                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_starttime");
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, ">", $param->val);
+                        } else if ($r instanceof ListFilterEndTime) {
+                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_endtime");
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, "<", $param->val);
+                        } else if ($r instanceof ListFilterUID) {
+                            $gridListDbObject->where($r->col, $uid);
+                        }
+                    }
+                    $vModelValTip = $gridListDbObject->doClone()->where($columnItem->gridListVModelCol, $vModelVal)->first();
+                    if ($vModelValTip == null)
+                        $vModelValTip = "";
+                    else
+                        $vModelValTip = json_decode(json_encode($vModelValTip), true)[$columnItem->gridListDisplayCol];
+                    $columns = [];
+                    foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
+                        if (($column instanceof ListTableColumnDisplay) || ($column instanceof ListTableColumnRichDisplay))
+                            continue;
+                        $columns[] = $column->col;
+                    }
+                    $res = $gridListDbObject->select($columns)->paginate(8);
+                    $res = json_decode(json_encode($res), true);
+                    foreach ($res['data'] as &$searchResultItem) {
+                        $searchResultItem['BUTTON_CONDITION_DATA'] = [];
+                        $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
+                        $searchResultParams = [];
+                        foreach ($gridList->getTableColumnList() as $column) {
+                            if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
+                                $searchResultItem[$column->col] = '';
+                            $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
+                        }
+                        $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
+                        foreach ($gridList->getRowButtonList() as $rowButtonItem) {
+                            $searchResultItem['BUTTON_FINAL_URL_DATA'][] = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
+                            $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
+                        }
+                    }
+                    $res['status'] = 1;
+                    $res['vModelValTip'] = $vModelValTip;
+                    $hook = $columnItem->getHook();
+                    if ($hook != null)
+                        return json_encode($hook->hook($res));
                     return json_encode($res);
                 }
             }
@@ -484,7 +526,7 @@ abstract class AntOAController extends Controller {
         try {
             if ($this->gridObj->getGridList() == null)
                 throw new Exception("页面配置信息不存在");
-            if (!$this->gridObj->getGridList()->getArr()['hasDelete'])
+            if (!$this->gridObj->getGridList()->hasDelete)
                 throw new Exception("非法操作");
         } catch (Exception $e) {
             return json_encode([
@@ -502,7 +544,6 @@ abstract class AntOAController extends Controller {
         }
         try {
             $obj = $this->gridObj->getGridList()->getDBObject();
-            $config = $this->gridObj->getGridList()->getArr();
             $id = $request->get("id");
             if (!$id)
                 throw new Exception("缺少参数ID");
@@ -516,9 +557,6 @@ abstract class AntOAController extends Controller {
                 $obj->delete($id);
             $resp = json_encode($resp);
             $resp = json_decode($resp, true);
-            foreach ($config['delete_join'] as $table) {
-                DB::table($table[0])->where($table[2], $resp[$table[1]])->delete();
-            }
             return json_encode([
                 "status" => 1,
                 "data"   => "删除成功"
@@ -545,26 +583,31 @@ abstract class AntOAController extends Controller {
             $content = json_decode($content, true);
             if (!$content)
                 throw new Exception("非法操作");
-            $hookConfig = null;
+            $changeHookList = null;
             if (!array_key_exists("type", $content) || !array_key_exists("form", $content))
                 throw new Exception("非法操作");
             $type = $content['type'];
+            $col = $content['col'];
             if ($type == "create") {
                 if ($this->gridObj->getCreateForm() == null)
                     throw new Exception("页面配置信息不存在");
-                $hookConfig = $this->gridObj->getCreateForm()->getArr()["change_hook"];
+                $changeHookList = $this->gridObj->getCreateForm()->getChangeHookList();
             } else if ($type == "edit") {
                 if ($this->gridObj->getEditForm() == null)
                     throw new Exception("页面配置信息不存在");
-                $hookConfig = $this->gridObj->getEditForm()->getArr()["change_hook"];
+                $changeHookList = $this->gridObj->getEditForm()->getChangeHookList();
             } else
                 throw new Exception("非法操作");
-            if ($hookConfig == null)
+            $changeHookList = array_filter($changeHookList, function ($t) use ($col) {
+                return $t->col == $col;
+            });
+            if (empty($changeHookList))
                 throw new Exception("页面配置信息不存在");
-            $data = $hookConfig['hook']->hook($content['form']);
+            $data = $changeHookList[0]->hook($content['form']);
             return json_encode([
-                "status" => 1,
-                "data"   => $data
+                "status"         => 1,
+                "data"           => $data->data,
+                "displayColumns" => $data->display
             ]);
         } catch (Exception $e) {
             return json_encode([

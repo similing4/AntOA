@@ -102,11 +102,13 @@ class AuthController {
                 "saveKey"    => '$(etag)' . '$(ext)'
             ], true);
             $routes = $this->makeRoutes($uid);
+            $titleMap = $this->makeTitleMap();
             return json_encode([
-                "status" => 1,
-                "host"   => $qiniu['url'],
-                "token"  => $token,
-                "routes" => $routes
+                "status"    => 1,
+                "host"      => $qiniu['url'],
+                "token"     => $token,
+                "routes"    => $routes,
+                "title_map" => $titleMap
             ]);
         } catch (Exception $e) {
             return json_encode([
@@ -114,6 +116,31 @@ class AuthController {
                 "msg"    => $e->getMessage() . $e->getLine()
             ]);
         }
+    }
+
+    private function makeTitleMap() {
+        $configRoutes = config('antoa.menu_routes');
+        $ret = [];
+        $dfs = function ($item) use (&$dfs, &$ret) {
+            if (array_key_exists("children", $item))
+                foreach ($item['children'] as $r)
+                    $dfs($r);
+            if (!array_key_exists('path', $item))
+                return;
+            if (!array_key_exists('name', $item))
+                return;
+            $ret[] = [
+                "path" => $item['path'],
+                "name" => $item['name']
+            ];
+        };
+        foreach ($configRoutes as $r)
+            $dfs($r);
+        $ret[] = [
+            "path" => "/antoa/user/change_password",
+            "name" => "修改密码"
+        ];
+        return $ret;
     }
 
     private function makeRoutes($uid) {
@@ -124,33 +151,33 @@ class AuthController {
         $user = json_decode($user, true);
         $configRoutes = config('antoa.menu_routes');
         $configRoutes[] = [
-            "name"      => "修改密码",
-            "visible"    => false,
-            "children"   => [
+            "name"     => "修改密码",
+            "visible"  => false,
+            "children" => [
                 [
-                    "visible"    => false,
-                    "path"       => "/antoa/user/change_password",
-                    "name"       => "修改密码"
+                    "visible" => false,
+                    "path"    => "/antoa/user/change_password",
+                    "name"    => "修改密码"
                 ]
             ]
         ];
-        foreach ($configRoutes as &$configRoutesItem){
-            if(array_key_exists('children',$configRoutesItem)){
-                $configRoutesItem['children'] = array_filter($configRoutesItem['children'], function($r) use($user) {
+        foreach ($configRoutes as &$configRoutesItem) {
+            if (array_key_exists('children', $configRoutesItem)) {
+                $configRoutesItem['children'] = array_filter($configRoutesItem['children'], function ($r) use ($user) {
                     $limitVailed = true;
-                    if(array_key_exists('role_limit',$r))
+                    if (array_key_exists('role_limit', $r))
                         $limitVailed = $r['role_limit']($user);
-                    return (!array_key_exists("visible",$r) || $r['visible']) && $limitVailed;
+                    return (!array_key_exists("visible", $r) || $r['visible']) && $limitVailed;
                 });
             }
-            if(array_key_exists('isHome',$configRoutesItem) && $configRoutesItem['isHome']){
+            if (array_key_exists('isHome', $configRoutesItem) && $configRoutesItem['isHome']) {
                 $configRoutesItem['children'] = [];
                 unset($configRoutesItem['children']);
                 $configRoutesItem['path'] = "/home";
             }
         }
-        $configRoutes = array_filter($configRoutes, function($r) {
-            return !array_key_exists("visible",$r) || $r['visible'];
+        $configRoutes = array_filter($configRoutes, function ($r) {
+            return !array_key_exists("visible", $r) || $r['visible'];
         });
         return $configRoutes;
     }

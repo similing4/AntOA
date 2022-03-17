@@ -28,10 +28,8 @@ class ListTableColumnHidden extends ListTableColumnBase {
     }
 
     public function jsonSerialize() {
-        return [
-            "type" => "ListTableColumnHidden",
-            "col" => $this->col,
-            "tip" => $this->tip
-        ];
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListTableColumnHidden"
+        ]);
     }
 }

@@ -37,12 +37,9 @@ class ListFilterEnum extends ListFilterBase {
     }
 
     public function jsonSerialize() {
-        return [
-            "type"    => "ListFilterEnum",
-            "col"     => $this->col,
-            "tip"     => $this->tip,
-            "default" => $this->defaultVal,
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListFilterEnum",
             "enum" => $this->options
-        ];
+        ]);
     }
 }

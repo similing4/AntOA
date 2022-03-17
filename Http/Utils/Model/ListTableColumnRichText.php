@@ -20,10 +20,8 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase;
  */
 class ListTableColumnRichText extends ListTableColumnBase {
     public function jsonSerialize() {
-        return [
-            "type" => "ListTableColumnRichText",
-            "col" => $this->col,
-            "tip" => $this->tip
-        ];
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListTableColumnRichText"
+        ]);
     }
 }

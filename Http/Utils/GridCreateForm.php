@@ -3,20 +3,51 @@
  * FileName:GridCreateForm.php
  * Author:Shengxinyu
  * Email:845206213@qq.com
- * Date:2021/8/9
- * Time:16:29
+ * Date:2021/8/11
+ * Time:15:37
  */
 declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils;
 
 
-use Illuminate\Support\Facades\DB;
 use JsonSerializable;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateOrEditColumnChangeHookCollection;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateColumnBase;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateColumnCollection;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateRowButtonBase;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateRowButtonBaseCollection;
 use Modules\AntOA\Http\Utils\hook\CreateOrEditColumnChangeHook;
+use Modules\AntOA\Http\Utils\Model\CascaderNode;
+use Modules\AntOA\Http\Utils\Model\CreateColumnCascader;
+use Modules\AntOA\Http\Utils\Model\CreateColumnChildrenChoose;
+use Modules\AntOA\Http\Utils\Model\CreateColumnDisplay;
+use Modules\AntOA\Http\Utils\Model\CreateColumnDivideNumber;
+use Modules\AntOA\Http\Utils\Model\CreateColumnEnum;
+use Modules\AntOA\Http\Utils\Model\CreateColumnEnumCheckBox;
+use Modules\AntOA\Http\Utils\Model\CreateColumnEnumRadio;
+use Modules\AntOA\Http\Utils\Model\CreateColumnEnumTreeCheckBox;
+use Modules\AntOA\Http\Utils\Model\CreateColumnFile;
+use Modules\AntOA\Http\Utils\Model\CreateColumnFiles;
+use Modules\AntOA\Http\Utils\Model\CreateColumnHidden;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPassword;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPicture;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPictures;
+use Modules\AntOA\Http\Utils\Model\CreateColumnRichText;
+use Modules\AntOA\Http\Utils\Model\CreateColumnText;
+use Modules\AntOA\Http\Utils\Model\CreateColumnTextarea;
+use Modules\AntOA\Http\Utils\Model\CreateColumnTimestamp;
+use Modules\AntOA\Http\Utils\Model\CreateRowButtonApi;
+use Modules\AntOA\Http\Utils\Model\CreateRowButtonApiWithConfirm;
+use Modules\AntOA\Http\Utils\Model\CreateRowButtonBlob;
+use Modules\AntOA\Http\Utils\Model\CreateRowButtonNavigate;
+use Modules\AntOA\Http\Utils\Model\CreateRowButtonRichText;
+use Modules\AntOA\Http\Utils\Model\EnumOption;
+use Modules\AntOA\Http\Utils\Model\GridListEasy;
+use Modules\AntOA\Http\Utils\Model\TreeNode;
 
 class GridCreateForm implements JsonSerializable {
-    private $_table; //DBCreateOperator类型对象
+    /*
     const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据
     const COLUMN_NUMBER_DIVIDE = "COLUMN_NUMBER_DIVIDE"; //进行预除运算的数字数据，提交时会乘回来
     const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据
@@ -35,19 +66,30 @@ class GridCreateForm implements JsonSerializable {
     const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
     const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
     const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
-    private $columns = []; //创建页的所有行（col）、注释（tip）、类型（type）、额外数据（extra）
-    private $columnsApiButton = []; //创建页的每行自定义API按钮
-    private $defaultValues = []; //默认值，可为数组或字符串，如果为数组那么为静态默认值，如果为字符串那么为根据接口获取的动态默认值
-    private $changeHook = null; //数据变更时的钩子
-
+    */
     /**
-     * 工厂方法用于创建空的GridCreateForm对象用于apiButtonWithForm方法。
-     * @return GridCreateForm
+     * @var DBCreateOperator DBCreateOperator对象
      */
-    public static function EmptyForm() {
-        return new self(new class(DB::table("")) extends DBCreateOperator {
-        });
-    }
+    private $_table;
+    /**
+     * @var string 被用作跳转到编辑页及调用删除功能时传入的主键列名
+     */
+    public $primaryKey = "id";
+    /**
+     * @var CreateColumnCollection
+     * 编辑页的所有表单项
+     */
+    private $editColumnCollection;
+    /**
+     * @var CreateRowButtonBaseCollection
+     * 编辑页的每行自定义API按钮
+     */
+    private $editRowButtonBaseCollection;
+    /**
+     * @var CreateOrEditColumnChangeHookCollection
+     * 数据变更时的钩子
+     */
+    private $createOrCreateColumnChangeHookCollection;
 
     /**
      * 构造方法
@@ -55,33 +97,35 @@ class GridCreateForm implements JsonSerializable {
      */
     public function __construct($table) {
         $this->_table = $table;
+        $this->editColumnCollection = new CreateColumnCollection();
+        $this->editRowButtonBaseCollection = new CreateRowButtonBaseCollection();
+        $this->createOrCreateColumnChangeHookCollection = new CreateOrEditColumnChangeHookCollection();
     }
 
     /**
-     * 序列化对象为数组形式
-     * @return array 序列化后的数组
+     * 获取数据库操作对象
+     * @return DBCreateOperator 数据库操作DB的Builder对象
      */
-    public function getArr() {
-        return [
-            "table"              => $this->_table,
-            "columns"            => $this->columns,
-            "default_values"     => $this->defaultValues,
-            "columns_api_button" => $this->columnsApiButton,
-            "change_hook"        => $this->changeHook
-        ];
+    public function getDBObject() {
+        return $this->_table;
     }
 
     /**
-     * 序列化对象
-     * @return String 序列化后的JSON
+     * 获取内容变更钩子列表
+     * @return array<CreateOrEditColumnChangeHook> 返回行数据变更时的钩子
      */
-    public function json() {
-        return json_encode([
-            "columns"            => $this->columns,
-            "default_values"     => $this->defaultValues,
-            "columns_api_button" => $this->columnsApiButton,
-            "change_hook"        => $this->changeHook ? $this->changeHook['columns'] : null
-        ]);
+    public function getChangeHookList() {
+        return $this->createOrCreateColumnChangeHookCollection->getItems();
+    }
+
+    /**
+     * 设置列表项
+     * @param string $primaryKey 被用作跳转到编辑页及调用删除功能时传入的主键列名
+     * @return GridCreateForm
+     */
+    public function setPrimaryKey($primaryKey) {
+        $this->primaryKey = $primaryKey;
+        return $this;
     }
 
     /**
@@ -89,42 +133,40 @@ class GridCreateForm implements JsonSerializable {
      * @return array 序列化后的JSON
      */
     public function jsonSerialize() {
-        return json_decode($this->json(), true);
+        return [
+            "primaryKey"                             => $this->primaryKey,
+            "editColumnCollection"                   => $this->editColumnCollection,
+            "editRowButtonBaseCollection"            => $this->editRowButtonBaseCollection,
+            "createOrCreateColumnChangeHookCollection" => $this->createOrCreateColumnChangeHookCollection
+        ];
+    }
+    /**
+     * 获取所有列对象
+     * @return array<CreateColumnBase>
+     */
+    public function getCreateColumnList() {
+        return $this->editColumnCollection->getItems();
     }
 
     /**
      * 指定一列
-     * @param String $columnType 列表类型，可选类型为GridCreateForm对应的静态属性
-     * @param String $col 数据库列名
-     * @param String $colTip 在列表页该列的的表头名称
-     * @param array $extra 该列类型的对应额外数据
+     * @param CreateColumnBase $columnItem 编辑页的行对象
      * @return GridCreateForm 返回this以便链式调用
-     * @deprecated
      */
-    public function column($columnType, $col, $colTip, $extra = []) {
-        $this->columns[] = [
-            "type"  => $columnType,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => $extra
-        ];
+    public function column(CreateColumnBase $columnItem) {
+        $this->editColumnCollection->addItem($columnItem);
         return $this;
     }
-
 
     /**
      * 指定一个文本输入框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnText($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_TEXT,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnText($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnText($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -134,18 +176,11 @@ class GridCreateForm implements JsonSerializable {
      * @param String $colTip 在列表页该列的的表头名称
      * @param Number $divide 除数
      * @param string $unit 单位，默认为空
+     * @param String $defaultVal 默认值（没除的数）
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnNumberDivide($col, $colTip, $divide, $unit = '') {
-        $this->columns[] = [
-            "type"  => self::COLUMN_NUMBER_DIVIDE,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => [
-                "divide" => $divide,
-                "unit"   => $unit
-            ]
-        ];
+    public function columnNumberDivide($col, $colTip, $divide, $unit = '', $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnDivideNumber($col, $colTip, $divide, $unit, $defaultVal));
         return $this;
     }
 
@@ -153,15 +188,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个Textarea
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnTextarea($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_TEXTAREA,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnTextarea($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnTextarea($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -169,15 +200,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个密码输入框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnPassword($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_PASSWORD,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnPassword($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnPassword($col, $tip, $defaultVal));
         return $this;
     }
 
@@ -185,16 +212,12 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个下拉单选框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param array $keyValMap 单选的键值对数组，键为数据库的字段值，值为选择时展示的值
+     * @param array<EnumOption> $options 单选的选项
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnSelect($col, $colTip, array $keyValMap) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_SELECT,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => (object)$keyValMap
-        ];
+    public function columnSelect($col, $colTip, array $options, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnEnum($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -202,16 +225,12 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个Radio单选框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param array $keyValMap 单选的键值对数组，键为数据库的字段值，值为选择时展示的值
+     * @param array<EnumOption> $options 单选的选项
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnRadio($col, $colTip, array $keyValMap) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_RADIO,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => (object)$keyValMap
-        ];
+    public function columnRadio($col, $colTip, array $options, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnEnumRadio($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -219,16 +238,12 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个多选框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param array $keyValMap 多选的键值对数组，键为数据库的字段值，值为选择时展示的值
+     * @param array<EnumOption> $options 多选的选项
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnCheckbox($col, $colTip, array $keyValMap) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_CHECKBOX,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => (object)$keyValMap
-        ];
+    public function columnCheckbox($col, $colTip, array $options, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnEnumCheckBox($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -236,16 +251,12 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个树形多选框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param array $keyValMap 详见https://www.antdv.com/components/tree-select-cn的tree-data属性
+     * @param array<TreeNode> $options 详见https://www.antdv.com/components/tree-select-cn
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnTreeCheckbox($col, $colTip, array $keyValMap) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_TREE_CHECKBOX,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => $keyValMap
-        ];
+    public function columnTreeCheckbox($col, $colTip, array $options, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnEnumTreeCheckBox($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -253,15 +264,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个时间选择输入框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnTimestamp($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_TIMESTAMP,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnTimestamp($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnTimestamp($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -269,15 +276,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个时富文本输入框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnRichText($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_RICHTEXT,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnRichText($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnRichText($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -285,15 +288,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个图片选择框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnPicture($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_PICTURE,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnPicture($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnPicture($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -301,15 +300,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个文件选择框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnFile($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_FILE,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnFile($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnFile($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -317,15 +312,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个图片多选框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnPictures($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_PICTURES,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnPictures($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnPictures($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -333,15 +324,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个文件多选框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnFiles($col, $colTip) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_FILES,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => []
-        ];
+    public function columnFiles($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnFiles($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -349,16 +336,12 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个级联选择框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param array $keyValMap 详见https://www.antdv.com/components/cascader-cn
+     * @param array<CascaderNode> $options 详见https://www.antdv.com/components/cascader-cn
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnChoose($col, $colTip, array $keyValMap) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_CHOOSE,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => $keyValMap
-        ];
+    public function columnCascader($col, $colTip, array $options, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnCascader($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -366,16 +349,11 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个展示框，不会被提交
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param String $noContentVal 没有对应的查询值时的默认值
+     * @param String $defaultVal 没有对应的查询值时的默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnDisplay($col, $colTip, $noContentVal = "") {
-        $this->columns[] = [
-            "type"  => self::COLUMN_DISPLAY,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => $noContentVal === "" ? [] : $noContentVal
-        ];
+    public function columnDisplay($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnDisplay($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -385,12 +363,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnHidden($col) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_HIDDEN,
-            "col"   => $col,
-            "tip"   => "",
-            "extra" => []
-        ];
+        $this->editColumnCollection->addItem(new CreateColumnHidden($col));
         return $this;
     }
 
@@ -398,68 +371,84 @@ class GridCreateForm implements JsonSerializable {
      * 指定一个子表选择行，子表的第一个设置的列会被作为最终选择的值
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
-     * @param GridList $gridList 用于选择的GridList实例
+     * @param GridListEasy $gridListEasy 用于选择的GridList实例
+     * @param String $gridListVModelCol 选中列表项后需要作为表单值的列表列（如列表为select uid,username from user，那么此值为uid时将会将对应选中行的uid值作为对应表单值传给后端）
+     * @param String $gridListDisplayCol 选中列表项后展示在表单中的值对应的列表列（如列表为select uid,username from user，那么此值为username时将会将对应选中行的username值展示在表单上）
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnChildrenChoose($col, $colTip, GridList $gridList) {
-        $this->columns[] = [
-            "type"  => self::COLUMN_CHILDREN_CHOOSE,
-            "col"   => $col,
-            "tip"   => $colTip,
-            "extra" => $gridList
-        ];
-        return $this;
-    }
-
-    /**
-     * 设置默认值
-     * @param array $defaultValues 默认值的键值对数组
-     * @return GridCreateForm 返回this以便链式调用
-     */
-    public function defaultVal($defaultValues) {
-        $this->defaultValues = $defaultValues;
-        return $this;
-    }
-
-    /**
-     * 通过接口设置默认值
-     * @param string $url 默认值接口url
-     * @return GridCreateForm 返回this以便链式调用
-     */
-    public function defaultValFromApi($url) {
-        $this->defaultValues = $url;
+    public function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new CreateColumnChildrenChoose($col, $colTip, $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal));
         return $this;
     }
 
     /**
      * 指定一列后方请求数据的按钮
-     * @param string $col 列名
-     * @param string $buttonName 按钮名称
-     * @param string $url 按钮请求的接口地址
-     * @param String $buttonType 按钮的type属性，默认为primary
+     * @param CreateRowButtonBase $buttonItem 需要添加的行按钮对象
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnApiButton($col, $buttonName, $url, $buttonType = 'primary') {
-        $this->columnsApiButton[] = [
-            "column" => $col,
-            "title"  => $buttonName,
-            "url"    => $url,
-            "type"   => $buttonType
-        ];
+    public function columnApiButton(CreateRowButtonBase $buttonItem) {
+        $this->editRowButtonBaseCollection->addItem($buttonItem);
         return $this;
     }
 
     /**
      * 添加内容变更钩子
-     * @param array<string> $cols 监听的列列表
      * @param CreateOrEditColumnChangeHook $hook 行数据变更时的钩子
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function setChangeHook($cols, CreateOrEditColumnChangeHook $hook) {
-        $this->changeHook = [
-            "columns" => $cols,
-            "hook"    => $hook
-        ];
+    public function setChangeHook(CreateOrEditColumnChangeHook $hook) {
+        $this->createOrCreateColumnChangeHookCollection->addItem($hook);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行页面跳转按钮
+     * @param CreateRowButtonNavigate $editRowButtonItem 按钮项
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function rowNavigateButton(CreateRowButtonNavigate $editRowButtonItem) {
+        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行API调用按钮
+     * @param CreateRowButtonApi $editRowButtonItem 按钮项
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function rowApiButton(CreateRowButtonApi $editRowButtonItem) {
+        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行文件BLOB下载调用按钮
+     * @param CreateRowButtonBlob $editRowButtonItem 按钮项
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function rowBlobButton(CreateRowButtonBlob $editRowButtonItem) {
+        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个需要弹窗确认的每行API调用按钮
+     * @param CreateRowButtonApiWithConfirm $editRowButtonItem 按钮项
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function rowApiButtonWithConfirm(CreateRowButtonApiWithConfirm $editRowButtonItem) {
+        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行弹窗展示富文本的模态框的按钮
+     * @param CreateRowButtonRichText $editRowButtonItem 按钮项
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function rowRichTextButton(CreateRowButtonRichText $editRowButtonItem) {
+        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
         return $this;
     }
 }

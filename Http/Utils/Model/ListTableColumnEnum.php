@@ -36,11 +36,9 @@ class ListTableColumnEnum extends ListTableColumnBase {
     }
 
     public function jsonSerialize() {
-        return [
+        return array_merge(parent::jsonSerialize(), [
             "type" => "ListTableColumnEnum",
-            "col"  => $this->col,
-            "tip"  => $this->tip,
             "enum" => $this->options
-        ];
+        ]);
     }
 }

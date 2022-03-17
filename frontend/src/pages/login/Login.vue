@@ -132,6 +132,7 @@ export default {
 						localStorage.homeVueApi = e.routes[0].children[i].meta.vue_api;
 				}
 				this.$store.commit('setting/setMenuData', e.routes);
+				this.$store.commit('setting/setCustomTitleList', e.title_map);
 				this.$router.push("/home");
 			} catch (e) {
 				this.$message.error(e + "", 5)

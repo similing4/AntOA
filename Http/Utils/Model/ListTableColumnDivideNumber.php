@@ -41,12 +41,10 @@ class ListTableColumnDivideNumber extends ListTableColumnBase {
     }
 
     public function jsonSerialize() {
-        return [
+        return array_merge(parent::jsonSerialize(), [
             "type" => "ListTableColumnDivideNumber",
-            "col"    => $this->col,
-            "tip"    => $this->tip,
             "divide" => $this->divide,
             "unit"   => $this->unit
-        ];
+        ]);
     }
 }

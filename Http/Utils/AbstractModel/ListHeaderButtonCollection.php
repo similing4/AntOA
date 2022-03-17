@@ -19,6 +19,12 @@ class ListHeaderButtonCollection implements JsonSerializable {
         $this->array[] = $item;
     }
 
+    public function removeItems(array $items) {
+        $this->array = array_filter($this->array, function ($item) use ($items) {
+            return !in_array($item, $items);
+        });
+    }
+
     /**
      * 获取所有行按钮对象
      * @return array<ListHeaderButtonBase>

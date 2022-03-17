@@ -21,7 +21,7 @@ export default {
   },
   getters: {
     menuData(state, getters, rootState) {
-      if(!state.menuData || state.menuData.length == 0)
+      if (!state.menuData || state.menuData.length == 0)
         state.menuData = JSON.parse(localStorage.antOAMenuData)
       return state.menuData
     },
@@ -89,16 +89,20 @@ export default {
     setFixedTabs(state, fixedTabs) {
       state.fixedTabs = fixedTabs
     },
-    setCustomTitle(state, { path, title }) {
-      if (title) {
-        const obj = state.customTitles.find(item => item.path === path)
-        if (obj) {
-          obj.title = title
-        } else {
-          state.customTitles.push({ path, title })
+    setCustomTitleList(state, arr) {
+      arr.map((row) => {
+        let { path, name } = row;
+        let title = name;
+        if (title) {
+          const obj = state.customTitles.find(item => item.path === path)
+          if (obj) {
+            obj.title = title
+          } else {
+            state.customTitles.push({ path, title })
+          }
         }
-        sessionStorage.setItem(process.env.VUE_APP_TBAS_TITLES_KEY, JSON.stringify(state.customTitles))
-      }
+      });
+      sessionStorage.setItem(process.env.VUE_APP_TBAS_TITLES_KEY, JSON.stringify(state.customTitles))
     }
   }
 }

@@ -14,12 +14,21 @@ namespace Modules\AntOA\Http\Utils;
 use Illuminate\Database\Query\Builder;
 
 abstract class DBListOperator {
+    /**
+     * @var Builder Builder
+     */
     public $builder; //DB类产生的对象，于构造方法中传入
 
     public function __construct(Builder $builder) {
         $this->builder = $builder;
     }
-    
+
+    public function doClone() {
+        $ret = clone $this;
+        $ret->builder = clone $this->builder;
+        return $ret;
+    }
+
     //where方法，设置的对应column会作为条件传入。你可以根据column自定义设置传入条件内容
     public function where($column, $operator = null, $value = null, $boolean = 'and') {
         $this->builder->where($column, $operator, $value, $boolean);

@@ -9,7 +9,7 @@
 						<ListFilterEndTime v-if="filterItem.type == 'ListFilterEndTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+  '_endtime']" />
 						<ListFilterText v-if="filterItem.type == 'ListFilterText'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 					</a-col>
-					<span style="float: right; margin-top: 3px;">
+					<span style="float: right; margin-top: 3px;" v-if="gridListObject.listFilterCollection.filter((t)=>t.type != 'ListFilterHidden').length > 0">
 						<a-button type="primary" @click="doSearch">查询</a-button>
 						<a-button style="margin-left: 8px" @click="resetSearch">重置</a-button>
 					</span>
@@ -17,7 +17,7 @@
 			</div>
 			<div>
 				<a-space class="antoa-list-operator">
-					<HeaderButtonsWrapper :grid-list-object="gridListObject" @openurl="openurl" />
+					<HeaderButtonsWrapper :grid-list-object="gridListObject" :grid-api-object="gridApiObject" @openurl="openurl" @loadpage="loadPage" />
 				</a-space>
 				<div style="margin-bottom: 16px">
 					<a-alert type="info" :show-icon="true">
@@ -33,7 +33,7 @@
 						</div>
 					</a-alert>
 				</div>
-				<standard-table :columns="tableModel.columns" :data-source="tableModel.dataSource" :selected-rows.sync="tableModel.selectedRows" :pagination="tableModel.pagination" @change="onDataChange">
+				<standard-table :columns="tableModel.columns" :data-source="tableModel.dataSource" :selected-rows.sync="tableModel.selectedRows" :pagination="tableModel.pagination" :row-key="gridListObject.primaryKey" @change="onDataChange">
 					<template :slot="templateItem.col" slot-scope="{text, record}" v-for="templateItem in gridListObject.listTableColumnCollection">
 						<ListTableColumnEnum :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnEnum'" />
 						<ListTableColumnDivideNumber :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnDivideNumber'" />
@@ -43,7 +43,7 @@
 						<ListTableColumnPicture :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnPicture'" />
 					</template>
 					<div slot="action" slot-scope="{text, record}">
-						<RowButtonsWrapper :grid-list-object="gridListObject" :record="record" @openurl="openurl" />
+						<RowButtonsWrapper :grid-list-object="gridListObject" :grid-api-object="gridApiObject" :record="record" @openurl="openurl" @loadpage="loadPage" />
 					</div>
 				</standard-table>
 			</div>
@@ -88,6 +88,7 @@ export default {
 				save: ""
 			},
 			gridListObject: {
+				"primaryKey": "id",
 				"listFilterCollection": [], //{"type": "ListFilterText","col": "name","tip": "比赛名称"}
 				"listTableColumnCollection": [], //{"type": "ListTableColumnText","col": "id","tip": "ID"}
 				"listHeaderButtonCollection": [],

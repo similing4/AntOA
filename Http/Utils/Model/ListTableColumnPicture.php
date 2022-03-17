@@ -42,12 +42,10 @@ class ListTableColumnPicture extends ListTableColumnBase {
     }
 
     public function jsonSerialize() {
-        return [
-            "type"   => "ListTableColumnPicture",
-            "col"    => $this->col,
-            "tip"    => $this->tip,
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListTableColumnPicture",
             "width"  => $this->width,
             "height" => $this->height
-        ];
+        ]);
     }
 }

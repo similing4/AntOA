@@ -1,22 +1,25 @@
 <template>
 	<div>
-		<a-button @click="onEditClick(record.id)" type="primary" v-if="gridListObject.hasEdit" style="margin: 5px;">编辑</a-button>
-		<a-button @click="onDeleteClick(record.id)" type="danger" v-if="gridListObject.hasDelete" style="margin: 5px;">删除</a-button>
+		<a-button @click="onEditClick(record[gridListObject.primaryKey])" type="primary" v-if="gridListObject.hasEdit" style="margin: 5px;">编辑</a-button>
+		<a-button @click="onDeleteClick(record[gridListObject.primaryKey])" type="danger" v-if="gridListObject.hasDelete" style="margin: 5px;">删除</a-button>
 		<a-button @click="onRowButtonClick(rowButton, record, index)" :type="rowButton.buttonType" v-for="(rowButton,index) in gridListObject.listRowButtonCollection" :key="index" v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
 			{{ rowButton.buttonText }}
 		</a-button>
 		<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
 			<div v-html="richHtmlModal.html"></div>
 		</a-modal>
+		<confirm-dialog ref="confirmDialog"></confirm-dialog>
 	</div>
 </template>
 <script>
+import confirmDialog from "@/components/tool/ConfirmDialog.vue";
 export default {
 	props: {
 		gridListObject: {
 			type: Object,
 			default () {
 				return {
+					"primaryKey": "id",
 					"listFilterCollection": [], //{"type": "ListFilterText","col": "name","tip": "比赛名称"}
 					"listTableColumnCollection": [], //{"type": "ListTableColumnText","col": "id","tip": "ID"}
 					"listHeaderButtonCollection": [],
@@ -24,6 +27,24 @@ export default {
 					"hasCreate": false,
 					"hasEdit": false,
 					"hasDelete": false
+				}
+			}
+		},
+		gridApiObject: {
+			type: Object,
+			default () {
+				return {
+					api_column_change: "",
+					create: "",
+					create_page: "",
+					delete: "",
+					detail: "",
+					detail_column_list: "",
+					edit_page: "",
+					list: "",
+					list_page: "",
+					path: "",
+					save: ""
 				}
 			}
 		},
@@ -45,7 +66,13 @@ export default {
 			}
 		};
 	},
+	components:{
+		confirmDialog
+	},
 	methods: {
+		loadPage() {
+			this.$emit("loadpage");
+		},
 		async onRowButtonClick(rowButtonItem, record, index) {
 			let finalUrl = this.record.BUTTON_FINAL_URL_DATA[index];
 			let param = {
@@ -93,9 +120,13 @@ export default {
 			}
 		},
 		onEditClick(id) {
-			this.$emit('openurl', this.api.edit_page + "?id=" + id);
+			if(!id)
+				return this.$message.error("请在响应数据中配置id字段，否则无法使用GridEditForm功能", 5);
+			this.$emit('openurl', this.gridApiObject.edit_page + "?id=" + id);
 		},
 		onDeleteClick(id) {
+			if(!id)
+				return this.$message.error("请在响应数据中配置id字段，否则无法使用delete功能", 5);
 			this.$refs.confirmDialog.confirm("确认要删除这条记录么？").then(async () => {
 				let e = await this.$api(this.gridApiObject.delete).method("GET").param({
 					id: id

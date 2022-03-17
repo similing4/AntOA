@@ -24,11 +24,8 @@ class ListFilterHidden extends ListFilterBase {
     }
 
     public function jsonSerialize() {
-        return [
-            "type"    => "ListFilterHidden",
-            "col"     => $this->col,
-            "tip"     => $this->tip,
-            "default" => $this->defaultVal
-        ];
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListFilterHidden"
+        ]);
     }
 }

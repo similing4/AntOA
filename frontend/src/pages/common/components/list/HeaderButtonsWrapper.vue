@@ -7,15 +7,18 @@
 		<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
 			<div v-html="richHtmlModal.html"></div>
 		</a-modal>
+		<confirm-dialog ref="confirmDialog"></confirm-dialog>
 	</div>
 </template>
 <script>
+import confirmDialog from "@/components/tool/ConfirmDialog.vue";
 export default {
 	props: {
 		gridListObject: {
 			type: Object,
 			default () {
 				return {
+					"primaryKey": "id",
 					"listFilterCollection": [], //{"type": "ListFilterText","col": "name","tip": "比赛名称"}
 					"listTableColumnCollection": [], //{"type": "ListTableColumnText","col": "id","tip": "ID"}
 					"listHeaderButtonCollection": [],
@@ -23,6 +26,24 @@ export default {
 					"hasCreate": false,
 					"hasEdit": false,
 					"hasDelete": false
+				}
+			}
+		},
+		gridApiObject: {
+			type: Object,
+			default () {
+				return {
+					api_column_change: "",
+					create: "",
+					create_page: "",
+					delete: "",
+					detail: "",
+					detail_column_list: "",
+					edit_page: "",
+					list: "",
+					list_page: "",
+					path: "",
+					save: ""
 				}
 			}
 		}
@@ -35,7 +56,13 @@ export default {
 			}
 		};
 	},
+	components: {
+		confirmDialog
+	},
 	methods: {
+		loadPage() {
+			this.$emit("loadpage");
+		},
 		async onHeaderButtonClick(headerButtonItem) {
 			let param = this.$route.query;
 			if (headerButtonItem.type === "ListHeaderButtonApi") {
@@ -80,10 +107,11 @@ export default {
 			}
 		},
 		onCreateClick() {
+			let param = this.$route.query;
 			let params = [];
-			for (let i in this.tableModel.searchObj)
-				params.push(i + "=" + this.tableModel.searchObj[i]);
-			this.openurl(this.api.create_page + "?" + params.join("&"));
+			for (let i in param)
+				params.push(i + "=" + param[i]);
+			this.$emit('openurl', this.gridApiObject.create_page + "?" + params.join("&"));
 		},
 	}
 }

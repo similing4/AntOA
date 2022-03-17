@@ -19,7 +19,6 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListRowButtonBase;
 use Modules\AntOA\Http\Utils\AbstractModel\ListRowButtonCollection;
 use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase;
 use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnCollection;
-use Modules\AntOA\Http\Utils\hook\ButtonCondition;
 use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
 use Modules\AntOA\Http\Utils\Model\ListFilterHidden;
@@ -64,23 +63,27 @@ class GridList implements JsonSerializable {
     const FILTER_ENUM = "FILTER_ENUM"; //单选类型的筛选，需要指定键值对用于确定ENUM对应关系
     */
     /**
+     * @var string 被用作跳转到编辑页及调用删除功能时传入的主键列名
+     */
+    public $primaryKey = "id";
+    /**
      * @var ListFilterCollection
-     * 列表的所有筛选列（col）、注释（tip）、类型（type）、额外数据（extra）
+     * 列表的所有筛选列
      */
     private $listFilterCollection;
     /**
      * @var ListTableColumnCollection
-     * 列表的所有列（col）、注释（tip）、类型（type）、额外数据（extra）
+     * 列表的所有列
      */
     private $listTableColumnCollection;
     /**
      * @var ListHeaderButtonCollection
-     * 顶部创建外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
+     * 顶部创建外所有按钮
      */
     private $listHeaderButtonCollection;
     /**
      * @var ListRowButtonCollection
-     * 每行编辑与删除外所有按钮的内容（title）、跳转链接（url）、按钮类型(type)、操作类型（btn_do_type）
+     * 每行编辑与删除外所有按钮
      */
     private $listRowButtonCollection;
     /**
@@ -90,15 +93,15 @@ class GridList implements JsonSerializable {
     /**
      * @var bool 列表页是否有创建按钮
      */
-    private $hasCreate = true;
+    public $hasCreate = true;
     /**
      * @var bool 列表页是否有编辑按钮
      */
-    private $hasEdit = true;
+    public $hasEdit = true;
     /**
      * @var bool 列表页是否有删除按钮
      */
-    private $hasDelete = true;
+    public $hasDelete = true;
 
     /**
      * 构造方法
@@ -121,12 +124,23 @@ class GridList implements JsonSerializable {
     }
 
     /**
+     * 设置列表项
+     * @param string $primaryKey 被用作跳转到编辑页及调用删除功能时传入的主键列名
+     * @return GridList
+     */
+    public function setPrimaryKey($primaryKey) {
+        $this->primaryKey = $primaryKey;
+        return $this;
+    }
+
+    /**
      * 获取所有筛选对象
      * @return array<ListFilterBase>
      */
     public function getFilterList() {
         return $this->listFilterCollection->getItems();
     }
+
     /**
      * 获取所有列对象
      * @return array<ListTableColumnBase>
@@ -134,6 +148,7 @@ class GridList implements JsonSerializable {
     public function getTableColumnList() {
         return $this->listTableColumnCollection->getItems();
     }
+
     /**
      * 获取所有页面顶部按钮对象
      * @return array<ListHeaderButtonBase>
@@ -141,6 +156,15 @@ class GridList implements JsonSerializable {
     public function getHeaderButtonList() {
         return $this->listHeaderButtonCollection->getItems();
     }
+
+    /**
+     * 删除指定页面顶部按钮对象
+     * @param array<ListHeaderButtonBase> $items
+     */
+    public function removeHeaderButtons($items) {
+        $this->listHeaderButtonCollection->removeItems($items);
+    }
+
     /**
      * 获取所有列对象
      * @return array<ListRowButtonBase>
@@ -155,6 +179,7 @@ class GridList implements JsonSerializable {
      */
     public function jsonSerialize() {
         return [
+            "primaryKey"                 => $this->primaryKey,
             "listFilterCollection"       => $this->listFilterCollection,
             "listTableColumnCollection"  => $this->listTableColumnCollection,
             "listHeaderButtonCollection" => $this->listHeaderButtonCollection,
@@ -388,32 +413,12 @@ class GridList implements JsonSerializable {
     }
 
     /**
-     * 创建一个每行页面跳转按钮
-     * @param ListRowButtonNavigate $listRowButtonItem 按钮项
-     * @return GridList 返回this以便链式调用
-     */
-    public function rowNavigateButton(ListRowButtonNavigate $listRowButtonItem) {
-        $this->listRowButtonCollection->addItem($listRowButtonItem);
-        return $this;
-    }
-
-    /**
      * 创建一个头部API调用按钮
      * @param ListHeaderButtonApi $listHeaderButtonItem 按钮项
      * @return GridList 返回this以便链式调用
      */
     public function headerApiButton(ListHeaderButtonApi $listHeaderButtonItem) {
         $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
-        return $this;
-    }
-
-    /**
-     * 创建一个每行API调用按钮
-     * @param ListRowButtonApi $listRowButtonItem 按钮项
-     * @return GridList 返回this以便链式调用
-     */
-    public function rowApiButton(ListRowButtonApi $listRowButtonItem) {
-        $this->listRowButtonCollection->addItem($listRowButtonItem);
         return $this;
     }
 
@@ -428,16 +433,6 @@ class GridList implements JsonSerializable {
     }
 
     /**
-     * 创建一个每行文件BLOB下载调用按钮
-     * @param ListRowButtonBlob $listRowButtonItem 按钮项
-     * @return GridList 返回this以便链式调用
-     */
-    public function rowBlobButton(ListRowButtonBlob $listRowButtonItem) {
-        $this->listRowButtonCollection->addItem($listRowButtonItem);
-        return $this;
-    }
-
-    /**
      * 创建一个需要弹窗确认的头部API调用按钮
      * @param ListHeaderButtonApiWithConfirm $listHeaderButtonItem 按钮项
      * @return GridList 返回this以便链式调用
@@ -448,22 +443,52 @@ class GridList implements JsonSerializable {
     }
 
     /**
+     * 创建一个头部弹窗展示富文本的模态框的按钮
+     * @param ListHeaderButtonRichText $listHeaderButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function headerRichTextButton(ListHeaderButtonRichText $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行页面跳转按钮
+     * @param ListRowButtonNavigate $listRowButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function rowNavigateButton(ListRowButtonNavigate $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行API调用按钮
+     * @param ListRowButtonApi $listRowButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function rowApiButton(ListRowButtonApi $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行文件BLOB下载调用按钮
+     * @param ListRowButtonBlob $listRowButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function rowBlobButton(ListRowButtonBlob $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
+        return $this;
+    }
+
+    /**
      * 创建一个需要弹窗确认的每行API调用按钮
      * @param ListRowButtonApiWithConfirm $listRowButtonItem 按钮项
      * @return GridList 返回this以便链式调用
      */
     public function rowApiButtonWithConfirm(ListRowButtonApiWithConfirm $listRowButtonItem) {
         $this->listRowButtonCollection->addItem($listRowButtonItem);
-        return $this;
-    }
-
-    /**
-     * 创建一个头部弹窗展示富文本的模态框的按钮
-     * @param ListHeaderButtonRichText $listHeaderButtonItem 按钮项
-     * @return GridList 返回this以便链式调用
-     */
-    public function richTextButton(ListHeaderButtonRichText $listHeaderButtonItem) {
-        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
         return $this;
     }
 
@@ -484,7 +509,6 @@ class GridList implements JsonSerializable {
      * @param String $url 表单提交的目标链接，post请求
      * @param String $buttonType 按钮的type属性，默认为primary
      * @param GridCreateForm $gridCreateForm GridCreateForm对象，待展示的表单
-     * @param ButtonCondition|null $condition 是否显示该按钮的回调
      * @return GridList 返回this以便链式调用
      *//*
     public function rowApiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null, $condition = null) {

@@ -33,13 +33,9 @@ abstract class ListHeaderButtonBlob extends ListHeaderButtonBase {
     }
 
     public function jsonSerialize() {
-        return [
-            "type"             => "ListHeaderButtonBlob",
-            "buttonText"       => $this->buttonText,
-            "buttonType"       => $this->buttonType,
-            "baseUrl"          => $this->baseUrl,
-            "finalUrl"         => $this->finalUrl,
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListHeaderButtonBlob",
             "downloadFilename" => $this->downloadFilename
-        ];
+        ]);
     }
 }

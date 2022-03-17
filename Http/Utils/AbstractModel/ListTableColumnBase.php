@@ -32,4 +32,11 @@ abstract class ListTableColumnBase implements JsonSerializable {
         $this->col = $col;
         $this->tip = $tip;
     }
+
+    public function jsonSerialize() {
+        return [
+            "col" => $this->col,
+            "tip" => $this->tip
+        ];
+    }
 }

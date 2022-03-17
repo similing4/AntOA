@@ -21,12 +21,8 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListRowButtonBase;
  */
 abstract class ListRowButtonApi extends ListRowButtonBase {
     public function jsonSerialize() {
-        return [
-            "type"       => "ListRowButtonApi",
-            "buttonText" => $this->buttonText,
-            "buttonType" => $this->buttonType,
-            "baseUrl"    => $this->baseUrl,
-            "finalUrl"   => $this->finalUrl
-        ];
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListRowButtonApi"
+        ]);
     }
 }

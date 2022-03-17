@@ -24,7 +24,7 @@ class DBEditOperator {
         return $this->builder->find($id);
     }
 
-    public function onUpdate($columns, $param) {
-        return $this->builder->where($columns[0]['col'], $param[$columns[0]['col']])->update($param);
+    public function onUpdate($primaryKey, $param) {
+        return $this->builder->where($primaryKey, $param[$primaryKey])->update($param);
     }
 }

@@ -33,13 +33,9 @@ abstract class ListRowButtonBlob extends ListRowButtonBase {
     }
 
     public function jsonSerialize() {
-        return [
-            "type"             => "ListRowButtonBlob",
-            "buttonText"       => $this->buttonText,
-            "buttonType"       => $this->buttonType,
-            "baseUrl"          => $this->baseUrl,
-            "finalUrl"         => $this->finalUrl,
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListRowButtonBlob",
             "downloadFilename" => $this->downloadFilename
-        ];
+        ]);
     }
 }

@@ -20,10 +20,8 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase;
  */
 class ListTableColumnDisplay extends ListTableColumnBase {
     public function jsonSerialize() {
-        return [
-            "type" => "ListTableColumnDisplay",
-            "col"  => $this->col,
-            "tip"  => $this->tip
-        ];
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListTableColumnDisplay"
+        ]);
     }
 }

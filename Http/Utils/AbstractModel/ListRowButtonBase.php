@@ -58,4 +58,13 @@ abstract class ListRowButtonBase implements JsonSerializable {
      * @return bool 返回真则显示，否则不显示
      */
     abstract public function judgeIsShow(UrlParamCalculator $calculator);
+
+    public function jsonSerialize() {
+        return [
+            "buttonText" => $this->buttonText,
+            "buttonType" => $this->buttonType,
+            "baseUrl"    => $this->baseUrl,
+            "finalUrl"   => $this->finalUrl
+        ];
+    }
 }

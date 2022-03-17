@@ -200,7 +200,7 @@
 	import ConfirmDialog from "@/components/tool/ConfirmDialog.vue";
 	import WangEditor from "@/components/tool/WangEditor.vue"
 	import UploadButton from "@/components/tool/UploadButton.vue"
-	import ColumnChildrenChoose from "./components/ColumnChildrenChoose.vue"
+	//import ColumnChildrenChoose from "./components/ColumnChildrenChoose.vue"
 
 	export default {
 		data() {
@@ -218,7 +218,7 @@
 			StandardTable,
 			WangEditor,
 			UploadButton,
-			ColumnChildrenChoose
+	//		ColumnChildrenChoose
 		},
 		async mounted() {
 			try {

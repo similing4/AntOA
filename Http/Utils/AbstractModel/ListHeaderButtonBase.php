@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Utils\AbstractModel;
 
 
+use Exception;
 use JsonSerializable;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculatorParamItem;
@@ -44,10 +45,14 @@ abstract class ListHeaderButtonBase implements JsonSerializable {
      * @return string 并入到baseURL的URL参数
      */
     public function calcButtonFinalUrl(UrlParamCalculator $calculator){
-        $param = [];
-        foreach ($this->calcButtonParam($calculator) as $item)
-            $param[] = $item->key . "=" . $item->val;
-        return $this->baseUrl . "?" . join("&", $param);
+        try {
+            $param = [];
+            foreach ($this->calcButtonParam($calculator) as $item)
+                $param[] = $item->key . "=" . $item->val;
+            return $this->baseUrl . "?" . join("&", $param);
+        }catch (Exception $exception){
+            return null;
+        }
     }
 
     /**
@@ -63,4 +68,13 @@ abstract class ListHeaderButtonBase implements JsonSerializable {
      * @return bool 返回真则显示，否则不显示
      */
     abstract public function judgeIsShow(UrlParamCalculator $calculator);
+
+    public function jsonSerialize() {
+        return [
+            "buttonText" => $this->buttonText,
+            "buttonType" => $this->buttonType,
+            "baseUrl"    => $this->baseUrl,
+            "finalUrl"   => $this->finalUrl
+        ];
+    }
 }

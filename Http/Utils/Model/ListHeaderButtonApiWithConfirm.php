@@ -20,12 +20,8 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListHeaderButtonBase;
  */
 abstract class ListHeaderButtonApiWithConfirm extends ListHeaderButtonBase {
     public function jsonSerialize() {
-        return [
-            "type"       => "ListHeaderButtonApiWithConfirm",
-            "buttonText" => $this->buttonText,
-            "buttonType" => $this->buttonType,
-            "baseUrl"    => $this->baseUrl,
-            "finalUrl"   => $this->finalUrl
-        ];
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "ListHeaderButtonApiWithConfirm"
+        ]);
     }
 }

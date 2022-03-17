@@ -38,4 +38,11 @@ abstract class ListFilterBase implements JsonSerializable {
         $this->tip = $tip;
         $this->defaultVal = $defaultVal;
     }
+    public function jsonSerialize() {
+        return [
+            "col"     => $this->col,
+            "tip"     => $this->tip,
+            "default" => $this->defaultVal
+        ];
+    }
 }

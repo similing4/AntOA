@@ -79,12 +79,12 @@ class GridCreateForm implements JsonSerializable {
      * @var CreateColumnCollection
      * 编辑页的所有表单项
      */
-    private $editColumnCollection;
+    private $createColumnCollection;
     /**
      * @var CreateRowButtonBaseCollection
      * 编辑页的每行自定义API按钮
      */
-    private $editRowButtonBaseCollection;
+    private $createRowButtonBaseCollection;
     /**
      * @var CreateOrEditColumnChangeHookCollection
      * 数据变更时的钩子
@@ -97,8 +97,8 @@ class GridCreateForm implements JsonSerializable {
      */
     public function __construct($table) {
         $this->_table = $table;
-        $this->editColumnCollection = new CreateColumnCollection();
-        $this->editRowButtonBaseCollection = new CreateRowButtonBaseCollection();
+        $this->createColumnCollection = new CreateColumnCollection();
+        $this->createRowButtonBaseCollection = new CreateRowButtonBaseCollection();
         $this->createOrCreateColumnChangeHookCollection = new CreateOrEditColumnChangeHookCollection();
     }
 
@@ -135,8 +135,8 @@ class GridCreateForm implements JsonSerializable {
     public function jsonSerialize() {
         return [
             "primaryKey"                             => $this->primaryKey,
-            "editColumnCollection"                   => $this->editColumnCollection,
-            "editRowButtonBaseCollection"            => $this->editRowButtonBaseCollection,
+            "createColumnCollection"                   => $this->createColumnCollection,
+            "createRowButtonBaseCollection"            => $this->createRowButtonBaseCollection,
             "createOrCreateColumnChangeHookCollection" => $this->createOrCreateColumnChangeHookCollection
         ];
     }
@@ -145,7 +145,7 @@ class GridCreateForm implements JsonSerializable {
      * @return array<CreateColumnBase>
      */
     public function getCreateColumnList() {
-        return $this->editColumnCollection->getItems();
+        return $this->createColumnCollection->getItems();
     }
 
     /**
@@ -154,7 +154,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function column(CreateColumnBase $columnItem) {
-        $this->editColumnCollection->addItem($columnItem);
+        $this->createColumnCollection->addItem($columnItem);
         return $this;
     }
 
@@ -166,7 +166,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnText($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnText($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnText($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -180,7 +180,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnNumberDivide($col, $colTip, $divide, $unit = '', $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnDivideNumber($col, $colTip, $divide, $unit, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnDivideNumber($col, $colTip, $divide, $unit, $defaultVal));
         return $this;
     }
 
@@ -192,7 +192,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnTextarea($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnTextarea($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnTextarea($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -204,7 +204,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnPassword($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnPassword($col, $tip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnPassword($col, $tip, $defaultVal));
         return $this;
     }
 
@@ -217,7 +217,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnSelect($col, $colTip, array $options, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnEnum($col, $colTip, $options, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnEnum($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -230,7 +230,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnRadio($col, $colTip, array $options, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnEnumRadio($col, $colTip, $options, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnEnumRadio($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -243,7 +243,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnCheckbox($col, $colTip, array $options, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnEnumCheckBox($col, $colTip, $options, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnEnumCheckBox($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -256,7 +256,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnTreeCheckbox($col, $colTip, array $options, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnEnumTreeCheckBox($col, $colTip, $options, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnEnumTreeCheckBox($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -268,7 +268,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnTimestamp($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnTimestamp($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnTimestamp($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -280,7 +280,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnRichText($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnRichText($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnRichText($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -292,7 +292,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnPicture($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnPicture($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnPicture($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -304,7 +304,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnFile($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnFile($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnFile($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -316,7 +316,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnPictures($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnPictures($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnPictures($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -328,7 +328,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnFiles($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnFiles($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnFiles($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -341,7 +341,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnCascader($col, $colTip, array $options, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnCascader($col, $colTip, $options, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnCascader($col, $colTip, $options, $defaultVal));
         return $this;
     }
 
@@ -353,7 +353,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnDisplay($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnDisplay($col, $colTip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnDisplay($col, $colTip, $defaultVal));
         return $this;
     }
 
@@ -363,7 +363,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnHidden($col) {
-        $this->editColumnCollection->addItem(new CreateColumnHidden($col));
+        $this->createColumnCollection->addItem(new CreateColumnHidden($col));
         return $this;
     }
 
@@ -378,7 +378,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new CreateColumnChildrenChoose($col, $colTip, $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnChildrenChoose($col, $colTip, $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal));
         return $this;
     }
 
@@ -388,7 +388,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnApiButton(CreateRowButtonBase $buttonItem) {
-        $this->editRowButtonBaseCollection->addItem($buttonItem);
+        $this->createRowButtonBaseCollection->addItem($buttonItem);
         return $this;
     }
 
@@ -404,51 +404,51 @@ class GridCreateForm implements JsonSerializable {
 
     /**
      * 创建一个每行页面跳转按钮
-     * @param CreateRowButtonNavigate $editRowButtonItem 按钮项
+     * @param CreateRowButtonNavigate $createRowButtonItem 按钮项
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function rowNavigateButton(CreateRowButtonNavigate $editRowButtonItem) {
-        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+    public function rowNavigateButton(CreateRowButtonNavigate $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
         return $this;
     }
 
     /**
      * 创建一个每行API调用按钮
-     * @param CreateRowButtonApi $editRowButtonItem 按钮项
+     * @param CreateRowButtonApi $createRowButtonItem 按钮项
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function rowApiButton(CreateRowButtonApi $editRowButtonItem) {
-        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+    public function rowApiButton(CreateRowButtonApi $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
         return $this;
     }
 
     /**
      * 创建一个每行文件BLOB下载调用按钮
-     * @param CreateRowButtonBlob $editRowButtonItem 按钮项
+     * @param CreateRowButtonBlob $createRowButtonItem 按钮项
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function rowBlobButton(CreateRowButtonBlob $editRowButtonItem) {
-        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+    public function rowBlobButton(CreateRowButtonBlob $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
         return $this;
     }
 
     /**
      * 创建一个需要弹窗确认的每行API调用按钮
-     * @param CreateRowButtonApiWithConfirm $editRowButtonItem 按钮项
+     * @param CreateRowButtonApiWithConfirm $createRowButtonItem 按钮项
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function rowApiButtonWithConfirm(CreateRowButtonApiWithConfirm $editRowButtonItem) {
-        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+    public function rowApiButtonWithConfirm(CreateRowButtonApiWithConfirm $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
         return $this;
     }
 
     /**
      * 创建一个每行弹窗展示富文本的模态框的按钮
-     * @param CreateRowButtonRichText $editRowButtonItem 按钮项
+     * @param CreateRowButtonRichText $createRowButtonItem 按钮项
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function rowRichTextButton(CreateRowButtonRichText $editRowButtonItem) {
-        $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
+    public function rowRichTextButton(CreateRowButtonRichText $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
         return $this;
     }
 }

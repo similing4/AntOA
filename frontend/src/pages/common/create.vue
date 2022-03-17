@@ -55,7 +55,7 @@
 				</CreateColumnTimestamp>
 			</template>
 			<a-form-item style="display: flex;justify-content: center;">
-				<a-button type="primary" @click="submit">修改</a-button>
+				<a-button type="primary" @click="submit">创建</a-button>
 				<a-button type="primary" style="margin-left: 8px;" @click="reset">重置</a-button>
 			</a-form-item>
 		</a-form>
@@ -135,7 +135,7 @@ export default {
 	},
 	async mounted() {
 		try {
-			this.gridPath = this.$route.path.substring(0, this.$route.path.length - "/list".length);
+			this.gridPath = this.$route.path.substring(0, this.$route.path.length - "/create".length);
 			this.gridConfigUrl = "/api" + this.gridPath + "/grid_config";
 			const gridConfigRes = await this.$api(this.gridConfigUrl).param(this.$route.query).method("POST").call();
 			if (!gridConfigRes.status)

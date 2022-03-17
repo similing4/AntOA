@@ -2,6 +2,7 @@
     <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
         <span>{{currentFormTip}}</span>
         <a-button type="primary" @click="isSelectModalShow = true;$forceUpdate()">选择</a-button>
+        <a-button type="danger" @click="remove" v-if="value != ''">删除</a-button>
         <a-modal v-model="isSelectModalShow" :title="'请选择' + column.tip">
             <div style="margin-bottom: 16px">
                 <a-row>
@@ -210,6 +211,10 @@ export default {
             this.isSelectModalShow = false;
             this.$forceUpdate()
             this.currentFormTip = record[this.column.gridListDisplayCol];
+        },
+        remove(){
+            this.$emit("input", "");
+            this.currentFormTip = "";
         }
     }
 }

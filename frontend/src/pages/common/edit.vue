@@ -135,7 +135,7 @@ export default {
 	},
 	async mounted() {
 		try {
-			this.gridPath = this.$route.path.substring(0, this.$route.path.length - "/list".length);
+			this.gridPath = this.$route.path.substring(0, this.$route.path.length - "/edit".length);
 			this.gridConfigUrl = "/api" + this.gridPath + "/grid_config";
 			const gridConfigRes = await this.$api(this.gridConfigUrl).param(this.$route.query).method("POST").call();
 			if (!gridConfigRes.status)

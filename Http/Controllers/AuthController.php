@@ -163,12 +163,12 @@ class AuthController {
         ];
         foreach ($configRoutes as &$configRoutesItem) {
             if (array_key_exists('children', $configRoutesItem)) {
-                $configRoutesItem['children'] = array_filter($configRoutesItem['children'], function ($r) use ($user) {
+                $configRoutesItem['children'] = array_values(array_filter($configRoutesItem['children'], function ($r) use ($user) {
                     $limitVailed = true;
                     if (array_key_exists('role_limit', $r))
                         $limitVailed = $r['role_limit']($user);
                     return (!array_key_exists("visible", $r) || $r['visible']) && $limitVailed;
-                });
+                }));
             }
             if (array_key_exists('isHome', $configRoutesItem) && $configRoutesItem['isHome']) {
                 $configRoutesItem['children'] = [];

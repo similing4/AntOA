@@ -1,36 +1,218 @@
 <?php
 
+$roleFunc = function ($role) {
+    return function ($user) use ($role) {
+        return in_array($role, json_decode($user['role'], true));
+    };
+};
 return [
     'name'        => 'AntOA',
-    'mode'        => ['vue', 'html'], //页面模式，可选项为vue与html，默认自带后台接口，如果设置vue则开启Ant Design Vue Admin页面开发，如果设置html则开启普通blade页面开发。无论该参数是否设置，开发的接口都会被开放。
-    //菜单路由配置，uri为完整URL链接，title为在菜单上显示的内容，breadcrumbTitle为面包屑上显示的标题，不设置默认为title
+    //菜单路由配置，path为完整URL链接，name为在菜单上显示的内容，breadcrumbname为面包屑上显示的标题，不设置默认为name
     'menu_routes' => [
         //前端页面的路由，html模式下为页面绝对地址，vue模式下为路由path地址
         [
-            "title"    => "首页", //页面名称，将显示在侧边栏及标签页上，如果不设置breadcrumbTitle也将设置为面包屑。
-            "isHome"   => true, //使用ant-design-vue-admin时此指定此页面组为首页/首页，设置的children将被无视，如需设置首页内容需要自定义vue项目的home.vue文件，只能设置在第一层且只能设置一个。
-            "vue_api"  => "", //首页如果设置了这个属性那么页面将会根据这个api获取vue页面信息进行组件渲染。格式如：{data() {return{};},template: ``}
-        ], [
-            "title"      => "用户管理",
-            "role_limit" => [1], //权限限制，不设置为不限制
+            "name"   => "首页", //页面名称，将显示在侧边栏及标签页上，如果不设置breadcrumbname也将设置为面包屑。
+            "isHome" => true, //使用ant-design-vue-admin时此指定此页面组为首页/首页，设置的children将被无视，如需设置首页内容需要自定义vue项目的home.vue文件，只能设置在第一层且只能设置一个。
+        ],
+        [
+            "name"       => "用户管理",
+            "role_limit" => $roleFunc(1), //权限限制，不设置为不限制
             "children"   => [
                 [
-                    "uri"             => "/admin/user/list",
-                    "title"           => "用户管理",
-                    "breadcrumbTitle" => "用户管理列表页",
-                    "role_limit"      => [1]
+                    "path"       => "/admin/user/list",
+                    "name"       => "用户列表",
+                    "role_limit" => $roleFunc(1)
                 ],
                 [
                     "visible"    => false, //设置左侧导航栏中不显示该页面
-                    "uri"        => "/admin/user/create",
-                    "title"      => "用户创建页",
-                    "role_limit" => [1]
+                    "path"       => "/admin/user/edit",
+                    "name"       => "用户编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+            ]
+        ],
+        [
+            "name"       => "类目管理",
+            "role_limit" => $roleFunc(1), //权限限制，不设置为不限制
+            "children"   => [
+                [
+                    "path"       => "/admin/category/list",
+                    "name"       => "类目列表",
+                    "role_limit" => $roleFunc(1)
                 ],
                 [
-                    "visible"    => false,
-                    "uri"        => "/admin/user/edit",
-                    "title"      => "用户编辑页",
-                    "role_limit" => [1]
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/category/edit",
+                    "name"       => "类目编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/category/create",
+                    "name"       => "类目添加",
+                    "role_limit" => $roleFunc(1)
+                ],
+            ]
+        ],
+        [
+            "name"       => "轮播图管理",
+            "role_limit" => $roleFunc(1), //权限限制，不设置为不限制
+            "children"   => [
+                [
+                    "path"       => "/admin/live_banner/list",
+                    "name"       => "主播端轮播图列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/live_banner/edit",
+                    "name"       => "主播端轮播图编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/live_banner/create",
+                    "name"       => "主播端轮播图添加",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "path"       => "/admin/company_banner/list",
+                    "name"       => "企业端轮播图列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/company_banner/edit",
+                    "name"       => "企业端轮播图编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/company_banner/create",
+                    "name"       => "企业端轮播图添加",
+                    "role_limit" => $roleFunc(1)
+                ],
+            ]
+        ],
+
+        [
+            "name"       => "金刚区管理",
+            "role_limit" => $roleFunc(1), //权限限制，不设置为不限制
+            "children"   => [
+                [
+                    "path"       => "/admin/live_navigate/list",
+                    "name"       => "主播端金刚区列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/live_navigate/edit",
+                    "name"       => "主播端金刚区编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/live_navigate/create",
+                    "name"       => "主播端金刚区添加",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "path"       => "/admin/company_navigate/list",
+                    "name"       => "企业金刚区列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/company_navigate/edit",
+                    "name"       => "企业金刚区编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/company_navigate/create",
+                    "name"       => "企业金刚区添加",
+                    "role_limit" => $roleFunc(1)
+                ],
+            ]
+        ],
+
+        [
+            "name"       => "直播人员管理",
+            "role_limit" => $roleFunc(1), //权限限制，不设置为不限制
+            "children"   => [
+                [
+                    "path"       => "/admin/live/list",
+                    "name"       => "直播人员列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/live/edit",
+                    "name"       => "直播人员编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/live/create",
+                    "name"       => "直播人员添加",
+                    "role_limit" => $roleFunc(1)
+                ],
+            ]
+        ],
+        [
+            "name"       => "企业管理",
+            "role_limit" => $roleFunc(1), //权限限制，不设置为不限制
+            "children"   => [
+                [
+                    "path"       => "/admin/company/list",
+                    "name"       => "企业列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/company/edit",
+                    "name"       => "企业编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "path"       => "/admin/recruit/list",
+                    "name"       => "招聘信息列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/recruit/edit",
+                    "name"       => "招聘信息编辑",
+                    "role_limit" => $roleFunc(1)
+                ]
+            ]
+        ],
+
+        [
+            "name"       => "系统配置管理",
+            "role_limit" => $roleFunc(1),
+            "children"   => [
+                [
+                    "path"       => "/admin/config/list",
+                    "name"       => "系统配置列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/config/edit",
+                    "name"       => "系统配置编辑",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "path"       => "/admin/customer/list",
+                    "name"       => "客服列表",
+                    "role_limit" => $roleFunc(1)
+                ],
+                [
+                    "visible"    => false, //设置左侧导航栏中不显示该页面
+                    "path"       => "/admin/customer/edit",
+                    "name"       => "客服编辑",
+                    "role_limit" => $roleFunc(1)
                 ]
             ]
         ]

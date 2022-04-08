@@ -8,6 +8,8 @@
 						<ListFilterStartTime v-if="filterItem.type == 'ListFilterStartTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+ '_starttime']" />
 						<ListFilterEndTime v-if="filterItem.type == 'ListFilterEndTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+  '_endtime']" />
 						<ListFilterText v-if="filterItem.type == 'ListFilterText'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
+						<ListFilterMultiSelect v-if="filterItem.type == 'ListFilterMultiSelect'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
+						<ListFilterCascader v-if="filterItem.type == 'ListFilterCascader'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 					</a-col>
 					<span style="float: right; margin-top: 3px;" v-if="gridListObject.listFilterCollection.filter((t)=>t.type != 'ListFilterHidden').length > 0">
 						<a-button type="primary" @click="doSearch">查询</a-button>
@@ -56,6 +58,8 @@ import ListFilterStartTime from "./components/list/filter/ListFilterStartTime.vu
 import ListFilterEndTime from "./components/list/filter/ListFilterEndTime.vue";
 import ListFilterEnum from "./components/list/filter/ListFilterEnum.vue";
 import ListFilterText from "./components/list/filter/ListFilterText.vue";
+import ListFilterMultiSelect from "./components/list/filter/ListFilterMultiSelect.vue";
+import ListFilterCascader from "./components/list/filter/ListFilterCascader.vue";
 import ListTableColumnEnum from "./components/list/table_column/ListTableColumnEnum.vue";
 import ListTableColumnDivideNumber from "./components/list/table_column/ListTableColumnDivideNumber.vue";
 import ListTableColumnRichText from "./components/list/table_column/ListTableColumnRichText.vue";
@@ -113,6 +117,8 @@ export default {
 		};
 	},
 	components: {
+		ListFilterCascader,
+		ListFilterMultiSelect,
 		ListFilterEnum,
 		ListFilterStartTime,
 		ListFilterEndTime,

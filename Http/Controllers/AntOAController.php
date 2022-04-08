@@ -2,19 +2,20 @@
 
 namespace Modules\AntOA\Http\Controllers;
 
+use App\Traits\ReturnMessage;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\AntOA\Http\Utils\AuthInterface;
 use Modules\AntOA\Http\Utils\Grid;
-use Modules\AntOA\Http\Utils\GridCreateForm;
 use Modules\AntOA\Http\Utils\Model\CreateColumnChildrenChoose;
 use Modules\AntOA\Http\Utils\Model\EditColumnChildrenChoose;
+use Modules\AntOA\Http\Utils\Model\ListFilterCascader;
 use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
 use Modules\AntOA\Http\Utils\Model\ListFilterHidden;
+use Modules\AntOA\Http\Utils\Model\ListFilterMultiSelect;
 use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterText;
 use Modules\AntOA\Http\Utils\Model\ListFilterUID;
@@ -22,6 +23,7 @@ use Modules\AntOA\Http\Utils\Model\ListTableColumnDisplay;
 use Modules\AntOA\Http\Utils\Model\ListTableColumnRichDisplay;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculatorParamItem;
+
 
 /**
  * NameSpace: Modules\AntOA\Http\Controllers
@@ -144,6 +146,16 @@ abstract class AntOAController extends Controller {
                         $gridListDbObject->where($r->col, "<", $param->val);
                 } else if ($r instanceof ListFilterUID) {
                     $gridListDbObject->where($r->col, $uid);
+                } else if ($r instanceof ListFilterMultiSelect) {
+                    if ($param !== null && $param->val != '') {
+                        $array = json_decode($param->val, true);
+                        $gridListDbObject->whereIn($r->col, $array);
+                    }
+                }else if($r instanceof ListFilterCascader){
+                    if ($param !== null && $param->val != '') {
+                        $array = json_decode($param->val, true);
+                        $gridListDbObject->where($r->col, join($array, " "));
+                    }
                 }
             }
             $columns = [];
@@ -603,7 +615,7 @@ abstract class AntOAController extends Controller {
             });
             if (empty($changeHookList))
                 throw new Exception("页面配置信息不存在");
-            $data = $changeHookList[0]->hook($content['form']);
+            $data = $changeHookList[0]->hook($content['form'], $content['page']);
             return json_encode([
                 "status"         => 1,
                 "data"           => $data->data,
@@ -614,6 +626,34 @@ abstract class AntOAController extends Controller {
                 "status" => 0,
                 "msg"    => $e->getMessage()
             ]);
+        }
+    }
+
+    public function flag(Request $request) {
+        try {
+            if (!$this->tableName) {
+                return response()->json([
+                    "status" => 0,
+                    "msg"    => "未开启置顶"
+                ]);
+            }
+            $key = $this->flagId;
+            $priKey = $request->input("row");
+            $priKey = $priKey['id'];
+//            if (DB::table($this->tableName)->where($key, $priKey)->value("sort") == 0) {
+            $max = DB::table($this->tableName)->max("sort");
+            DB::table($this->tableName)->where($key, $priKey)->update([
+                "sort" => $max + 1
+            ]);
+//            } else {
+//                DB::table($this->tableName)->where($key, $priKey)->update([
+//                    "sort" => 0
+//                ]);
+//            }
+
+            return response()->json(["status" => 1, "data" => "操作成功"]);
+        } catch (\Throwable $e) {
+            return response()->json(["status" => 0, "msg" => "操作失败：" . $e->getMessage()]);
         }
     }
 

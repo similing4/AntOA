@@ -1,6 +1,6 @@
 <template>
     <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
-        <a-input-number :placeholder="'请填写' + column.tip" :value="parseFloat(value) / parseFloat(column.divide)" @change="onChange"></a-input-number> {{column.unit}}
+        <a-input-number :placeholder="'请填写' + column.tip" :value="parseValue()" @change="onChange"></a-input-number> {{column.unit}}
         <slot />
     </a-form-item>
 </template>
@@ -46,12 +46,16 @@ export default {
         return {};
     },
     methods: {
-        parseFloat(t){
-            return parseFloat(t);
+        parseValue(){
+			if(isNaN(this.value))
+				return 0;
+			if(this.value === "")
+				return 0;
+			return parseFloat(this.value) / parseFloat(this.column.divide)
         },
         onChange(e) {
             this.$emit("input", parseFloat(e) * parseFloat(this.column.divide));
-        }
+        },
     }
 }
 </script>

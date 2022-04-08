@@ -19,9 +19,12 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListRowButtonBase;
 use Modules\AntOA\Http\Utils\AbstractModel\ListRowButtonCollection;
 use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase;
 use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnCollection;
+use Modules\AntOA\Http\Utils\Model\CascaderNode;
+use Modules\AntOA\Http\Utils\Model\ListFilterCascader;
 use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
 use Modules\AntOA\Http\Utils\Model\ListFilterHidden;
+use Modules\AntOA\Http\Utils\Model\ListFilterMultiSelect;
 use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterText;
 use Modules\AntOA\Http\Utils\Model\ListFilterUID;
@@ -350,7 +353,29 @@ class GridList implements JsonSerializable {
         $this->listFilterCollection->addItem(new ListFilterEnum($col, $colTip, $options));
         return $this;
     }
+    /**
+     * 指定多选类型筛选列
+     * @param String $col 列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param array<EnumOption> $options ENUM的选项数组
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterMultiSelect($col, $colTip, array $options) {
+        $this->listFilterCollection->addItem(new ListFilterMultiSelect($col, $colTip, $options));
+        return $this;
+    }
 
+    /**
+     * 指定级联筛选列
+     * @param String $col 列对应的字段
+     * @param String $tip 列对应的字段Label
+     * @param array<CascaderNode> $options 多选选项数组
+     * @param string $defaultVal 默认值
+     */
+    public function filterCascader($col, $colTip, array $options) {
+        $this->listFilterCollection->addItem(new ListFilterCascader($col, $colTip, $options));
+        return $this;
+    }
     /**
      * 创建一个筛选项
      * @param ListFilterBase $filterItem 筛选对象

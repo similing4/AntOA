@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 class RouteRegister {
     public static function register($route, $controller) {
-        if(in_array("html",config("antoa.mode"))) {
+        if (in_array("html", config("antoa.mode"))) {
             Route::get($route . "/list", $controller . "@list");
             Route::get($route . "/create", $controller . "@create");
             Route::get($route . "/edit", $controller . "@edit");
@@ -28,7 +28,7 @@ class RouteRegister {
         Route::any($route . "/detail", $controller . "@api_detail");
         Route::post($route . "/detail_column_list", $controller . "@api_detail_column_list");
         Route::post($route . "/save", $controller . "@api_save");
-        Route::get($route . "/delete", $controller . "@api_delete");
+        Route::any($route . "/delete", $controller . "@api_delete");
         Route::post($route . "/column_change", $controller . "@api_column_change");
         Route::post($route . "/grid_config", $controller . "@api_grid_config");
     }

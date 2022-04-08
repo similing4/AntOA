@@ -35,6 +35,12 @@ abstract class DBListOperator {
         return $this;
     }
 
+    //whereIn方法，设置的对应column会作为条件传入。你可以根据column自定义设置传入条件内容
+    public function whereIn($column, $values, $boolean = 'and', $not = false) {
+        $this->builder->whereIn($column, $values, $boolean, $not);
+        return $this;
+    }
+
     //orderBy方法，你可以在这里自定义设置排序规则。
     public function orderBy($column, $direction) {
         $this->builder->orderBy($column, $direction);

@@ -106,7 +106,7 @@ export default {
 				"primaryKey": "id",
 				"createColumnCollection": [], //{"col": "id","tip": "","default": "","type": "CreateColumnHidden"}
 				"createRowButtonBaseCollection": [], //["bindCol":"","apiUrl":"","buttonText":"","buttonType":""]
-				"createOrCreateColumnChangeHookCollection": null
+				"createOrEditColumnChangeHookCollection": null
 			},
 			displayColumns: [],
 			form: {},
@@ -147,7 +147,6 @@ export default {
 				this.displayColumns.push(createColumnItem.col);
 			});
 			await this.reset();
-			this.setWatchHook();
 			this.isLoadOk = true;
 		} catch (e) {
 			this.$message.error("配置加载错误：" + e, 5);

@@ -89,7 +89,7 @@ class GridCreateForm implements JsonSerializable {
      * @var CreateOrEditColumnChangeHookCollection
      * 数据变更时的钩子
      */
-    private $createOrCreateColumnChangeHookCollection;
+    private $createOrEditColumnChangeHookCollection;
 
     /**
      * 构造方法
@@ -99,7 +99,7 @@ class GridCreateForm implements JsonSerializable {
         $this->_table = $table;
         $this->createColumnCollection = new CreateColumnCollection();
         $this->createRowButtonBaseCollection = new CreateRowButtonBaseCollection();
-        $this->createOrCreateColumnChangeHookCollection = new CreateOrEditColumnChangeHookCollection();
+        $this->createOrEditColumnChangeHookCollection = new CreateOrEditColumnChangeHookCollection();
     }
 
     /**
@@ -115,7 +115,7 @@ class GridCreateForm implements JsonSerializable {
      * @return array<CreateOrEditColumnChangeHook> 返回行数据变更时的钩子
      */
     public function getChangeHookList() {
-        return $this->createOrCreateColumnChangeHookCollection->getItems();
+        return $this->createOrEditColumnChangeHookCollection->getItems();
     }
 
     /**
@@ -137,7 +137,7 @@ class GridCreateForm implements JsonSerializable {
             "primaryKey"                             => $this->primaryKey,
             "createColumnCollection"                   => $this->createColumnCollection,
             "createRowButtonBaseCollection"            => $this->createRowButtonBaseCollection,
-            "createOrCreateColumnChangeHookCollection" => $this->createOrCreateColumnChangeHookCollection
+            "createOrEditColumnChangeHookCollection" => $this->createOrEditColumnChangeHookCollection
         ];
     }
     /**
@@ -398,7 +398,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function setChangeHook(CreateOrEditColumnChangeHook $hook) {
-        $this->createOrCreateColumnChangeHookCollection->addItem($hook);
+        $this->createOrEditColumnChangeHookCollection->addItem($hook);
         return $this;
     }
 

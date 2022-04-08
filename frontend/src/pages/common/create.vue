@@ -147,6 +147,8 @@ export default {
 				this.displayColumns.push(createColumnItem.col);
 			});
 			await this.reset();
+			for (let i = 0; i < this.gridCreateObject.createOrEditColumnChangeHookCollection.length; i++)
+				await this.onHookCall(this.gridCreateObject.createOrEditColumnChangeHookCollection[i].col);
 			this.isLoadOk = true;
 		} catch (e) {
 			this.$message.error("配置加载错误：" + e, 5);

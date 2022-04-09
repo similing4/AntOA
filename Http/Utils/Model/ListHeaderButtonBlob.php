@@ -22,10 +22,10 @@ abstract class ListHeaderButtonBlob extends ListHeaderButtonBase {
 
     /**
      * ListHeaderButtonBlob constructor.
-     * @param $baseUrl
-     * @param $buttonText
-     * @param $downloadFilename
-     * @param string $buttonType
+     * @param $baseUrl 调用接口的url
+     * @param $buttonText 按钮文本
+     * @param $downloadFilename 按钮下载文件名
+     * @param string $buttonType 按钮类型
      */
     public function __construct($baseUrl, $buttonText, $downloadFilename, $buttonType = "primary") {
         parent::__construct($baseUrl, $buttonText, $buttonType);

@@ -66,47 +66,22 @@ filterCascader($col, $colTip, array $options);
 filter($filterItem);
 filterUid($col);
 ```
-
+使用例子如下：
 ```php
-//模板：
 $grid->list(new class(new DB::table("user")) extends DBListOperator {
-    //这里可以重写你各种自定义方法
-})->filter("列筛选类型", '列名', '筛选列展示名');
-//示例：
-$grid->list(new class(new DB::table("user")) extends DBListOperator {})
-    ->filter(GridList::FILTER_TEXT, 'username', '用户名');
+})->filterText('username', '用户名');
 ```
-这里的“**列筛选类型**”为GridList里的常量，可用的常量如下：
+您也可以根据Http/Utils/Model中提供的实体类传入filter方法中实现同样的功能。如：
 ```php
-const FILTER_HIDDEN = "FILTER_HIDDEN"; //隐藏类型筛选，用于外部传入
-const FILTER_TEXT = "FILTER_TEXT"; //文本类型筛选，筛选方式为%keyword%
-const FILTER_STARTTIME = "FILTER_STARTTIME"; //开始时间类型筛选，筛选结果为大于等于该结束时间的行
-const FILTER_ENDTIME = "FILTER_ENDTIME"; //结束时间类型筛选，筛选结果为小于等于该结束时间的行
-const FILTER_ENUM = "FILTER_ENUM"; //单选类型的筛选，需要指定键值对用于确定ENUM对应关系
-//例：
-$grid->list(new class(new DB::table("user")) extends DBListOperator {})
-    ->column(GridList::TEXT, 'username', '用户名')
-    ->column(GridList::TEXT, 'create_time', '注册时间')
-    ->column(GridList::ENUM, 'state', '用户状态',[
-        "0" => "禁用",
-        "1" => "启用"
-    ])
-    ->filter(GridList::FILTER_TEXT,'username','用户名')
-    ->filter(GridList::FILTER_STARTTIME,'create_time','在此注册时间之后')
-    ->filter(GridList::FILTER_ENDTIME,'create_time','在此注册时间之前')
-    ->filter(GridList::FILTER_ENUM,'state','状态',[
-        "0" => "禁用",
-        "1" => "启用"
-    ]);
+$grid->list(new class(new DB::table("user")) extends DBListOperator {
+})->filter(new ListFilterText('username', '用户名'));
 ```
 后续我会根据需求更新这些筛选类型。
 
-### (3)order操作
-等同于DB的order操作，例：
+### (3)orderby操作
+直接调用DBListOperator对象的orderby方法即可。例：
 ```php
-$grid->list(new class(new DB::table("user")) extends DBListOperator {})
-    ->column(GridList::TEXT, 'username', '用户名')
-    ->order("create_time","desc");
+$grid->list((new class(new DB::table("user")) extends DBListOperator {})->orderBy('rounds', 'desc'));
 ```
 
 ### (4)自定义按钮
@@ -117,38 +92,72 @@ $grid->list(new class(new DB::table("user")) extends DBListOperator {})
 您可以分别通过GridList对象的useCreate、useEdit、useDelete方法来设置是否启用它们。它们均返回对象自身实例，可以进行链式调用。例：
 ```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {})
-    ->column(GridList::TEXT, 'username', '用户名')
+    ->columnText('username', '用户名')
     ->useCreate(false)
     ->useEdit(false)
     ->useDelete(false);
 ```
-如果您需要自定义顶部按钮，GridList提供了四个方法供您使用。它们分别为：navigateButton、blobButton、apiButton、apiButtonWithConfirm。它们均返回对象自身实例，可以进行链式调用。例：
+如果您需要自定义顶部按钮，GridList对象提供了4个方法供您使用，后续可能会补充。它们分别为：
+```php
+headerNavigateButton(ListHeaderButtonNavigate $listHeaderButtonItem);
+headerApiButton(ListHeaderButtonApi $listHeaderButtonItem);
+headerBlobButton(ListHeaderButtonBlob $listHeaderButtonItem);
+headerRichTextButton(ListHeaderButtonRichText $listHeaderButtonItem);
+```
+它们均返回对象自身实例，可以进行链式调用。对应功能详见对应方法与其参数的实体类。例：
 ```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {})
-    ->column(GridList::TEXT, 'username', '用户名')
-    ->navigateButton("测试按钮","http://www.baidu.com","primary") //跳转到百度
-    ->blobButton("测试按钮","/api/user/test/test","primary","test.xls") //调用/api/user/test/test接口并使响应的二进制数据直接弹出下载
-    ->apiButton("测试按钮","/api/user/test/test","primary") //调用/api/user/test/test接口并对响应JSON根据status字段判定提示msg字段内容
-    ->apiButtonWithConfirm("测试按钮","/api/user/test/test","primary"); //与apiButton相同，但调用接口前会要求用户确认
-```
-相对于顶部按钮，每行按钮则为另外三个方法。它们分别为：rowNavigateButton、rowBlobButton、rowApiButton、rowApiButtonWithConfirm。它们均返回对象自身实例，可以进行链式调用。例：
-```php
-$grid->list(new class(new DB::table("user")) extends DBListOperator {})
-    ->column(GridList::TEXT, 'username', '用户名')
-    ->rowNavigateButton("测试按钮","http://www.baidu.com","primary") //跳转到百度
-    ->rowBlobButton("测试按钮","/api/user/test/test","primary","test.xls") //调用/api/user/test/test接口并使响应的二进制数据直接弹出下载
-    ->rowApiButton("测试按钮","/api/user/test/test","primary") //调用/api/user/test/test接口并对响应JSON根据status字段判定提示msg字段内容
-    ->rowApiButtonWithConfirm("测试按钮","/api/user/test/test","primary"); //与rowApiButton相同，但调用接口前会要求用户确认
-```
-每行按钮会自动带上该行的id参数。如范例中的测试按钮点击后会弹窗确认，确认后会调用/api/user/test/test?id=1。
+    ->columnText('username', '用户名')
+    ->headerNavigateButton(new class("http://www.baidu.com","测试按钮","primary") extends ListHeaderButtonNavigate{
+        public function calcButtonParam(UrlParamCalculator $calculator) { //配置跳转页面时页面传入的参数，返回UrlParamCalculatorParamItem的对象数组
+        return [];
+    }
 
-如果您想传入您定义的页面的参数不为id，如/api/user/test/test?sid=1
+    public function judgeIsShow(UrlParamCalculator $calculator) { //根据参数判断该按钮是否显示
+        return true;
+    }
+    }) //跳转到百度
+    ->headerBlobButton(new class("/api/user/test/test","测试按钮","test.xls","primary") extends ListHeaderButtonBlob{
+        public function calcButtonParam(UrlParamCalculator $calculator) { //配置调用接口时传入的参数，返回UrlParamCalculatorParamItem的对象数组
+        return [];
+    }
 
-那么您可以定义第四个参数为你要传入的参数，例：
+    public function judgeIsShow(UrlParamCalculator $calculator) { //根据参数判断该按钮是否显示
+        return true;
+    }
+    }) //调用/api/user/test/test接口并使响应的二进制数据直接弹出下载
+    ->headerApiButton(new class("/api/user/test/test","测试按钮","primary") extends ListHeaderButtonApi{
+        public function calcButtonParam(UrlParamCalculator $calculator) { //配置调用接口时传入的参数，返回UrlParamCalculatorParamItem的对象数组
+        return [];
+    }
+
+    public function judgeIsShow(UrlParamCalculator $calculator) { //根据参数判断该按钮是否显示
+        return true;
+    }
+    }); //调用/api/user/test/test接口并对响应JSON根据status字段判定提示data或msg字段内容
+```
+相对于顶部按钮，GridList对象为每行按钮提供了4个方法。它们分别为：
+```php
+rowNavigateButton(ListRowButtonNavigate $listRowButtonItem);
+rowApiButton(ListRowButtonApi $listRowButtonItem);
+rowBlobButton(ListRowButtonBlob $listRowButtonItem);
+rowRichTextButton(ListRowButtonRichText $listRowButtonItem);
+```
+它们均返回对象自身实例，可以进行链式调用。相对于header系列按钮方法，每行按钮的UrlParamCalculator多了每行的数据处理。例：
 ```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {})
-    ->rowApiButtonWithConfirm("测试按钮","/api/user/test/test","primary","sid"); //与rowApiButton相同，但调用接口前会要求用户确认
+    ->columnText('username', '用户名')
+    ->rowNavigateButton(new class("/race/register/list", "报名记录", "primary") extends ListRowButtonNavigate {
+        public function calcButtonParam(UrlParamCalculator $calculator) { //将每行的race_id字段转换为跳转页面参数的id字段
+            return [new UrlParamCalculatorParamItem("race_id", $calculator->getRowParamByKey("id")->val)];
+        }
+        public function judgeIsShow(UrlParamCalculator $calculator) { //根据参数判断该按钮是否显示
+            return true;
+        }
+    });
 ```
+如范例中的测试按钮点击后会跳转页面，假设被点击行的race_id是1，那么点击报名记录这个按钮时跳转到目标url是/race/register/list?id=1。
+注意：跳转的链接如果不以http:// 或 https:// 开头的话会被认作客户端相对路径哦~
 
 ## 2.Create创建页配置
 
@@ -182,8 +191,8 @@ abstract class DBCreateOperator {
     public function __construct(Builder $builder) {
         $this->builder = $builder;
     }
-	
-	//你可以在这里重写插入方法，但不推荐直接在这里写，你可以在CreateHook中进行插入信息的修改。
+    
+    //你可以在这里重写插入方法，但不推荐直接在这里写，你可以在CreateHook中进行插入信息的修改。
     public function insert(array $values) {
         return $this->builder->insert($values);
     }
@@ -209,16 +218,16 @@ const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交，所有column
 const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择，Extra中需传入GridList类的实例并配置displayColumn。
 //例：
 $grid->createForm(new DB::table("user")) extends DBCreateOperator {
-	//这里可以重写你各种自定义方法
+    //这里可以重写你各种自定义方法
 })
 ->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名')
 ->column(GridCreateForm::COLUMN_PICTURE, 'icon', '用户头像',[
-	"width"  => '50px',
-	"height" => '50px'
+    "width"  => '50px',
+    "height" => '50px'
 ])
 ->column(GridCreateForm::COLUMN_SELECT, 'state', '用户状态',[
-	"0" => "禁用",
-	"1" => "启用"
+    "0" => "禁用",
+    "1" => "启用"
 ])
 ->column(GridCreateForm::COLUMN_RICHTEXT, 'log', '用户备注');
 ```
@@ -229,7 +238,7 @@ $grid->createForm(new DB::table("user")) extends DBCreateOperator {
 Edit编辑页主要由GridEditForm对象控制。创建GridEditForm对象的方法如下：
 ```php
 $grid->editForm(new DB::table("user")) extends DBEditOperator {
-	//这里可以重写你各种自定义方法
+    //这里可以重写你各种自定义方法
 });
 ```
 此方法调用之后会在Grid内部自动创建GridEditForm实例并返回该GridEditForm实例。您可以通过这个GridEditForm实例来操作列表页信息。
@@ -243,13 +252,13 @@ abstract class DBEditOperator {
     public function __construct(Builder $builder) {
         $this->builder = $builder;
     }
-	
-	//用于获取detail数据
+    
+    //用于获取detail数据
     public function find($id) {
         return $this->builder->find($id);
     }
 
-	//用于更新数据，更新时会默认以第一个传入的column为条件更新数据。你可以重写这个方法自定义更新数据
+    //用于更新数据，更新时会默认以第一个传入的column为条件更新数据。你可以重写这个方法自定义更新数据
     public function onUpdate($columns, $param) {
         return $this->builder->where($columns[0]['col'], $param[$columns[0]['col']])->update($param);
     }
@@ -285,16 +294,16 @@ const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
 const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
 //例：
 $grid->editForm(new class(DB::table("user")) extends DBEditOperator {
-	//这里可以重写你各种自定义方法
+    //这里可以重写你各种自定义方法
 })
 ->column(GridEditForm::COLUMN_TEXT, 'username', '用户名')
 ->column(GridEditForm::COLUMN_PICTUR, 'icon', '用户头像',[
-	"width"  => '50px',
-	"height" => '50px'
+    "width"  => '50px',
+    "height" => '50px'
 ])
 ->column(GridEditForm::COLUMN_SELECT, 'state', '用户状态',[
-	"0" => "禁用",
-	"1" => "启用"
+    "0" => "禁用",
+    "1" => "启用"
 ])
 ->column(GridEditForm::COLUMN_RICHTEXT, 'log', '用户备注');
 ```
@@ -309,28 +318,28 @@ $grid->editForm(new class(DB::table("user")) extends DBEditOperator {
 例：
 ```php
 $grid->hookList(new class() implements ListHook {
-	public function hook($response) {
-		foreach ($response['data'] as &$r)
-			$r['size'] = intval($r['size']) / 1024;
-		return $response;
-	}
+    public function hook($response) {
+        foreach ($response['data'] as &$r)
+            $r['size'] = intval($r['size']) / 1024;
+        return $response;
+    }
 });
 $grid->hookDetail(new class() implements DetailHook {
-	public function hook($response) {
-		$response['data']['size'] = intval($response['data']['size']) / 1024;
-		return $response;
-	}
+    public function hook($response) {
+        $response['data']['size'] = intval($response['data']['size']) / 1024;
+        return $response;
+    }
 });
 $grid->hookCreate(new class() implements CreateHook {
-	public function hook($param) {
-		$param['size'] = intval($param['size'] * 1024);
-		return $param;
-	}
+    public function hook($param) {
+        $param['size'] = intval($param['size'] * 1024);
+        return $param;
+    }
 });
 $grid->hookSave(new class() implements SaveHook {
-	public function hook($param) {
-		$param['size'] = intval($param['size'] * 1024);
-		return $param;
-	}
+    public function hook($param) {
+        $param['size'] = intval($param['size'] * 1024);
+        return $param;
+    }
 });
 ```

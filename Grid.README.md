@@ -15,101 +15,58 @@ Grid实例主要控制四个接口，它们分别是List（列表接口）、Cre
 ### (1)构造
 List列表页主要由GridList对象控制。创建GridList对象的方法如下：
 ```php
-$grid->list(new class(new DB::table("user")) extends DBListOperator {
+$grid->list(new class(数据库Builder对象实例) extends DBListOperator {
+    //这里可以重写你各种自定义方法
+});
+//例如：
+$grid->list(new class(DB::table("user")) extends DBListOperator {
     //这里可以重写你各种自定义方法
 });
 ```
 此方法调用之后会在Grid内部自动创建GridList实例并返回该GridList实例。您可以通过这个GridList实例来操作列表页信息。
 
-这里的匿名类用于对应处理数据库操作，详情请见DBListOperator类。
+这里的匿名类用于对应处理数据库操作，您可以直接重写内部定义的数据库处理方法，详情请见DBListOperator类。
 
-### (2)column操作
-column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
+### (2)GridList对象的column系列方法
+column系列方法用于配置列表页的列数据，且能返回对象自身供链式调用。默认的方法包括但不限于：
+```php
+column($column);
+columnText($col, $colTip);
+columnDisplay($col, $colTip);
+columnRichDisplay($col, $colTip);
+columnPicture($col, $colTip, $width, $height);
+columnEnum($col, $colTip, array $options);
+columnRichText($col, $colTip);
+columnHidden($col);
+columnDivideNumber($col, $colTip, $divide, $unit = '');
+```
+使用例子如下：
 ```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {
-    //这里可以重写你各种自定义方法
-})->column("列类型", '列名', '列展示名');
+})->columnText('username', '用户名');
 ```
-示例：
+您也可以根据Http/Utils/Model中提供的实体类传入column方法中实现同样的功能。如：
 ```php
 $grid->list(new class(new DB::table("user")) extends DBListOperator {
-    //这里可以重写你各种自定义方法
-})->column(GridList::TEXT, 'username', '用户名');
-```
-这里的$grid->list参数需要传入一个DBListOperator抽象类子类的实例，这里推荐直接使用匿名对象重写父类方法。DBListOperator类定义如下：
-```php
-<?php
-abstract class DBListOperator {
-    public $builder; //DB类产生的对象，于构造方法中传入
-
-    public function __construct(Builder $builder) {
-        $this->builder = $builder;
-    }
-	
-	//where方法，设置的对应column会作为条件传入。你可以根据column自定义设置传入条件内容
-    public function where($column, $operator = null, $value = null, $boolean = 'and') {
-        $this->builder->where($column, $operator, $value, $boolean);
-        return $this;
-    }
-
-	//orderBy方法，你可以在这里自定义设置排序规则。
-    public function orderBy($column, $direction) {
-        $this->builder->orderBy($column, $direction);
-        return $this;
-    }
-
-	//select方法，如果你有连接查询你可以在这里将查询字段格式化为正确的字段解决冲突。
-    public function select($columns) {
-        $this->builder->select($columns);
-        return $this;
-    }
-
-	//分页方法，不建议直接重写本方法，建议直接通过hook修改结果。
-    public function paginate($pageCount) {
-        return $this->builder->paginate($pageCount);
-    }
-
-	//当编辑页或创建页使用column为COLUMN_CHILDREN_CHOOSE类型时，extra需要使用本方法。
-    public function first() {
-        return $this->builder->first();
-    }
-
-	//detail判断、删除时判断
-    public function find($id) {
-        return $this->builder->find($id);
-    }
-
-	//删除时进行的操作，除了重写这里之外，你也可以直接重写AntOAController的delete方法
-    public function delete($id) {
-        return $this->builder->delete($id);
-    }
-}
-```
-这里的“**列类型**”为GridList里的常量，可用的常量如下：
-```php
-const TEXT = "TEXT"; //文本类型展示
-const PICTURE = "PICTURE"; //图片类型展示，需在extra中指定图片宽高
-const ENUM = "ENUM"; //枚举类型展示，需要指定键值对用于确定ENUM对应关系
-const RICH_TEXT = "RICH_TEXT"; //富文本类型展示
-const DISPLAY = "DISPLAY"; //文本类型展示，且不从数据库查询。需要通过HOOK设置
-const RICH_DISPLAY = "RICH_DISPLAY"; //富文本类型展示，且不从数据库查询。需要通过HOOK设置
-//例：
-$grid->list(new class(new DB::table("user")) extends DBListOperator {})
-    ->column(GridList::TEXT, 'username', '用户名')
-    ->column(GridList::PICTURE, 'icon', '用户头像',[
-        "width"  => '50px',
-        "height" => '50px'
-    ])
-    ->column(GridList::ENUM, 'state', '用户状态',[
-        "0" => "禁用",
-        "1" => "启用"
-    ])
-    ->column(GridList::RICH_TEXT, 'log', '用户备注');
+})->column(new ListTableColumnText('username', '用户名'));
 ```
 后续我会根据需求更新这些类型，但通常RICH_TEXT配合Hook钩子就可以满足绝大多数自定义需求了。
 
-### (2)filter操作
-filter方法用于配置列表页的列筛选项，且能返回对象自身供链式调用。使用方法如下：
+### (3)GridList对象的filter系列方法
+filter系列方法用于配置列表页的列筛选项，且能返回对象自身供链式调用。默认的方法包括但不限于：
+
+```php
+filterHidden($col);
+filterText($col, $colTip);
+filterStartTime($col, $colTip);
+filterEndTime($col, $colTip);
+filterEnum($col, $colTip, array $options);
+filterMultiSelect($col, $colTip, array $options);
+filterCascader($col, $colTip, array $options);
+filter($filterItem);
+filterUid($col);
+```
+
 ```php
 //模板：
 $grid->list(new class(new DB::table("user")) extends DBListOperator {

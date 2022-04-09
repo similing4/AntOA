@@ -50,21 +50,6 @@ use Modules\AntOA\Http\Utils\Model\ListTableColumnText;
 
 
 class GridList implements JsonSerializable {
-    /*
-    const TEXT = "TEXT"; //文本类型展示
-    const DIVIDE_NUMBER = "DIVIDE_NUMBER"; //数字类型除以指定数值后展示
-    const DISPLAY = "DISPLAY"; //文本类型展示，且不从数据库查询。需要通过HOOK设置
-    const RICH_DISPLAY = "RICH_DISPLAY"; //富文本类型展示，且不从数据库查询。需要通过HOOK设置
-    const PICTURE = "PICTURE"; //图片类型展示，需在extra中指定图片宽高
-    const ENUM = "ENUM"; //枚举类型展示，需要指定键值对用于确定ENUM对应关系
-    const RICH_TEXT = "RICH_TEXT"; //富文本类型展示
-    const HIDDEN = "HIDDEN"; //隐藏列，只是查询出来但不展示
-    const FILTER_HIDDEN = "FILTER_HIDDEN"; //隐藏类型筛选，用于外部传入
-    const FILTER_TEXT = "FILTER_TEXT"; //文本类型筛选，筛选方式为%keyword%
-    const FILTER_STARTTIME = "FILTER_STARTTIME"; //开始时间类型筛选，筛选结果为大于等于该结束时间的行
-    const FILTER_ENDTIME = "FILTER_ENDTIME"; //结束时间类型筛选，筛选结果为小于等于该结束时间的行
-    const FILTER_ENUM = "FILTER_ENUM"; //单选类型的筛选，需要指定键值对用于确定ENUM对应关系
-    */
     /**
      * @var string 被用作跳转到编辑页及调用删除功能时传入的主键列名
      */

@@ -170,142 +170,107 @@ $grid->createForm(new class(new DB::table("user")) extends DBCreateOperator {
 ```
 此方法调用之后会在Grid内部自动创建GridCreateForm实例并返回该GridCreateForm实例。您可以通过这个GridCreateForm实例来操作列表页信息。
 
-这里的表名是指DB::table的参数，暂时还不支持Model操作。
+### (2)column系列操作
+column系列方法用于配置列表页的列筛选项，且能返回对象自身供链式调用。默认的方法包括但不限于：
 
-### (2)column操作
-column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
 ```php
-//模板：
-$grid->createForm(DBCreateOperator对象)->column("列类型", '列名', '列展示名');
-//示例：
-$grid->createForm(new DB::table("user")) extends DBCreateOperator {
-    //这里可以重写你各种自定义方法
-})->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名');
+function column(CreateColumnBase $columnItem);
+function columnText($col, $colTip, $defaultVal = '');
+function columnNumberDivide($col, $colTip, $divide, $unit = '', $defaultVal = '');
+function columnTextarea($col, $colTip, $defaultVal = '');
+function columnPassword($col, $colTip, $defaultVal = '');
+function columnSelect($col, $colTip, array $options, $defaultVal = '');
+function columnRadio($col, $colTip, array $options, $defaultVal = '');
+function columnCheckbox($col, $colTip, array $options, $defaultVal = '');
+function columnTreeCheckbox($col, $colTip, array $options, $defaultVal = '');
+function columnTimestamp($col, $colTip, $defaultVal = '');
+function columnRichText($col, $colTip, $defaultVal = '');
+function columnPicture($col, $colTip, $defaultVal = '');
+function columnFile($col, $colTip, $defaultVal = '');
+function columnPictures($col, $colTip, $defaultVal = '');
+function columnFiles($col, $colTip, $defaultVal = '');
+function columnCascader($col, $colTip, array $options, $defaultVal = '');
+function columnDisplay($col, $colTip, $defaultVal = '');
+function columnHidden($col);
+function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '');
+function columnApiButton(CreateRowButtonBase $buttonItem);
 ```
-这里的$grid->createForm参数需要传入一个DBCreateOperator抽象类子类的实例，这里推荐直接使用匿名对象重写父类方法。DBCreateOperator类定义如下：
-```php
-<?php
-abstract class DBCreateOperator {
-    public $builder; //构造方法，为DB类的Builder
 
-    public function __construct(Builder $builder) {
-        $this->builder = $builder;
-    }
-    
-    //你可以在这里重写插入方法，但不推荐直接在这里写，你可以在CreateHook中进行插入信息的修改。
-    public function insert(array $values) {
-        return $this->builder->insert($values);
-    }
-}
-```
-这里的“**列类型**”为GridCreateForm里的常量，可用的常量如下：
+使用例子如下：
 ```php
-const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据，表现形式为一个文本框
-const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据，表现形式为一个textarea
-const COLUMN_PASSWORD = "COLUMN_PASSWORD"; //密码数据，表现形式为一个密码输入框
-const COLUMN_SELECT = "COLUMN_SELECT"; //下拉单选，表现形式为一个select，需传入Extra参数为一个键值对数组，如["1"=>"启用","2"=>"禁用"]，那么用户会选择启用与禁用，而你能拿到1或2
-const COLUMN_RADIO = "COLUMN_RADIO"; //Radio单选，表现形式为input type=radio的单选，需传入Extra参数与COLUMN_SELECT一致
-const COLUMN_CHECKBOX = "COLUMN_CHECKBOX"; //多选，表现形式为input type=checkbox的多选，需传入Extra参数与COLUMN_SELECT一致，但你获取到的值为多选选中的键数组
-const COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"; //时间选择，表现形式为点击后弹出时间与日期的选择
-const COLUMN_RICHTEXT = "COLUMN_RICHTEXT"; //富文本，表现形式为WangEditor的富文本编辑器
-const COLUMN_PICTURE = "COLUMN_PICTURE"; //图片，表现形式为上传并预览单张图片
-const COLUMN_FILE = "COLUMN_FILE"; //文件，表现形式为上传并预览单个文件
-const COLUMN_PICTURES = "COLUMN_PICTURES"; //多图片，表现形式为上传并预览多张图片
-const COLUMN_CHOOSE = "COLUMN_CHOOSE"; //级联选择，表现形式参考[级联选择](https://www.antdv.com/components/cascader-cn/#API)，需传入Extra参数为Cascader组件的options格式，对应数据为Cascader组件的v-model格式的数组的json_encode格式
-const COLUMN_FILES = "COLUMN_FILES"; //多文件，表现形式为上传并预览多个文件
-const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交。可以通过extra传入要展示的富文本信息。
-const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交，所有column配置内容均可通过页面传入参数注入。
-const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择，Extra中需传入GridList类的实例并配置displayColumn。
-//例：
-$grid->createForm(new DB::table("user")) extends DBCreateOperator {
-    //这里可以重写你各种自定义方法
+$grid->createForm(new class(DB::table("race")) extends DBCreateOperator {
 })
-->column(GridCreateForm::COLUMN_TEXT, 'username', '用户名')
-->column(GridCreateForm::COLUMN_PICTURE, 'icon', '用户头像',[
-    "width"  => '50px',
-    "height" => '50px'
-])
-->column(GridCreateForm::COLUMN_SELECT, 'state', '用户状态',[
-    "0" => "禁用",
-    "1" => "启用"
-])
-->column(GridCreateForm::COLUMN_RICHTEXT, 'log', '用户备注');
+    ->columnText('name', '比赛名称')
+    ->columnTimestamp('register_end_time', '报名截止时间')
+    ->columnRichText('race_explain', '比赛简介')
+    ->columnText('race_qq_url', '比赛QQ群加群链接')
+    ->columnRadio('status', '状态', [
+        new EnumOption("0", "不可报名"),
+        new EnumOption("1", "可报名"),
+    ]);
 ```
+您也可以根据Http/Utils/Model中提供的实体类传入column方法中实现同样的功能。如：
+```php
+$grid->createForm(new class(DB::table("race")) extends DBCreateOperator {
+})->column(new CreateColumnText('name', '比赛名称'));
+```
+
 ## 3.Edit编辑页配置
 编辑页与创建页大体相同：
 
 ### (1)构造
 Edit编辑页主要由GridEditForm对象控制。创建GridEditForm对象的方法如下：
 ```php
-$grid->editForm(new DB::table("user")) extends DBEditOperator {
+$grid->editForm(new class(new DB::table("user")) extends DBCreateOperator {
     //这里可以重写你各种自定义方法
 });
 ```
 此方法调用之后会在Grid内部自动创建GridEditForm实例并返回该GridEditForm实例。您可以通过这个GridEditForm实例来操作列表页信息。
 
-这里的$grid->editForm参数需要传入一个DBEditOperator抽象类子类的实例，这里推荐直接使用匿名对象重写父类方法。DBEditOperator类定义如下：
+### (2)column系列操作
+column系列方法用于配置列表页的列筛选项，且能返回对象自身供链式调用。默认的方法包括但不限于：
+
 ```php
-<?php
-abstract class DBEditOperator {
-    public $builder;
-
-    public function __construct(Builder $builder) {
-        $this->builder = $builder;
-    }
-    
-    //用于获取detail数据
-    public function find($id) {
-        return $this->builder->find($id);
-    }
-
-    //用于更新数据，更新时会默认以第一个传入的column为条件更新数据。你可以重写这个方法自定义更新数据
-    public function onUpdate($columns, $param) {
-        return $this->builder->where($columns[0]['col'], $param[$columns[0]['col']])->update($param);
-    }
-}
+function column(EditColumnBase $columnItem);
+function columnText($col, $colTip, $defaultVal = '');
+function columnNumberDivide($col, $colTip, $divide, $unit = '', $defaultVal = '');
+function columnTextarea($col, $colTip, $defaultVal = '');
+function columnPassword($col, $colTip, $defaultVal = '');
+function columnSelect($col, $colTip, array $options, $defaultVal = '');
+function columnRadio($col, $colTip, array $options, $defaultVal = '');
+function columnCheckbox($col, $colTip, array $options, $defaultVal = '');
+function columnTreeCheckbox($col, $colTip, array $options, $defaultVal = '');
+function columnTimestamp($col, $colTip, $defaultVal = '');
+function columnRichText($col, $colTip, $defaultVal = '');
+function columnPicture($col, $colTip, $defaultVal = '');
+function columnFile($col, $colTip, $defaultVal = '');
+function columnPictures($col, $colTip, $defaultVal = '');
+function columnFiles($col, $colTip, $defaultVal = '');
+function columnCascader($col, $colTip, array $options, $defaultVal = '');
+function columnDisplay($col, $colTip, $defaultVal = '');
+function columnHidden($col);
+function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '');
+function columnApiButton(EditRowButtonBase $buttonItem);
 ```
 
-### (2)column操作
-column方法用于配置列表页的列数据，且能返回对象自身供链式调用。使用方法如下：
+使用例子如下：
 ```php
-//模板：
-$grid->editForm(DBEditOperator对象)->column("列类型", '列名', '列展示名');
-//示例：
-$grid->editForm(new class(DB::table("user")) extends DBEditOperator {
-    //这里可以重写你各种自定义方法
-})->column(GridEditForm::COLUMN_TEXT, 'username', '用户名');
-```
-这里的“**列类型**”为GridEditForm里的常量，可用的常量如下：
-```php
-const COLUMN_TEXT = "COLUMN_TEXT"; //文本数据，表现形式为一个文本框
-const COLUMN_TEXTAREA = "COLUMN_TEXTAREA"; //多行文本数据，表现形式为一个textarea
-const COLUMN_PASSWORD = "COLUMN_PASSWORD"; //密码数据，表现形式为一个密码输入框
-const COLUMN_SELECT = "COLUMN_SELECT"; //下拉单选，表现形式为一个select
-const COLUMN_RADIO = "COLUMN_RADIO"; //Radio单选，表现形式为input type=radio的单选
-const COLUMN_CHECKBOX = "COLUMN_CHECKBOX"; //多选，表现形式为input type=checkbox的多选
-const COLUMN_TIMESTAMP = "COLUMN_TIMESTAMP"; //时间选择，表现形式为点击后弹出时间与日期的选择
-const COLUMN_RICHTEXT = "COLUMN_RICHTEXT"; //富文本，表现形式为WangEditor的富文本编辑器
-const COLUMN_PICTURE = "COLUMN_PICTURE"; //图片，表现形式为上传并预览单张图片
-const COLUMN_FILE = "COLUMN_FILE"; //文件，表现形式为上传并预览单个文件
-const COLUMN_PICTURES = "COLUMN_PICTURES"; //多图片，表现形式为上传并预览多张图片
-const COLUMN_FILES = "COLUMN_FILES"; //多文件，表现形式为上传并预览多个文件
-const COLUMN_DISPLAY = "COLUMN_DISPLAY"; //只用来展示的行，不会提交
-const COLUMN_HIDDEN = "COLUMN_HIDDEN"; //隐藏的行，会提交
-const COLUMN_CHILDREN_CHOOSE = "COLUMN_CHILDREN_CHOOSE"; //子表选择，将子表的ID作为值进行选择
-//例：
-$grid->editForm(new class(DB::table("user")) extends DBEditOperator {
-    //这里可以重写你各种自定义方法
+$grid->editForm(new class(DB::table("race")) extends DBEditOperator {
 })
-->column(GridEditForm::COLUMN_TEXT, 'username', '用户名')
-->column(GridEditForm::COLUMN_PICTUR, 'icon', '用户头像',[
-    "width"  => '50px',
-    "height" => '50px'
-])
-->column(GridEditForm::COLUMN_SELECT, 'state', '用户状态',[
-    "0" => "禁用",
-    "1" => "启用"
-])
-->column(GridEditForm::COLUMN_RICHTEXT, 'log', '用户备注');
+    ->columnHidden('id')
+    ->columnText('name', '比赛名称')
+    ->columnTimestamp('register_end_time', '报名截止时间')
+    ->columnRichText('race_explain', '比赛简介')
+    ->columnText('race_qq_url', '比赛QQ群加群链接')
+    ->columnRadio('status', '状态', [
+        new EnumOption("0", "不可报名"),
+        new EnumOption("1", "可报名")
+    ]);
+```
+您也可以根据Http/Utils/Model中提供的实体类传入column方法中实现同样的功能。如：
+```php
+$grid->editForm(new class(DB::table("race")) extends DBCreateOperator {
+})->column(new EditColumnText('name', '比赛名称'));
 ```
 
 ## 4. 钩子操作

@@ -24,6 +24,7 @@
 		created() {
 			this.setHtmlTitle()
 			this.setLanguage(this.lang)
+			this.refreshRoute();
 			enquireScreen(isMobile => this.setDevice(isMobile))
 		},
 		mounted() {
@@ -83,6 +84,18 @@
 			},
 			popContainer() {
 				return document.getElementById("popContainer")
+			},
+			async refreshRoute() {
+				let e = await this.$api("/api/antoa/auth/config").method("GET").call();
+				if (!e.status)
+					return;
+				delete localStorage.homeVueApi;
+				for (let i in e.routes[0].children) {
+					if (e.routes[0].children[i].meta && e.routes[0].children[i].meta.is_home)
+						localStorage.homeVueApi = e.routes[0].children[i].meta.vue_api;
+				}
+				this.$store.commit('setting/setMenuData', e.routes);
+				this.$store.commit('setting/setCustomTitleList', e.title_map);
 			}
 		}
 	}

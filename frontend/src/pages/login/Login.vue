@@ -123,11 +123,11 @@ export default {
 		},
 		async goHome() {
 			try {
-				var e = await this.$api("/api/antoa/auth/config").method("GET").call();
+				let e = await this.$api("/api/antoa/auth/config").method("GET").call();
 				if (!e.status)
 					throw e.msg;
 				delete localStorage.homeVueApi;
-				for (var i in e.routes[0].children) {
+				for (let i in e.routes[0].children) {
 					if (e.routes[0].children[i].meta && e.routes[0].children[i].meta.is_home)
 						localStorage.homeVueApi = e.routes[0].children[i].meta.vue_api;
 				}

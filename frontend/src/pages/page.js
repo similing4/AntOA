@@ -3,6 +3,7 @@ import BlankView from '@/layouts/BlankView'
 import PageView from '@/layouts/PageView'
 export default [{
 	path: '-',
+	name: 'ANTOA_BASE_ROUTE',
 	component: TabsView,
 	children: [{
 		path: '/home',
@@ -24,9 +25,5 @@ export default [{
 		path: '/antoa/user/change_password',
 		name: '修改密码',
 		component: () => import('@/pages/common/change_password.vue')
-	}, {
-		path: '/software/test/diy_list',
-		name: '自定义列表页',
-		component: () => import('@/pages/diy/list.vue')
 	}]
 }]

@@ -1,10 +1,10 @@
 {
-  "name": "vue-antd-admin",
-  "version": "0.7.2",
-  "homepage": "https://iczer.github.io/vue-antd-admin",
-  "private": true,
+  "name": "AntOA",
+  "version": "1.0.0",
+  "homepage": "https://github.com/similing4/AntOA",
+  "private": false,
   "scripts": {
-    "dev": "concurrently \" npm run serve \" \" json-server -w db.json -p 5555 \"",
+    "mix": "node mix.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },

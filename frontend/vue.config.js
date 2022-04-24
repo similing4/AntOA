@@ -1,3 +1,4 @@
+let fs = require('fs');
 let path = require('path')
 const webpack = require('webpack')
 const ThemeColorReplacer = require('webpack-theme-color-replacer')
@@ -48,6 +49,24 @@ module.exports = {
 		}
 	},
 	configureWebpack: config => {
+	    let moduleListConfigFile = path.resolve(__dirname, "../../../modules_statuses.json");
+	    if(fs.existsSync(moduleListConfigFile)){
+	        let moduleListExportFile = path.resolve(__dirname, "./external_module_js.js");
+    	    let modules = fs.readFileSync(moduleListConfigFile);
+    	    modules = JSON.parse(modules);
+    	    modules = Object.keys(modules).filter((k)=>modules[k] && k != "AntOA");
+    	    let exportScripts = "let ret = {};\n";
+    	    let modulesList = modules.map((t)=>{
+    	        let moduleJsFilePath = path.resolve(__dirname, "../../" + t + "/antoa_plugin.js");
+    	        if(!fs.existsSync(moduleJsFilePath))
+    	            return "";
+    	        exportScripts += "ret['" + t + "'] = " + t + ";\n";
+    	        return "import " + t + " from '../../" + t + "/antoa_plugin.js';";
+    	    }).join("\n");
+    	    modulesList += "\n" + exportScripts + "\nexport default ret;";
+    	    fs.writeFileSync(moduleListExportFile, modulesList);
+	    }
+	    
 		config.entry.app = ["babel-polyfill", "whatwg-fetch", "./src/main.js"];
 		config.performance = {
 			hints: false

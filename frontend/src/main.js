@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import App from './App'
-import router from './router'
+import routerInit from './router'
 import './theme/index.less'
 import Antd from 'ant-design-vue'
 import store from './store'
@@ -15,9 +15,16 @@ Vue.config.productionTip = false;
 Vue.use(Router);
 Vue.use(Antd);
 Vue.use(Plugins);
+let pluginRoutes = [];
 for(let i = 0; i < Object.values(external_module).length; i++){
     let plugin = Object.values(external_module)[i];
     Vue.use(plugin);
+    if(plugin.routes)
+        pluginRoutes = pluginRoutes.concat(plugin.routes);
+}
+let router = routerInit(pluginRoutes);
+for(let i = 0; i < Object.values(external_module).length; i++){
+    let plugin = Object.values(external_module)[i];
     if(plugin.dealRouter)
         plugin.dealRouter(router);
 }

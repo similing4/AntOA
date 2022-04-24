@@ -15,8 +15,12 @@ Vue.config.productionTip = false;
 Vue.use(Router);
 Vue.use(Antd);
 Vue.use(Plugins);
-for(let i = 0; i < Object.values(external_module).length; i++)
-    Vue.use(Object.values(external_module)[i]);
+for(let i = 0; i < Object.values(external_module).length; i++){
+    let plugin = Object.values(external_module)[i];
+    Vue.use(plugin);
+    if(plugin.dealRouter)
+        plugin.dealRouter(router);
+}
 
 /* eslint-disable no-new */
 const app = new Vue({

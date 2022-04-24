@@ -140,7 +140,7 @@ Route::prefix('software')->group(function() { //这里的software要与web中设
 ## 四、自定义页面及插件
 自定义插件主要由路由管理和插件两部分组成。不论是哪部分，都需要您去新建模块来实现。
 
-### 自定义路由
+### 自定义路由（页面）
 路由管理用于管理路由与自定义页面，路由守卫等。
 
 如果你需要自定义路由，那么你需要在你的模块所在根目录下创建一个antoa_plugin.js文件，内容如下：
@@ -164,4 +164,17 @@ export default {
   dealRouter
 };
 ```
-这里的install会被main.js通过Vue.use调用。routes配置请参考我的写法进行引用
+这里的install会被main.js通过Vue.use调用。routes配置请参考我的写法进行引用。dealRouter会被main.js调用，参数是项目的VueRouter对象，你可以使用这个对象设置一些路由守卫功能。
+
+### 自定义插件
+自定义插件用于扩展list、filter、create、edit等方法以满足不同需求。
+
+如果你需要定义一个新的扩展方法：
+
+后端方面，你需要PHP中继承对应实体类。如列表页筛选需要继承ListFilterBase类等。详情请到Modules\AntOA\Http\Utils\AbstractModel文件夹中查看对应实体类的父类定义及Modules\AntOA\Http\Utils\Model文件夹中查看对应实现。注：实体类对应的jsonSerialize方法中type字段应与前端定义的Vue同名。推荐文件名、type字段名与Vue文件名三个名称一致。
+
+前端方面，你需要在你的模块所在根目录下创建一个antoa_components文件夹，其可包含如下子文件夹：
+PluginListFilter        该文件夹用于列表页筛选的组件自定义，文件夹内的对应PluginListFilter开头的vue文件会被引入注入到list.vue中，编写范例详见frontend/src/pages/common/components/list/filter 文件夹中的任意文件。
+PluginListTableColumn   该文件夹用于列表页列展示的组件自定义，文件夹内的对应PluginListTableColumn开头的vue文件会被引入注入到list.vue中，编写范例详见frontend/src/pages/common/components/list/table_column 文件夹中的任意文件
+PluginCreateColumn      该文件夹用于创建页对应列的组件自定义，文件夹内的对应PluginCreateColumn开头的vue文件会被引入注入到create.vue中，编写范例详见frontend/src/pages/common/components/create/column_column 文件夹中的任意文件
+PluginEditColumn        该文件夹用于编辑页对应列的组件自定义，文件夹内的对应PluginEditColumn开头的vue文件会被引入注入到edit.vue中，编写范例详见frontend/src/pages/common/components/edit/column_column 文件夹中的任意文件

@@ -53,6 +53,9 @@
 				<CreateColumnTimestamp :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnTimestamp'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnTimestamp>
+				<CreateColumnPlugin :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type.startsWith('PluginCreateColumn')" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</CreateColumnPlugin>
 			</template>
 			<a-form-item style="display: flex;justify-content: center;">
 				<a-button type="primary" @click="submit">创建</a-button>
@@ -82,6 +85,7 @@ import CreateColumnPictures from "./components/create/column_column/CreateColumn
 import CreateColumnRichText from "./components/create/column_column/CreateColumnRichText.vue";
 import CreateColumnTextarea from "./components/create/column_column/CreateColumnTextarea.vue";
 import CreateColumnTimestamp from "./components/create/column_column/CreateColumnTimestamp.vue";
+import CreateColumnPlugin from "./components/CreateColumnPluginGeneral.vue";
 import ConfirmDialog from "@/components/tool/ConfirmDialog.vue";
 export default {
 	data() {
@@ -130,6 +134,7 @@ export default {
 		CreateColumnRichText,
 		CreateColumnTextarea,
 		CreateColumnTimestamp,
+		CreateColumnPlugin,
 		ConfirmDialog,
 		RowButton
 	},

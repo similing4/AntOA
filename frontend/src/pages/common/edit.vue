@@ -53,6 +53,9 @@
 				<EditColumnTimestamp :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnTimestamp'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</EditColumnTimestamp>
+				<EditColumnPlugin :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type.startsWith('PluginEditColumn')" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</EditColumnPlugin>
 			</template>
 			<a-form-item style="display: flex;justify-content: center;">
 				<a-button type="primary" @click="submit">修改</a-button>
@@ -82,6 +85,7 @@ import EditColumnPictures from "./components/edit/column_column/EditColumnPictur
 import EditColumnRichText from "./components/edit/column_column/EditColumnRichText.vue";
 import EditColumnTextarea from "./components/edit/column_column/EditColumnTextarea.vue";
 import EditColumnTimestamp from "./components/edit/column_column/EditColumnTimestamp.vue";
+import EditColumnPlugin from "./components/EditColumnPluginGeneral.vue";
 import ConfirmDialog from "@/components/tool/ConfirmDialog.vue";
 export default {
 	data() {
@@ -130,6 +134,7 @@ export default {
 		EditColumnRichText,
 		EditColumnTextarea,
 		EditColumnTimestamp,
+		EditColumnPlugin,
 		ConfirmDialog,
 		RowButton
 	},

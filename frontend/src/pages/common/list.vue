@@ -10,6 +10,7 @@
 						<ListFilterText v-if="filterItem.type == 'ListFilterText'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 						<ListFilterMultiSelect v-if="filterItem.type == 'ListFilterMultiSelect'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 						<ListFilterCascader v-if="filterItem.type == 'ListFilterCascader'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
+						<ListFilterPlugin v-if="filterItem.type.startsWith('PluginListFilter')" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 					</a-col>
 					<span style="float: right; margin-top: 3px;" v-if="gridListObject.listFilterCollection.filter((t)=>t.type != 'ListFilterHidden').length > 0">
 						<a-button type="primary" @click="doSearch">查询</a-button>
@@ -43,6 +44,7 @@
 						<ListTableColumnRichDisplay :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnRichDisplay'" />
 						<ListTableColumnText :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnText'" />
 						<ListTableColumnPicture :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnPicture'" />
+						<ListTableColumnPlugin :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type.startsWith('PluginListTableColumn')" />
 					</template>
 					<div slot="action" slot-scope="{text, record}">
 						<RowButtonsWrapper :grid-list-object="gridListObject" :grid-api-object="gridApiObject" :record="record" @openurl="openurl" @loadpage="loadPage" />
@@ -68,6 +70,8 @@ import ListTableColumnPicture from "./components/list/table_column/ListTableColu
 import ListTableColumnText from "./components/list/table_column/ListTableColumnText.vue";
 import HeaderButtonsWrapper from "./components/list/HeaderButtonsWrapper.vue";
 import RowButtonsWrapper from "./components/list/RowButtonsWrapper.vue";
+import ListFilterPlugin from "./components/ListFilterPluginGeneral.vue";
+import ListTableColumnPlugin from "./components/ListTableColumnPluginGeneral.vue";
 import moment from "moment";
 import StandardTable from "@/components/table/StandardTable.vue";
 import confirmDialog from "@/components/tool/ConfirmDialog.vue";
@@ -132,7 +136,9 @@ export default {
 		HeaderButtonsWrapper,
 		RowButtonsWrapper,
 		StandardTable,
-		confirmDialog
+		confirmDialog,
+		ListFilterPlugin,
+		ListTableColumnPlugin
 	},
 	async mounted() {
 		try {

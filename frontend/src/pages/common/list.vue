@@ -139,8 +139,13 @@ export default {
 			this.gridPath = this.$route.path.substring(0, this.$route.path.length - "/list".length);
 			this.gridConfigUrl = "/api" + this.gridPath + "/grid_config";
 			const gridConfigRes = await this.$api(this.gridConfigUrl).param(this.$route.query).method("POST").call();
-			if (!gridConfigRes.status)
+			if (!gridConfigRes.status){
+				if(gridConfigRes.msg == "登录失效"){
+					this.$message.error("登录失效，请重新登录", 5);
+					return this.$router.push("/login");
+				}
 				throw gridConfigRes.msg;
+			}
 			Object.assign(this.gridApiObject, gridConfigRes.api);
 			Object.assign(this.gridListObject, gridConfigRes.grid.list);
 			this.generateTableObject();

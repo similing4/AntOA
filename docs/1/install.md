@@ -9,34 +9,34 @@ composer require nwidart/laravel-modules 7.3
 Windows下：
 
 ```bash
-$ php artisan module:make AntOA 
-$ cd Modules
-$ rmdir AntOA /S /Q
-$ git clone https://github.com/similing4/AntOA.git
+php artisan module:make AntOA 
+cd Modules
+rmdir AntOA /S /Q
+git clone https://github.com/similing4/AntOA.git
 ```
 
 linux下：
 
 ```bash
-$ php artisan module:make AntOA 
-$ cd Modules
-$ rm AntOA -rf
-$ git clone https://github.com/similing4/AntOA.git
+php artisan module:make AntOA 
+cd Modules
+rm AntOA -rf
+git clone https://github.com/similing4/AntOA.git
 ```
 
 安装结束后需要使用npm或yarn安装并打包页面到public下，否则无法访问页面：
 
 使用npm：
 ```shell script
-$ cd Modules/AntOA/frontend
-$ npm install
-$ npm run build
+cd Modules/AntOA/frontend
+npm install
+npm run build
 ```
 使用yarn：
 ```shell script
-$ cd Modules/AntOA/frontend
-$ yarn
-$ yarn build
+cd Modules/AntOA/frontend
+yarn
+yarn build
 ```
 注意：每次新增带有AntOA模块的插件时（和页面相关的扩展功能）需要重新打包，即重新执行上述脚本。
 
@@ -50,7 +50,7 @@ $ yarn build
 
 模块的授权依赖于数据库中的管理员用户，因此需要创建超级管理员表。可通过以下脚本创建（创建前请修改好主项目的数据库配置）：
 ```shell script
-$ php artisan module:seed AntOA
+php artisan module:seed AntOA
 ```
 
 访问 http://你的域名/antoa/webpack/index.html 看看吧~

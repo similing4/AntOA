@@ -74,6 +74,16 @@ export default {
       state.pageMinHeight += minHeight
     },
     setMenuData(state, menuData) {
+      let index = 0;
+      let dfs = (dom) => {
+        dom.key = index++;
+        dom.key = dom.key + "";
+        if (dom.children)
+          for (let i = 0; i < dom.children.length; i++)
+            dfs(dom.children[i]);
+      };
+      for (let j = 0; j < menuData.length; j++)
+        dfs(menuData[j]);
       localStorage.antOAMenuData = JSON.stringify(menuData)
       state.menuData = menuData
     },

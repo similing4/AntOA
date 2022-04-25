@@ -1,2 +1,7 @@
 node_modules/
 frontend/.env
+frontend/external_module_js.js
+frontend/src/pages/common/components/ListTableColumnPluginGeneral.vue
+frontend/src/pages/common/components/ListFilterPluginGeneral.vue
+frontend/src/pages/common/components/EditColumnPluginGeneral.vue
+frontend/src/pages/common/components/CreateColumnPluginGeneral.vue

@@ -113,7 +113,7 @@ export default {
         config = { attrs: { style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: menu.meta.link, target: '_blank' } }
       }
       return h(
-        Item, { key: menu.fullPath },
+        Item, { key: menu.key },
         [
           h(tag, config,
             [
@@ -136,7 +136,7 @@ export default {
       menu.children.forEach(function(item) {
         itemArr.push(this_.renderItem(h, item))
       })
-      return h(SubMenu, { key: menu.fullPath },
+      return h(SubMenu, { key: menu.key },
         subItem.concat(itemArr)
       )
     },
@@ -178,15 +178,36 @@ export default {
     },
     updateMenu() {
       const matchedRoutes = this.$route.matched.filter(item => item.path !== '')
-      this.selectedKeys = this.getSelectedKey(this.$route)
-      let openKeys = matchedRoutes.map((item,index) => item.path ? item.path : index)
-      openKeys = openKeys.slice(0, openKeys.length - 1)
+      let selectedKeys = this.getSelectedKey(this.$route);
+      this.selectedKeys = [selectedKeys[0]];
+      let openKeys = selectedKeys;
       if (!fastEqual(openKeys, this.sOpenKeys)) {
         this.collapsed || this.mode === 'horizontal' ? this.cachedOpenKeys = openKeys : this.sOpenKeys = openKeys
       }
     },
     getSelectedKey(route) {
-      return route.matched.map(item => item.path)
+      let menuData = JSON.parse(localStorage.antOAMenuData);
+      let nodes = null;
+      for(let i=0;i<menuData.length;i++){
+        nodes = this.getNodePathInTree(menuData[i], (node)=>{
+          return node.path == route.fullPath;
+        });
+        if(nodes)
+          break;
+      }
+      return nodes ? nodes.map((t)=>t.key) : [];
+      //return route.matched.map(item => item.path)
+    },
+    getNodePathInTree(root, testfunc){
+      if(testfunc(root))
+        return [root];
+      if(root.children)
+        for(let i=0;i<root.children.length;i++){
+          let ret = this.getNodePathInTree(root.children[i], testfunc);
+          if(ret)
+            return ret.concat([root]);
+        }
+      return null;
     }
   },
   render(h) {

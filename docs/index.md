@@ -16,14 +16,17 @@ composer require nwidart/laravel-modules 7.3
 安装好laravel-modules模块后您可以直接使用命令行创建注册本模块后覆盖：
 
 Windows下：
-```shell script
+
+```bash
 $ php artisan module:make AntOA 
 $ cd Modules
 $ rmdir AntOA /S /Q
 $ git clone https://github.com/similing4/AntOA.git
 ```
+
 linux下：
-```shell script
+
+```bash
 $ php artisan module:make AntOA 
 $ cd Modules
 $ rm AntOA -rf

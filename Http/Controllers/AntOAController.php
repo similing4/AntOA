@@ -37,6 +37,7 @@ abstract class AntOAController extends Controller {
     public function __construct(AuthInterface $auth) {
         $this->auth = $auth;
         $this->gridObj = new Grid();
+        $this->getUserInfo(request());
         $this->grid($this->gridObj);
     }
 

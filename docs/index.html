@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>AntOA开发文档</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="description" content="一个基于Vue AntD Admin二次开发与 Laravel 结合的后台OA管理系统">
+    <meta name="keywords" content="Laravel|CURD|AntOA|后台管理系统|前后端分离|配置页面|自定义页面"/>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="referrer" content="no-referrer"/>
+    <link rel="stylesheet" href="guide/css/vue.css">
+    <link rel="stylesheet" href="guide/css/sidebar.min.css"/>
+    <link rel="stylesheet" href="guide/css/docsify-darklight-theme.min.css"/>
+</head>
+<body>
+<div id="app">
+    <p>有志者事竟成</p>
+</div>
+<script>
+    window.$docsify = {
+        name: 'AntOA',
+        logo: 'guide/images/logo.jpg',
+        repo: 'https://github.com/similing4/AntOA',
+        loadSidebar: 'summary.md',
+        homepage: 'readme.md',
+        subMaxLevel: 3,
+        //自动显示标题
+        autoHeader: true,
+        //自动跳转到页面顶部
+        auto2top: true,
+        //小屏设备下合并导航栏到侧边栏
+        mergeNavbar: true,
+        //搜索插件
+        search: {
+            placeholder: '搜索试试',
+            noData: '没有结果！',
+        },
+        plugins: [
+            // footer
+            function (hook) {
+                var footer = [
+                    '<hr/>',
+                    '<footer>',
+                    '<span>老老实实做人，踏踏实实做事。</span><br/>',
+                    '</footer>'
+                ].join('');
+
+                hook.afterEach(function (html) {
+                    return html + footer;
+                });
+            },
+            // mathjax
+            function (hook) {
+                hook.doneEach(function () {
+                    if (typeof MathJax !== 'undefined') {
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+                    }
+                })
+            }
+        ]
+    }
+</script>
+<script src="guide/js/docsify.min.js"></script>
+<script src="guide/js/search.min.js"></script>
+<script src="guide/js/prism-java.min.js"></script>
+<script src="guide/js/emoji.min.js"></script>
+<script src="guide/js/zoom-image.min.js"></script>
+<script src="guide/js/docsify-copy-code.js"></script>
+<script src="guide/js/docsify-sidebar-collapse.min.js"></script>
+<script src="guide/js/docsify-plugin-flexible-alerts.js"></script>
+<script src="guide/js/vanilla-back-to-top.min.js"></script>
+<script src="guide/js/docsify-darklight-theme.js"></script>
+
+<!-- 回到顶部功能 -->
+<script>
+    addBackToTop({
+        diameter: 56,
+        backgroundColor: 'rgb(66, 185, 131)',
+        textColor: '#fff',
+    });
+</script>
+
+<!-- 实现离线化 -->
+<script>
+    if (typeof navigator.serviceWorker !== 'undefined') {
+        navigator.serviceWorker.register('pwa.js')
+    }
+</script>
+
+</body>
+</html>

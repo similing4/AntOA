@@ -7,7 +7,6 @@
 
 本项目还有部分功能没有完工，比如默认值填充部分，但已经能基本解决绝大多数后端问题。本项目和我司外包项目息息相关，故而会持续更新。如有新增需求请提issue或请QQ联系我：845206213。
 
-## 指南
 ### 安装
 
 本项目是基于Laravel Modules[nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)进行的开发，故而您需要在您的laravel项目中使用composer引入该库：

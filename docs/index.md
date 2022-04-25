@@ -1,7 +1,7 @@
 # 指南
 ## 写在前面
 
-之前尝试了很多后台框架，发现很多框架不能完全前后端分离，而且分模块做的很烂，页面间获取、传输数据很难甚至一些简单的交互都需要前端写js配合，均不能满足我司需求。故此我根据Vue Antd Admin[Vue Antd Admin](https://github.com/iczer/vue-antd-admin)前端项目整改了一套后端控制下的前后端完全分离且能根据Laravel Module分模块的后台管理框架——AntOA。
+之前尝试了很多后台框架，发现很多框架不能完全前后端分离，而且分模块做的很烂，页面间获取、传输数据很难甚至一些简单的交互都需要前端写js配合，均不能满足我司需求。故此我根据[Vue Antd Admin](https://github.com/iczer/vue-antd-admin)前端项目整改了一套后端控制下的前后端完全分离且能根据Laravel Module分模块的后台管理框架——AntOA。
 
 出于外包项目原因，本项目的上传相关功能都应用到了七牛云存储。后续会加入非云存储的上传方式。
 
@@ -9,7 +9,7 @@
 
 ### 安装
 
-本项目是基于Laravel Modules[nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)进行的开发，故而您需要在您的laravel项目中使用composer引入该库：
+本项目是基于[nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)进行的开发，故而您需要在您的laravel项目中使用composer引入该库：
 ```bash
 composer require nwidart/laravel-modules 7.3
 ```

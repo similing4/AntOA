@@ -1,15 +1,35 @@
 ## 安装
 
-本项目是基于[nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)进行的开发，故而您需要在您的laravel项目中使用composer引入该库：
+本项目是基于[nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)进行的开发，故而您需要[安装并创建laravel6.0](https://learnku.com/docs/laravel/6.x/installation/5124)并在其中使用composer引入该库：
 ```bash
 composer require nwidart/laravel-modules 7.3
 ```
-安装好laravel-modules模块后您可以直接使用命令行创建注册本模块后覆盖：
+安装好laravel-modules模块后您需要使用命令行创建AntOA模块：
+
+```bash
+php artisan module:make AntOA
+```
+
+创建之后你需要修改项目根目录下的composer.json，修改autoload节点下的psr-4节点如下：
+
+```json
+{
+    "App\\": "app/",
+    "Modules\\": "Modules/"
+}
+```
+
+然后你需要在项目根目录执行如下命令更新Package：
+
+```php
+composer dump-autoload
+```
+
+然后你可以直接使用命令行创建注册本模块后覆盖
 
 Windows下：
 
 ```bash
-php artisan module:make AntOA 
 cd Modules
 rmdir AntOA /S /Q
 git clone https://github.com/similing4/AntOA.git
@@ -18,7 +38,6 @@ git clone https://github.com/similing4/AntOA.git
 linux下：
 
 ```bash
-php artisan module:make AntOA 
 cd Modules
 rm AntOA -rf
 git clone https://github.com/similing4/AntOA.git

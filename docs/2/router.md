@@ -88,4 +88,42 @@ return [
 
 ## 页面
 
-未完待续
+页面分为控制器配置页面和自定义页面两种。
+
+### 自定义页面
+
+详见 四、功能扩展->扩展页面
+
+### 控制器配置页面
+
+通过RouteRegister::registerApi方法定义的且在antoa.php中配置的页面即可访问。控制器配置的页面主要包括：
+
+1.list页面
+
+list页面为后台管理的列表页，可通过Grid对应的方法来配置页面展示信息与交互。
+
+2.create页面
+
+create页面为后台管理的创建页，可通过Grid对应的方法来配置页面展示信息与交互。
+
+3.edit页面
+
+edit页面为后台管理的编辑页，可通过Grid对应的方法来配置页面展示信息与交互。
+
+它们对应的接口有：
+
+```php
+	//注：这里对应的接口前有/api/前缀。
+    public static function registerApi($route, $controller) {
+	    Route::any($route . "/list", $controller . "@api_list"); //获取列表页的列表数据
+	    Route::post($route . "/create", $controller . "@api_create"); //创建页进行创建操作的接口
+	    Route::any($route . "/detail", $controller . "@api_detail"); //获取编辑页待编辑行数据的接口
+	    Route::post($route . "/detail_column_list", $controller . "@api_detail_column_list"); //获取ColumnChildrenChoose功能的对应列表数据信息
+	    Route::post($route . "/save", $controller . "@api_save"); //编辑页进行保存修改操作的接口
+	    Route::any($route . "/delete", $controller . "@api_delete"); //列表页进行删除操作的接口
+	    Route::post($route . "/column_change", $controller . "@api_column_change"); //待监听的字段值发生改变时调用的钩子接口
+	    Route::post($route . "/grid_config", $controller . "@api_grid_config"); //获取后台配置的列表页创建页编辑页结构信息
+    }
+```
+
+对应的接口文档详见API文档。

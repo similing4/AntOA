@@ -183,5 +183,7 @@ return [
 ![](quick_1.png)
 
 选择左侧的用户列表后如图所示，这个页面就是我们配置好的页面啦：
-![](quick_2.png)
-![](quick_3.png)
+![/admin/user/list](quick_2.png)
+![/admin/user/create](quick_3.png)
+![/admin/user/list](quick_4.png)
+![/admin/user/edit?id=10](quick_5.png)

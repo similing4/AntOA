@@ -11,22 +11,22 @@ const isProd = process.env.NODE_ENV === 'production'
 
 const assetsCDN = {
 	// webpack build externals
-	externals: {
+	externals: {/*
 		vue: 'Vue',
 		'vue-router': 'VueRouter',
 		vuex: 'Vuex',
 		nprogress: 'NProgress',
 		'@antv/data-set': 'DataSet',
-		'js-cookie': 'Cookies'
+		'js-cookie': 'Cookies'*/
 	},
 	css: [],
-	js: [
+	js: [/*
 		'//cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js',
 		'//cdn.jsdelivr.net/npm/vue-router@3.3.4/dist/vue-router.min.js',
 		'//cdn.jsdelivr.net/npm/vuex@3.4.0/dist/vuex.min.js',
 		'//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js',
 		'//cdn.jsdelivr.net/npm/@antv/data-set@0.11.4/build/data-set.min.js',
-		'//cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js'
+		'//cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js'*/
 	]
 }
 

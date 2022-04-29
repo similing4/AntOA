@@ -167,7 +167,8 @@ class AuthController {
                     $limitVailed = true;
                     if (array_key_exists('role_limit', $r))
                         $limitVailed = $r['role_limit']($user);
-                    return (!array_key_exists("visible", $r) || $r['visible']) && $limitVailed;
+                    //return (!array_key_exists("visible", $r) || $r['visible']) && $limitVailed;
+                    return $limitVailed;
                 }));
             }
             if (array_key_exists('isHome', $configRoutesItem) && $configRoutesItem['isHome']) {

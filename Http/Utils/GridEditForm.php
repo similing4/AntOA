@@ -204,7 +204,7 @@ class GridEditForm implements JsonSerializable {
      * @return GridEditForm 返回this以便链式调用
      */
     public function columnPassword($col, $colTip, $defaultVal = '') {
-        $this->editColumnCollection->addItem(new EditColumnPassword($col, $tip, $defaultVal));
+        $this->editColumnCollection->addItem(new EditColumnPassword($col, $colTip, $defaultVal));
         return $this;
     }
 

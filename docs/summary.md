@@ -6,7 +6,7 @@
   * [后台用户](2/user.md)
   * [登录授权](2/auth.md)
   * [后台首页](2/home.md)
-  * [路由与页面](2/router.md)
+  * [路由与页面结构介绍](2/router.md)
 * 三、Grid的使用
   * [控制器与Grid](3/grid.md)
   * [后台列表页](3/list.md)

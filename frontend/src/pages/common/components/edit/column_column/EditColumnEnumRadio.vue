@@ -1,6 +1,6 @@
 <template>
 	<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
-		<a-radio-group :value="value + ''" @change="onChange" :options="enums"></a-radio-group>
+		<a-radio-group :value="value" @change="onChange" :options="enums"></a-radio-group>
 		<slot />
 	</a-form-item>
 </template>

@@ -204,7 +204,7 @@ class GridCreateForm implements JsonSerializable {
      * @return GridCreateForm 返回this以便链式调用
      */
     public function columnPassword($col, $colTip, $defaultVal = '') {
-        $this->createColumnCollection->addItem(new CreateColumnPassword($col, $tip, $defaultVal));
+        $this->createColumnCollection->addItem(new CreateColumnPassword($col, $colTip, $defaultVal));
         return $this;
     }
 

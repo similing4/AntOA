@@ -134,7 +134,8 @@ export default {
       )]
       let itemArr = []
       menu.children.forEach(function(item) {
-        itemArr.push(this_.renderItem(h, item))
+        if(item.visible !== false)
+          itemArr.push(this_.renderItem(h, item))
       })
       return h(SubMenu, { key: menu.key },
         subItem.concat(itemArr)
@@ -161,7 +162,8 @@ export default {
       let this_ = this
       let menuArr = []
       menuTree.forEach(function(menu, i) {
-        menuArr.push(this_.renderItem(h, menu, '0', i))
+        if(menu.visible !== false)
+          menuArr.push(this_.renderItem(h, menu, '0', i))
       })
       return menuArr
     },
@@ -178,14 +180,22 @@ export default {
     },
     updateMenu() {
       const matchedRoutes = this.$route.matched.filter(item => item.path !== '')
-      let selectedKeys = this.getSelectedKey(this.$route);
+      let selectNodes = this.getSelectedNodes(this.$route);
+      let selectedKeys = selectNodes.map((t)=>t.key);
+      if(selectNodes[0].visible === false){
+        for(let i = selectNodes[1].children.indexOf(selectNodes[0]);i >= 0;i--)
+          if(selectNodes[1].children[i].visible !== false){
+            selectedKeys[0] = selectNodes[1].children[i].key;
+            break;
+          }
+      }
       this.selectedKeys = [selectedKeys[0]];
       let openKeys = selectedKeys;
       if (!fastEqual(openKeys, this.sOpenKeys)) {
         this.collapsed || this.mode === 'horizontal' ? this.cachedOpenKeys = openKeys : this.sOpenKeys = openKeys
       }
     },
-    getSelectedKey(route) {
+    getSelectedNodes(route) {
       let menuData = JSON.parse(localStorage.antOAMenuData);
       let nodes = null;
       for(let i=0;i<menuData.length;i++){
@@ -195,7 +205,7 @@ export default {
         if(nodes)
           break;
       }
-      return nodes ? nodes.map((t)=>t.key) : [];
+      return nodes ? nodes : [];
       //return route.matched.map(item => item.path)
     },
     getNodePathInTree(root, testfunc){

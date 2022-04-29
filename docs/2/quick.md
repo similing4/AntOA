@@ -180,8 +180,8 @@ return [
 访问 http://你的域名/antoa/webpack/index.html 使用数据库表antoa_user表中的用户登录即可。默认帐户密码均为admin。
 
 登录后如图所示：
-![](2/quick_1.png)
+![](quick_1.png)
 
 选择左侧的用户列表后如图所示，这个页面就是我们配置好的页面啦：
-![](2/quick_2.png)
-![](2/quick_3.png)
+![](quick_2.png)
+![](quick_3.png)

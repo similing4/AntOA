@@ -44,64 +44,11 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
 }
 ```
 
-### 你可以将菜单的路由JSON改为本地的JSON用于调试：
-
-修改这个文件：src/pages/login/Login.vue
-
-更改 goHome 方法为如下
-
-```javascript
-async goHome() {
-    try {
-        if (routerConfig.mode != 'dev') {
-            var e = await this.$api('/api/antoa/auth/config').method('GET').call();
-            if (!e.status) throw e.msg;
-            loadRoutes(e.routes);
-            for (var i in e.routes[0].children) {
-            if (e.routes[0].children[i].meta && e.routes[0].children[i].meta.is_home) localStorage.homeVueApi = e.routes[0].children[i].meta.vue_api;
-            }
-            this.$router.push('/home');
-        } else {
-            var e = await getMenuConfig();
-            console.log(e.routes);
-            if (!e.status) throw e.msg;
-            loadRoutes(e.routes);
-            for (var i in e.routes[0].children) {
-            if (e.routes[0].children[i].meta && e.routes[0].children[i].meta.is_home) localStorage.homeVueApi = e.routes[0].children[i].meta.vue_api;
-            }
-            this.$router.push('/home');
-            console.log(this.$router);
-        }
-    } catch (e) {
-        this.$message.error(e + '', 5);
-    }
-},
-```
-
-在生产环境下该方法为:
-
-```javascript
-async goHome() {
-    try {
-    var e = await this.$api('/api/antoa/auth/config').method('GET').call();
-    if (!e.status) throw e.msg;
-    loadRoutes(e.routes);
-    for (var i in e.routes[0].children) {
-    if (e.routes[0].children[i].meta && e.routes[0].children[i].meta.is_home) localStorage.homeVueApi = e.routes[0].children[i].meta.vue_api;
-    }
-    this.$router.push('/home');
-
-    } catch (e) {
-    this.$message.error(e + '', 5);
-    }
-},
-```
-
-配置成功后运行如下代码：
+配置成功后运行如下代码（推荐使用yarn，速度更快）：
 
 ```
-$ npm install
-$ npm run serve
+$ yarn
+$ yarn serve
 ```
 
 运行成功后浏览器访问http://localhost:8080/antoa/webpack/index 即可进行开发调试。
@@ -109,8 +56,8 @@ $ npm run serve
 ### 部署模式：
 
 ```
-$ npm install
-$ npm run build
+$ yarn
+$ yarn build
 ```
 
 运行成功后浏览器访问 你的域名/antoa/webpack/index 即可查看部署效果。

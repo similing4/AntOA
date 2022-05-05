@@ -1,0 +1,1 @@
+export default import('@/pages/home/Home.vue');

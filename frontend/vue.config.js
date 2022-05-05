@@ -10,6 +10,7 @@ const productionGzipExtensions = ['js', 'css']
 const isProd = process.env.NODE_ENV === 'production'
 
 const assetsCDN = {
+	// 这些CDN容易挂掉，影响稳定性
 	// webpack build externals
 	externals: {/*
 		vue: 'Vue',
@@ -32,15 +33,6 @@ const assetsCDN = {
 
 module.exports = {
 	devServer: {
-		// proxy: {
-		//   '/api': { //此处要与 /services/api.js 中的 API_PROXY_PREFIX 值保持一致
-		//     target: process.env.VUE_APP_API_BASE_URL,
-		//     changeOrigin: true,
-		//     pathRewrite: {
-		//       '^/api': ''
-		//     }
-		//   }
-		// }
 	},
 	pluginOptions: {
 		'style-resources-loader': {
@@ -49,11 +41,17 @@ module.exports = {
 		}
 	},
 	configureWebpack: config => {
+	    let homeVueFile = path.resolve(__dirname, "../../../AntOAHome.vue");
+	    let homeImportFile = path.resolve(__dirname, "./src/pages/home/Home.js");
 	    let moduleListConfigFile = path.resolve(__dirname, "../../../modules_statuses.json");
 	    let moduleListExportFile = path.resolve(__dirname, "./external_module_js.js");
 	    let modulesList = "";
     	let exportScripts = "let ret = {};\n";
     	let modules = [];
+    	if(!fs.existsSync(homeVueFile))
+    	    fs.writeFileSync(homeImportFile, "export default import('@/pages/home/Home.vue');");
+    	else
+    	    fs.writeFileSync(homeImportFile, "export default import('@/../../../../AntOAHome.vue');");
 	    if(fs.existsSync(moduleListConfigFile)){
     	    modules = fs.readFileSync(moduleListConfigFile);
     	    modules = JSON.parse(modules);

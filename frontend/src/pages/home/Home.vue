@@ -1,43 +1,27 @@
 <template>
 	<div class="new-page">
-		<home-component></home-component>
+		<div class="mainWrapper">
+		    <div class="mainWrapperFirstLine">
+		        <div class="line"></div>
+		        <div class="linetext">Based On Vue-Antd-Admin</div>
+		        <div class="line"></div>
+		    </div>
+		    <div class="mainWrapperSecondLine">
+		        <div>AntOA</div>
+		        <div>后台管理系统</div>
+		    </div>
+		    <div class="mainWrapperFirstLine">
+		        <div class="line"></div>
+		        <div class="linetext">Developed By Shengxinyu</div>
+		        <div class="line"></div>
+		    </div>
+		</div>
 	</div>
 </template>
 <script>
-import Vue from "vue";
 export default {
 	data() {
 		return {};
-	},
-	methods: {
-		openurl(url) {
-			if (url.startsWith("http"))
-				return window.open(url);
-			this.$router.push(url);
-		},
-	},
-	components: {
-		"HomeComponent": async function(recv) {
-			try {
-				if (!localStorage.homeVueApi)
-					throw "";
-				var api = localStorage.homeVueApi;
-				var res = await Vue.prototype.$api(api).method("GET").call();
-				if (!res.status)
-					throw res.msg;
-				return recv(eval("(()=>{return " + res.data + "})();"));
-			} catch (e) {
-				console.log(e);
-				return recv({
-					data() {
-						return {
-							title: "后台管理系统首页",
-						};
-					},
-					template: `<div>{{title}}</div>`
-				});
-			}
-		}
 	}
 }
 </script>
@@ -45,6 +29,36 @@ export default {
 .new-page {
 	background-color: @base-bg-color;
 	border-radius: 4px;
-	min-height: 100vh;
+	min-height: 60vh;
+	
+	.mainWrapper{
+	    width: 100%;
+	    height: 60vh;
+	    display: flex;
+	    flex-direction: column;
+	    justify-content: center;
+	    align-items: center;
+	    .mainWrapperFirstLine{
+	        display: flex;
+	        width: 60vw;
+	        align-items: center;
+	        .line{
+	            flex: 1;
+	            height: 1px;
+	            background: #333;
+	        }
+	        .linetext{
+	            flex: 1;
+	            font-size: 18px;
+	            color: #333;
+	            text-align: center;
+	        }
+        }
+        .mainWrapperSecondLine{
+            display: flex;
+            justify-content: space-around;
+            font-size: 50px;
+        }
+    }
 }
 </style>

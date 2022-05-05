@@ -1,6 +1,7 @@
 import TabsView from '@/layouts/tabs/TabsView'
 import BlankView from '@/layouts/BlankView'
 import PageView from '@/layouts/PageView'
+import HomePage from '@/pages/home/Home.js';
 export default [{
 	path: '-',
 	name: 'ANTOA_BASE_ROUTE',
@@ -8,7 +9,7 @@ export default [{
 	children: [{
 		path: '/home',
 		name: '首页',
-		component: () => import('@/pages/home/Home.vue')
+		component: () => HomePage
 	}, {
 		path: '/*/list',
 		name: '列表页',

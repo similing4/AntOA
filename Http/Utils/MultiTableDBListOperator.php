@@ -17,45 +17,48 @@ use Modules\AntOA\Http\Utils\OperatorModel\JoinTable;
 use Modules\AntOA\Http\Utils\OperatorModel\TableColumns;
 
 class MultiTableDBListOperator extends DBListOperator {
+    private $mainTable = "";
+    private $mainTableAlias = "";
+    private $databasePrefix = "";
     private $joinTables = [];
     private $tableColumnsMap = [];
-    private $mainTable = "";
     private $primaryKey = "";
 
     /**
      * 用于列表页的左连接查询DBListOperator.
      * @param String $mainTable 主表名
+     * @param String $mainTableAlias 主表别名
      * @param array<JoinTable> $joinTables 待查询的所有的表及对应关系
      * @param array<TableColumns> $tableColumnsMap 待查询的所有的表的字段对应关系
      * @throws Exception
      */
-    public function __construct($mainTable, $joinTables, $tableColumnsMap) {
-        $database = DB::selectOne("select database() as db")->db;
-        $pre = config("database.connections.mysql.prefix");
+    public function __construct($mainTable, $mainTableAlias, $joinTables, $tableColumnsMap) {
         $this->mainTable = $mainTable;
-        $mainTableColumns = DB::selectOne("SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = '" . $database . "' AND TABLE_NAME = '" . $pre . $mainTable . "'");
-        if (empty($mainTableColumns))
-            throw new Exception("表" . $mainTable . "不存在或主键不存在");
-        $this->primaryKey = $mainTable . "." . $mainTableColumns->COLUMN_NAME;
+        $this->mainTableAlias = $mainTableAlias;
+        $this->databasePrefix = config("database.connections.mysql.prefix");
         $this->joinTables = $joinTables;
         $this->tableColumnsMap = $tableColumnsMap;
-        $builder = DB::table($mainTable);
+        $database = DB::selectOne("select database() as db")->db;
+        $mainTableColumns = DB::selectOne("SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = '" . $database . "' AND TABLE_NAME = '" . $this->databasePrefix . $mainTable . "'");
+        if (empty($mainTableColumns))
+            throw new Exception("表" . $this->mainTable . "不存在或主键不存在");
+        $this->primaryKey = $this->mainTable . "." . $mainTableColumns->COLUMN_NAME;
+        $builder = DB::table($this->mainTable . " as " . $this->mainTableAlias);
         foreach ($this->joinTables as $joinTable)
-            $builder->leftJoin($joinTable->table, $joinTable->table . "." . $joinTable->id,
+            $builder->leftJoin($joinTable->table . " as " . $joinTable->tableAlias, $joinTable->tableAlias . "." . $joinTable->id,
                 "=", $joinTable->originTable . "." . $joinTable->originId);
         parent::__construct($builder);
     }
 
     /**
-     * 根据传入的列名搜索对应的表名
+     * 根据传入的列名搜索对应的TableColumns
      * @param String $columnName 待搜索的列名
-     * @return String|null 搜索到的表名，如果不存在则返回null
+     * @return TableColumns|null 搜索到的TableColumns对象，如果不存在则返回null
      */
-    private function getTableNameByColumnName($columnName) {
+    private function getTableColumnsByColumnName($columnName) {
         foreach ($this->tableColumnsMap as $tableColumns) {
-            $table = $tableColumns->getTableNameFromColumn($columnName);
-            if ($table)
-                return $table;
+            if ($tableColumns->isTableColumnsContainsColumn($columnName))
+                return $tableColumns;
         }
         return null;
     }
@@ -70,9 +73,9 @@ class MultiTableDBListOperator extends DBListOperator {
      * @throws Exception
      */
     public function where($column, $operator = null, $value = null, $boolean = 'and') {
-        $table = $this->getTableNameByColumnName($column);
-        if ($table)
-            return parent::where($table . '.' . $column, $operator, $value, $boolean);
+        $tableColumns = $this->getTableColumnsByColumnName($column);
+        if ($tableColumns)
+            return parent::where($tableColumns->tableAlias . '.' . $tableColumns->tableColumnsMap[$column], $operator, $value, $boolean);
         throw new Exception("列" . $column . "不存在，请在tableColumnsMap中配置！");
     }
 
@@ -85,10 +88,10 @@ class MultiTableDBListOperator extends DBListOperator {
     public function select($columns) {
         $needs = [];
         foreach ($columns as $r) {
-            $table = $this->getTableNameByColumnName($r);
-            if ($table == null)
+            $tableColumns = $this->getTableColumnsByColumnName($r);
+            if ($tableColumns == null)
                 throw new Exception("字段" . $r . "不存在");
-            $needs [] = $table . "." . $r . " as " . $r;
+            $needs [] = $tableColumns->tableAlias . "." . $tableColumns->tableColumnsMap[$r] . " as " . $r;
         }
         return parent::select($needs);
     }

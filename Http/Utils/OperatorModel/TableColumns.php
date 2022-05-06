@@ -14,67 +14,50 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 
 class TableColumns {
-    public $tableColumnsMap = [];
+    public $table; // 需要的被查询表名
+    public $tableAlias; // 需要的被查询表别名
+    public $tableColumnsMap = []; //需要查询的值对应的 查询结果名=>原名
 
     /**
      * @param String $table 表名
-     * @param array|String $columns 表对应需要的列的键值对数组，字符串时只能是*号
+     * @param String $alias 表别名
+     * @param array|String $columns 表对应需要的列的 查询结果名=>原名 键值对数组，字符串时只能是*号
      * @return TableColumns
      * @throws Exception 如果表字段已经设置过了会直接抛出异常
      */
-    public static function create($table, $columns) {
-        return (new self())->table($table, $columns);
+    public function __construct($table, $alias, $columns) {
+        $this->table = $table;
+        $this->tableAlias = $alias;
+        return $this->table($columns);
     }
 
     /**
-     * @param $table
+     * 对传入的列进行验证并填充
      * @param $columns
      * @return $this
      * @throws Exception
      */
-    public function table($table, $columns) {
+    public function table($columns) {
+        $table = $this->table;
         if ($columns == "*") {
             $pre = config("database.connections.mysql.prefix");
             $columns = DB::select("DESC " . $pre . $table);
             $a = [];
             foreach ($columns as $column)
-                $a[] = $column->Field;
-            $this->table($table, $a);
+                $a[$column->Field] = $column->Field;
+            $this->table($a);
             return $this;
         }
-        foreach ($this->tableColumnsMap as $k => $vs) {
-            foreach ($columns as $columnKey => $column)
-                if (in_array($column, array_values($vs)))
-                    throw new Exception("字段" . $column . "已存在于表" . $k . "中");
-        }
-        $this->tableColumnsMap[$table] = $columns;
+        $this->tableColumnsMap = $columns;
         return $this;
     }
 
-    public function getTables() {
-        return array_keys($this->tableColumnsMap);
-    }
-
     /**
-     * @param $table
-     * @return bool|mixed
+     * 判断别名字段是否在该查询结果中
+     * @param string $aliasName 别名字段
+     * @return boolean 存在返回真，否则返回假
      */
-    public function getTableColumns($table) {
-        if ($this->tableColumnsMap[$table])
-            return $this->tableColumnsMap[$table];
-        return false;
-    }
-
-    /**
-     * @param $name
-     * @return string|null
-     */
-    public function getTableNameFromColumn($name) {
-        foreach ($this->tableColumnsMap as $table => $columns) {
-            foreach ($columns as $k => $column)
-                if ($column == $name)
-                    return $table;
-        }
-        return null;
+    public function isTableColumnsContainsColumn($aliasName) {
+        return array_key_exists($aliasName, $this->tableColumnsMap);
     }
 }

@@ -194,7 +194,7 @@ export default {
             Object.assign(param, this.tableModel.searchObj, {
                 page: this.tableModel.pagination.current
             });
-            let res = await this.$api(this.gridApiObject.detail_column_list + "?type=edit&col=" + this.column.col + "&val=" + this.value).method("POST").param(param).call();
+            let res = await this.$api(this.gridApiObject.detail_column_list + "?type=create&col=" + this.column.col + "&val=" + this.value).method("POST").param(param).call();
             if (res.status == 0)
                 throw res.msg;
             this.tableModel.pagination.total = res.total;

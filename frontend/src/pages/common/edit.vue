@@ -222,8 +222,6 @@ export default {
 				if (res.status) {
 					this.$message.success(res.data, 5);
 					this.reset();
-					this.$closePage(this.$route.path);
-					this.$router.go(-1);
 					try {
 						let beforePage = localStorage.beforePage
 						if (!beforePage) {

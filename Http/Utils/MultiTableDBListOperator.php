@@ -42,7 +42,7 @@ class MultiTableDBListOperator extends DBListOperator {
         $mainTableColumns = DB::selectOne("SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = '" . $database . "' AND TABLE_NAME = '" . $this->databasePrefix . $mainTable . "'");
         if (empty($mainTableColumns))
             throw new Exception("表" . $this->mainTable . "不存在或主键不存在");
-        $this->primaryKey = $this->mainTable . "." . $mainTableColumns->COLUMN_NAME;
+        $this->primaryKey = $this->mainTableAlias . "." . $mainTableColumns->COLUMN_NAME;
         $builder = DB::table($this->mainTable . " as " . $this->mainTableAlias);
         foreach ($this->joinTables as $joinTable)
             $builder->leftJoin($joinTable->table . " as " . $joinTable->tableAlias, $joinTable->tableAlias . "." . $joinTable->id,

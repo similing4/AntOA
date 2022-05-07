@@ -225,8 +225,9 @@ export default {
 							throw "";
 						} else {
 							beforePage = JSON.parse(beforePage);
+							console.log(beforePage,this.$route.fullPath);
 							let res = beforePage.filter((t) => {
-								return t.after == this.$route.fullPath
+								return t.after == this.$route.fullPath || t.after == this.$route.fullPath + "?" || t.after + "?" == this.$route.fullPath
 							});
 							if (res.length == 0)
 								throw "";

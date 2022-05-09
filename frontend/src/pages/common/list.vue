@@ -3,7 +3,7 @@
 		<a-card v-if="isLoadOk">
 			<div style="margin-bottom: 16px">
 				<a-row>
-					<a-col :md="12" :sm="24" v-for="(filterItem,indexT) in gridListObject.listFilterCollection" :key="indexT">
+					<a-col :md="12" :sm="24" v-for="(filterItem,indexT) in gridListObject.listFilterCollection.filter((t)=>t.type != 'ListFilterHidden')" :key="indexT">
 						<ListFilterEnum v-if="filterItem.type == 'ListFilterEnum'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 						<ListFilterStartTime v-if="filterItem.type == 'ListFilterStartTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+ '_starttime']" />
 						<ListFilterEndTime v-if="filterItem.type == 'ListFilterEndTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+  '_endtime']" />

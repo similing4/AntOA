@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Modules\AntOA\Http\Utils\hook;
 
+use Exception;
+
 /**
  * Interface DeleteHook
  * @package Modules\AntOA\Http\Utils\hook
@@ -20,6 +22,7 @@ interface DeleteHook {
      * 删除接口前置钩子
      * @param string $id 待删除的内容ID
      * @return string|null 返回传入参数，如果返回null则不进行删除操作。
+     * @throws Exception
      */
     public function hook($id);
 }

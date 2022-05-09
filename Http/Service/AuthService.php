@@ -34,6 +34,8 @@ class AuthService implements AuthInterface{
      * @return String|null 查询到返回用户UID，否则返回null
      */
     public function getUidFromToken($token) {
+        if($token == null)
+            return null;
         $arr = explode("_", $token);
         $uid = $arr[0];
         $token = Cache::get('ANTOA_USER_AUTH_TOKEN_' . $uid);

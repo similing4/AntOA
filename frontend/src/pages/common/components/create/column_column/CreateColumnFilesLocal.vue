@@ -4,12 +4,12 @@
 			<a-button type="primary" @click="openurl(fileItem)">下载</a-button>
 			<a-button type="danger" @click="onChange(parse(value).filter((t)=>{return t != fileItem;}))">删除</a-button>
 		</div>
-		<upload-button @uploadfinished="onChange(parse(value).concat($event.map((t)=>{return t.response;})))" accept="*/*" :multiple="true"></upload-button>
+		<upload-button @uploadfinished="onChange(parse(value).concat($event.map((t)=>{return t.response;})))" accept="*/*" :multiple="true" type="create" :col="column.col" :path="gridApiObject.api_upload"></upload-button>
 		<slot />
 	</a-form-item>
 </template>
 <script>
-import UploadButton from "@/components/tool/UploadButton.vue"
+import UploadButton from "@/components/tool/UploadButtonLocal.vue"
 export default {
 	props: {
 		column: {
@@ -38,7 +38,8 @@ export default {
 					list: "",
 					list_page: "",
 					path: "",
-					save: ""
+					save: "",
+					api_upload: ""
 				};
 			},
 		},

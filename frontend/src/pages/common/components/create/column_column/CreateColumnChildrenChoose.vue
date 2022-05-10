@@ -87,7 +87,8 @@ export default {
                     list: "",
                     list_page: "",
                     path: "",
-                    save: ""
+                    save: "",
+                    api_upload: ""
                 };
             },
         },

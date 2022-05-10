@@ -7,7 +7,7 @@
 	</a-form-item>
 </template>
 <script>
-import UploadButton from "@/components/tool/UploadButton.vue"
+import UploadButton from "@/components/tool/UploadButtonLocal.vue"
 export default {
 	props: {
 		column: {
@@ -36,7 +36,8 @@ export default {
 					list: "",
 					list_page: "",
 					path: "",
-					save: ""
+					save: "",
+					api_upload: ""
 				};
 			},
 		},

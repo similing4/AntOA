@@ -2,7 +2,7 @@
 	<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
 		<a-button type="primary" @click="openurl(value)" v-if="value != ''">下载</a-button>
 		<a-button type="danger" @click="onChange('')" v-if="value != ''">删除</a-button>
-		<upload-button @uploadfinished="onChange($event[0].response)" accept="*/*" :multiple="false" type="edit" :col="column.col" :path="gridApiObject.api_upload"></upload-button>
+		<upload-button @uploadfinished="onChange($event[0].response)" accept="*/*" :multiple="false"></upload-button>
 		<slot />
 	</a-form-item>
 </template>

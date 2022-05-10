@@ -4,7 +4,7 @@
 			<a-button type="primary" @click="openurl(fileItem)">下载</a-button>
 			<a-button type="danger" @click="onChange(parse(value).filter((t)=>{return t != fileItem;}))">删除</a-button>
 		</div>
-		<upload-button @uploadfinished="onChange(parse(value).concat($event.map((t)=>{return t.response;})))" accept="*/*" :multiple="true" type="edit" :col="column.col" :path="gridApiObject.api_upload"></upload-button>
+		<upload-button @uploadfinished="onChange(parse(value).concat($event.map((t)=>{return t.response;})))" accept="*/*" :multiple="true"></upload-button>
 		<slot />
 	</a-form-item>
 </template>

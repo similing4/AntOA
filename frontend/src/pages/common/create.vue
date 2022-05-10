@@ -35,6 +35,12 @@
 				<CreateColumnFiles :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFiles'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnFiles>
+                <CreateColumnFileLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFileLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</CreateColumnFileLocal>
+				<CreateColumnFilesLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFilesLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</CreateColumnFilesLocal>
 				<CreateColumnPassword :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPassword'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPassword>
@@ -44,6 +50,12 @@
 				<CreateColumnPictures :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPictures'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPictures>
+				<CreateColumnPictureLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPictureLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</CreateColumnPictureLocal>
+				<CreateColumnPicturesLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPicturesLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</CreateColumnPicturesLocal>
 				<CreateColumnRichText :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnRichText'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnRichText>
@@ -79,9 +91,13 @@ import CreateColumnEnumRadio from "./components/create/column_column/CreateColum
 import CreateColumnEnumTreeCheckBox from "./components/create/column_column/CreateColumnEnumTreeCheckBox.vue";
 import CreateColumnFile from "./components/create/column_column/CreateColumnFile.vue";
 import CreateColumnFiles from "./components/create/column_column/CreateColumnFiles.vue";
+import CreateColumnFileLocal from "./components/create/column_column/CreateColumnFileLocal.vue";
+import CreateColumnFilesLocal from "./components/create/column_column/CreateColumnFilesLocal.vue";
 import CreateColumnPassword from "./components/create/column_column/CreateColumnPassword.vue";
 import CreateColumnPicture from "./components/create/column_column/CreateColumnPicture.vue";
 import CreateColumnPictures from "./components/create/column_column/CreateColumnPictures.vue";
+import CreateColumnPictureLocal from "./components/create/column_column/CreateColumnPictureLocal.vue";
+import CreateColumnPicturesLocal from "./components/create/column_column/CreateColumnPicturesLocal.vue";
 import CreateColumnRichText from "./components/create/column_column/CreateColumnRichText.vue";
 import CreateColumnTextarea from "./components/create/column_column/CreateColumnTextarea.vue";
 import CreateColumnTimestamp from "./components/create/column_column/CreateColumnTimestamp.vue";
@@ -128,9 +144,13 @@ export default {
 		CreateColumnEnumTreeCheckBox,
 		CreateColumnFile,
 		CreateColumnFiles,
+        CreateColumnFileLocal,
+		CreateColumnFilesLocal,
 		CreateColumnPassword,
 		CreateColumnPicture,
 		CreateColumnPictures,
+		CreateColumnPictureLocal,
+		CreateColumnPicturesLocal,
 		CreateColumnRichText,
 		CreateColumnTextarea,
 		CreateColumnTimestamp,

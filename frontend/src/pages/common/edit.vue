@@ -35,6 +35,12 @@
 				<EditColumnFiles :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnFiles'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</EditColumnFiles>
+                <EditColumnFileLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnFileLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</EditColumnFileLocal>
+				<EditColumnFilesLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnFilesLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</EditColumnFilesLocal>
 				<EditColumnPassword :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnPassword'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</EditColumnPassword>
@@ -44,6 +50,12 @@
 				<EditColumnPictures :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnPictures'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</EditColumnPictures>
+				<EditColumnPictureLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnPictureLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</EditColumnPictureLocal>
+				<EditColumnPicturesLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnPicturesLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</EditColumnPicturesLocal>
 				<EditColumnRichText :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'EditColumnRichText'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</EditColumnRichText>
@@ -79,7 +91,11 @@ import EditColumnEnumRadio from "./components/edit/column_column/EditColumnEnumR
 import EditColumnEnumTreeCheckBox from "./components/edit/column_column/EditColumnEnumTreeCheckBox.vue";
 import EditColumnFile from "./components/edit/column_column/EditColumnFile.vue";
 import EditColumnFiles from "./components/edit/column_column/EditColumnFiles.vue";
+import EditColumnFileLocal from "./components/edit/column_column/EditColumnFileLocal.vue";
+import EditColumnFilesLocal from "./components/edit/column_column/EditColumnFilesLocal.vue";
 import EditColumnPassword from "./components/edit/column_column/EditColumnPassword.vue";
+import EditColumnPictureLocal from "./components/edit/column_column/EditColumnPictureLocal.vue";
+import EditColumnPicturesLocal from "./components/edit/column_column/EditColumnPicturesLocal.vue";
 import EditColumnPicture from "./components/edit/column_column/EditColumnPicture.vue";
 import EditColumnPictures from "./components/edit/column_column/EditColumnPictures.vue";
 import EditColumnRichText from "./components/edit/column_column/EditColumnRichText.vue";
@@ -128,9 +144,13 @@ export default {
 		EditColumnEnumTreeCheckBox,
 		EditColumnFile,
 		EditColumnFiles,
+		EditColumnFileLocal,
+		EditColumnFilesLocal,
 		EditColumnPassword,
 		EditColumnPicture,
 		EditColumnPictures,
+		EditColumnPictureLocal,
+		EditColumnPicturesLocal,
 		EditColumnRichText,
 		EditColumnTextarea,
 		EditColumnTimestamp,

@@ -112,9 +112,7 @@ abstract class AntOAController extends Controller {
                 "delete"             => "/api/" . $path . "/delete",
                 "detail_column_list" => "/api/" . $path . "/detail_column_list",
                 "api_column_change"  => "/api/" . $path . "/column_change",
-                "list_page"          => "/" . $path . "/list",
-                "create_page"        => "/" . $path . "/create",
-                "edit_page"          => "/" . $path . "/edit"
+                "api_upload"         => "/api/" . $path . "/upload",
             ]
         ];
     }
@@ -650,8 +648,8 @@ abstract class AntOAController extends Controller {
     public function uploadFile(Request $request) {
         try {
             $uid = $this->getUserInfo($request);
-            $_type = $request->get("type");
-            $_col = $request->get("col");
+            $_type = $request->post("type");
+            $_col = $request->post("col");
             if ($_type == "create") {
                 $gridCreateForm = $this->gridObj->getCreateForm();
                 if ($gridCreateForm == null)
@@ -685,10 +683,10 @@ abstract class AntOAController extends Controller {
             $destFile = $uid . "_" . time() . md5($file->getFilename()) . $fileExt;
             if(!file_exists($destDir))
                 mkdir($destDir);
-            $path = $file->move($destDir, $destFile);
+            $file->move($destDir, $destFile);
             return json_encode([
                 "status"         => 1,
-                "data"           => $destFile
+                "data"           => $destDir . "/" . $destFile
             ]);
         } catch (Exception $e) {
             return json_encode([

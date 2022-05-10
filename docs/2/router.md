@@ -123,6 +123,7 @@ edit页面为后台管理的编辑页，可通过Grid对应的方法来配置页
 	    Route::any($route . "/delete", $controller . "@api_delete"); //列表页进行删除操作的接口
 	    Route::post($route . "/column_change", $controller . "@api_column_change"); //待监听的字段值发生改变时调用的钩子接口
 	    Route::post($route . "/grid_config", $controller . "@api_grid_config"); //获取后台配置的列表页创建页编辑页结构信息
+        Route::post($route . "/upload", $controller . "@uploadFile"); //上传文件到服务端接口
     }
 ```
 

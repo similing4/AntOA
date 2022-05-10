@@ -451,4 +451,52 @@ class GridEditForm implements JsonSerializable {
         $this->editRowButtonBaseCollection->addItem($editRowButtonItem);
         return $this;
     }
+
+    /**
+     * 指定一个图片选择框并上传到服务器本地public/antoa_uploads/下
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridEditForm 返回this以便链式调用
+     */
+    public function columnPictureLocal($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new EditColumnPictureLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个文件选择框并上传到服务器本地public/antoa_uploads/下
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridEditForm 返回this以便链式调用
+     */
+    public function columnFileLocal($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new EditColumnFileLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个图片多选框并上传到服务器本地public/antoa_uploads/下
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridEditForm 返回this以便链式调用
+     */
+    public function columnPicturesLocal($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new EditColumnPicturesLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个文件多选框并上传到服务器本地public/antoa_uploads/下
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridEditForm 返回this以便链式调用
+     */
+    public function columnFilesLocal($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new EditColumnFilesLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
 }

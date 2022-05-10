@@ -458,7 +458,7 @@ class GridCreateForm implements JsonSerializable {
 
 
     /**
-     * 指定一个图片选择框
+     * 指定一个图片选择框并上传到服务器本地public/antoa_uploads/下
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
      * @param String $defaultVal 默认值
@@ -470,7 +470,7 @@ class GridCreateForm implements JsonSerializable {
     }
 
     /**
-     * 指定一个文件选择框
+     * 指定一个文件选择框并上传到服务器本地public/antoa_uploads/下
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
      * @param String $defaultVal 默认值
@@ -482,7 +482,7 @@ class GridCreateForm implements JsonSerializable {
     }
 
     /**
-     * 指定一个图片多选框
+     * 指定一个图片多选框并上传到服务器本地public/antoa_uploads/下
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
      * @param String $defaultVal 默认值
@@ -494,7 +494,7 @@ class GridCreateForm implements JsonSerializable {
     }
 
     /**
-     * 指定一个文件多选框
+     * 指定一个文件多选框并上传到服务器本地public/antoa_uploads/下
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称
      * @param String $defaultVal 默认值

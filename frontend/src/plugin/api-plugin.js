@@ -55,6 +55,21 @@ class DataModel {
 		}
 		return res.data;
 	}
+	async upload(file){
+		formData = new FormData();
+	    formData.append('file', file);
+	    for(let i in this._param)
+	    	formData.append(i, this._param[i]);
+	    let res = await axios({
+	        url: this._url,
+	        method: 'POST',
+	        data: formData,
+	        headers: {
+	        	'Content-Type': 'multipart/form-data'
+	        }
+	    });
+	    return res.data;
+	}
 }
 
 const install = (Vue) => {

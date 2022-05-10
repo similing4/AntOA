@@ -25,6 +25,18 @@
 			accept: {
 				type: String,
 				default: "*"
+			},
+			type:{
+				type: String,
+				default: ""
+			},
+			col:{
+				type: String,
+				default: ""
+			},
+			path:{
+				type: String,
+				default: ""
 			}
 		},
 		methods:{
@@ -44,9 +56,9 @@
 			},
 			async onUploadFile(data) {
 				try{
-					var res = await this.$oss.upload(data.file);
+					var res = await this.$api(this.path).param({type,col}).upload(data.file);
 					console.log(res);
-					data.onSuccess(res.url);
+					data.onSuccess(res.data);
 				}catch(e){
 					data.onError(e);
 				}

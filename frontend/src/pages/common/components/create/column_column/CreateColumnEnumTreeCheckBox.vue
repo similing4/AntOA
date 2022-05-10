@@ -14,7 +14,7 @@ export default {
                     "col": "id",
                     "tip": "",
                     "default": "",
-                    "type": "EditColumnEnumTreeCheckBox",
+                    "type": "CreateColumnEnumTreeCheckBox",
                     "enum": [] // {title:"",value:"",disabled:false}
                 };
             }

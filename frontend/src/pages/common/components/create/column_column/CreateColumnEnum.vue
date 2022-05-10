@@ -14,7 +14,7 @@ export default {
 					"col": "id",
 					"tip": "",
 					"default": "",
-					"type": "EditColumnEnum",
+					"type": "CreateColumnEnum",
 					"enum": [] // {title:"",value:"",disabled:false}
 				};
 			}

@@ -14,7 +14,7 @@ export default {
                     "col": "id",
                     "tip": "",
                     "default": "",
-                    "type": "EditColumnDisplay"
+                    "type": "CreateColumnDisplay"
                 };
             }
         },

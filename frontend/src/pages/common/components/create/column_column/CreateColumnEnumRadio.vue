@@ -14,7 +14,7 @@ export default {
 					"col": "id",
 					"tip": "",
 					"default": "",
-					"type": "EditColumnEnumRadio",
+					"type": "CreateColumnEnumRadio",
 					"enum": [] // {title:"",value:"",disabled:false}
 				};
 			}

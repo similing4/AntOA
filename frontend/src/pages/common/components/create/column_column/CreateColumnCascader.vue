@@ -15,7 +15,7 @@ export default {
                     "col": "id",
                     "tip": "",
                     "default": "",
-                    "type": "EditColumnCascader",
+                    "type": "CreateColumnCascader",
                     "enum": [] //{label:"",value:"",disabled:false,children:[]}
                 };
             }

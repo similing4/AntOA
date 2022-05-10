@@ -15,7 +15,7 @@ export default {
 					"col": "id",
 					"tip": "",
 					"default": "",
-					"type": "EditColumnEnumCheckBox",
+					"type": "CreateColumnEnumCheckBox",
 					"enum": [] //{title:"",value:"",disabled:false}
 				};
 			}

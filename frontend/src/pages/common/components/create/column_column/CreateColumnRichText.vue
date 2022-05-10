@@ -15,7 +15,7 @@ export default {
 					"col": "id",
 					"tip": "",
 					"default": "",
-					"type": "EditColumnRichText"
+					"type": "CreateColumnRichText"
 				};
 			}
 		},

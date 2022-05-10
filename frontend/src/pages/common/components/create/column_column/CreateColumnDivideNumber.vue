@@ -14,7 +14,7 @@ export default {
                     "col": "id",
                     "tip": "",
                     "default": "",
-                    "type": "EditColumnDivideNumber",
+                    "type": "CreateColumnDivideNumber",
                     "divide": 1,
                     "unit": ""
                 };

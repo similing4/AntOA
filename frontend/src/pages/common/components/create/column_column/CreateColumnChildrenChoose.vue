@@ -61,7 +61,7 @@ export default {
                     "col": "",
                     "tip": "",
                     "default": "",
-                    "type": "EditColumnChildrenChoose",
+                    "type": "CreateColumnChildrenChoose",
                     "gridListEasy": {
                         "listFilterCollection": [], //{"col": "id","tip": "","default": "","type": "ListFilterHidden"}
                         "listTableColumnCollection": [], //{"col": "game_uid","tip": "雀魂UID","type": "ListTableColumnText"}

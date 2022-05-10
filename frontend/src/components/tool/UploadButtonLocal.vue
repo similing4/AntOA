@@ -56,10 +56,13 @@
 			},
 			async onUploadFile(data) {
 				try{
-					var res = await this.$api(this.path).param({type,col}).upload(data.file);
+					var res = await this.$api(this.path).param({
+						type: this.type,
+						col: this.col
+					}).upload(data.file);
 					console.log(res);
 					data.onSuccess(res.data);
-				}catch(e){
+				}catch(e){console.log(e)
 					data.onError(e);
 				}
 				/*

@@ -10,15 +10,15 @@ use Illuminate\Support\Facades\DB;
 use Modules\AntOA\Http\Utils\AuthInterface;
 use Modules\AntOA\Http\Utils\Grid;
 use Modules\AntOA\Http\Utils\Model\CreateColumnChildrenChoose;
-use Modules\AntOA\Http\Utils\Model\CreateColumnFile;
-use Modules\AntOA\Http\Utils\Model\CreateColumnFiles;
-use Modules\AntOA\Http\Utils\Model\CreateColumnPicture;
-use Modules\AntOA\Http\Utils\Model\CreateColumnPictures;
+use Modules\AntOA\Http\Utils\Model\CreateColumnFileLocal;
+use Modules\AntOA\Http\Utils\Model\CreateColumnFilesLocal;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPictureLocal;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPicturesLocal;
 use Modules\AntOA\Http\Utils\Model\EditColumnChildrenChoose;
-use Modules\AntOA\Http\Utils\Model\EditColumnFile;
-use Modules\AntOA\Http\Utils\Model\EditColumnFiles;
-use Modules\AntOA\Http\Utils\Model\EditColumnPicture;
-use Modules\AntOA\Http\Utils\Model\EditColumnPictures;
+use Modules\AntOA\Http\Utils\Model\EditColumnFileLocal;
+use Modules\AntOA\Http\Utils\Model\EditColumnFilesLocal;
+use Modules\AntOA\Http\Utils\Model\EditColumnPictureLocal;
+use Modules\AntOA\Http\Utils\Model\EditColumnPicturesLocal;
 use Modules\AntOA\Http\Utils\Model\ListFilterCascader;
 use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
@@ -656,10 +656,10 @@ abstract class AntOAController extends Controller {
                     throw new Exception("非法请求");
                 $column = null;
                 foreach ($gridCreateForm->getCreateColumnList() as $col)
-                    if ($_col == $col->col && ($col instanceof CreateColumnFile
-                            || $col instanceof CreateColumnFiles
-                            || $col instanceof CreateColumnPicture
-                            || $col instanceof CreateColumnPictures))
+                    if ($_col == $col->col && ($col instanceof CreateColumnFileLocal
+                            || $col instanceof CreateColumnFilesLocal
+                            || $col instanceof CreateColumnPictureLocal
+                            || $col instanceof CreateColumnPicturesLocal))
                         $column = $col;
                 if ($column == null)
                     throw new Exception("非法请求");
@@ -669,24 +669,26 @@ abstract class AntOAController extends Controller {
                     throw new Exception("非法请求");
                 $column = null;
                 foreach ($gridEditForm->getEditColumnList() as $col)
-                    if ($_col == $col->col && ($col instanceof EditColumnFile
-                            || $col instanceof EditColumnFiles
-                            || $col instanceof EditColumnPicture
-                            || $col instanceof EditColumnPictures))
+                    if ($_col == $col->col && ($col instanceof EditColumnFileLocal
+                            || $col instanceof EditColumnFilesLocal
+                            || $col instanceof EditColumnPictureLocal
+                            || $col instanceof EditColumnPicturesLocal))
                         $column = $col;
                 if ($column == null)
                     throw new Exception("非法请求");
             }
             $file = $request->file('file');
             $fileExt = $file->getClientOriginalExtension();
+            if(!in_array($fileExt,["png","jpg","gif","zip","xls","xlsx","jpeg","webp","webm","mp4","mp3","3gp","avi","ppt","doc","pptx","docx","txt","rar","7z"]))
+                throw new Exception("非法后缀名");
             $destDir = base_path("public/antoa_uploads");
-            $destFile = $uid . "_" . time() . md5($file->getFilename()) . $fileExt;
+            $destFile = $uid . "_" . time() . md5($file->getFilename()) . "." . $fileExt;
             if(!file_exists($destDir))
                 mkdir($destDir);
             $file->move($destDir, $destFile);
             return json_encode([
                 "status"         => 1,
-                "data"           => $destDir . "/" . $destFile
+                "data"           => "/antoa_uploads/" . $destFile
             ]);
         } catch (Exception $e) {
             return json_encode([

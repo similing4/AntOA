@@ -56,7 +56,12 @@ class DataModel {
 		return res.data;
 	}
 	async upload(file){
-		formData = new FormData();
+		const headers = {
+			'Content-Type': 'multipart/form-data'
+		};
+		if (localStorage.AuthToken)
+			headers.Authorization = localStorage.AuthToken;
+		let formData = new FormData();
 	    formData.append('file', file);
 	    for(let i in this._param)
 	    	formData.append(i, this._param[i]);
@@ -64,9 +69,7 @@ class DataModel {
 	        url: this._url,
 	        method: 'POST',
 	        data: formData,
-	        headers: {
-	        	'Content-Type': 'multipart/form-data'
-	        }
+	        headers
 	    });
 	    return res.data;
 	}

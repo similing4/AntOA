@@ -10,7 +10,15 @@ use Illuminate\Support\Facades\DB;
 use Modules\AntOA\Http\Utils\AuthInterface;
 use Modules\AntOA\Http\Utils\Grid;
 use Modules\AntOA\Http\Utils\Model\CreateColumnChildrenChoose;
+use Modules\AntOA\Http\Utils\Model\CreateColumnFile;
+use Modules\AntOA\Http\Utils\Model\CreateColumnFiles;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPicture;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPictures;
 use Modules\AntOA\Http\Utils\Model\EditColumnChildrenChoose;
+use Modules\AntOA\Http\Utils\Model\EditColumnFile;
+use Modules\AntOA\Http\Utils\Model\EditColumnFiles;
+use Modules\AntOA\Http\Utils\Model\EditColumnPicture;
+use Modules\AntOA\Http\Utils\Model\EditColumnPictures;
 use Modules\AntOA\Http\Utils\Model\ListFilterCascader;
 use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
@@ -37,12 +45,12 @@ abstract class AntOAController extends Controller {
     public function __construct(AuthInterface $auth) {
         $this->auth = $auth;
         $this->gridObj = new Grid();
-        try{
+        try {
             $this->getUserInfo(request());
-        }catch(Exception $e){
+        } catch (Exception $e) {
             die(json_encode([
                 "status" => 0,
-                "msg" => $e->getMessage()
+                "msg"    => $e->getMessage()
             ]));
         }
         $this->grid($this->gridObj);
@@ -159,7 +167,7 @@ abstract class AntOAController extends Controller {
                         $array = json_decode($param->val, true);
                         $gridListDbObject->whereIn($r->col, $array);
                     }
-                }else if($r instanceof ListFilterCascader){
+                } else if ($r instanceof ListFilterCascader) {
                     if ($param !== null && $param->val != '') {
                         $array = json_decode($param->val, true);
                         $gridListDbObject->where($r->col, join($array, " "));
@@ -637,31 +645,54 @@ abstract class AntOAController extends Controller {
         }
     }
 
-    public function flag(Request $request) {
+    public function uploadFile(Request $request) {
         try {
-            if (!$this->tableName) {
-                return response()->json([
-                    "status" => 0,
-                    "msg"    => "未开启置顶"
-                ]);
+            $uid = $this->getUserInfo($request);
+            $_type = $request->get("type");
+            $_col = $request->get("col");
+            if ($_type == "create") {
+                $gridCreateForm = $this->gridObj->getCreateForm();
+                if ($gridCreateForm == null)
+                    throw new Exception("非法请求");
+                $column = null;
+                foreach ($gridCreateForm->getCreateColumnList() as $col)
+                    if ($_col == $col->col && ($col instanceof CreateColumnFile
+                            || $col instanceof CreateColumnFiles
+                            || $col instanceof CreateColumnPicture
+                            || $col instanceof CreateColumnPictures))
+                        $column = $col;
+                if ($column == null)
+                    throw new Exception("非法请求");
+            } else {
+                $gridEditForm = $this->gridObj->getEditForm();
+                if ($gridEditForm == null)
+                    throw new Exception("非法请求");
+                $column = null;
+                foreach ($gridEditForm->getEditColumnList() as $col)
+                    if ($_col == $col->col && ($col instanceof EditColumnFile
+                            || $col instanceof EditColumnFiles
+                            || $col instanceof EditColumnPicture
+                            || $col instanceof EditColumnPictures))
+                        $column = $col;
+                if ($column == null)
+                    throw new Exception("非法请求");
             }
-            $key = $this->flagId;
-            $priKey = $request->input("row");
-            $priKey = $priKey['id'];
-//            if (DB::table($this->tableName)->where($key, $priKey)->value("sort") == 0) {
-            $max = DB::table($this->tableName)->max("sort");
-            DB::table($this->tableName)->where($key, $priKey)->update([
-                "sort" => $max + 1
+            $file = $request->file('file');
+            $fileExt = $file->getClientOriginalExtension();
+            $destDir = base_path("public/antoa_uploads");
+            $destFile = $uid . "_" . time() . md5($file->getFilename()) . $fileExt;
+            if(!file_exists($destDir))
+                mkdir($destDir);
+            $path = $file->move($destDir, $destFile);
+            return json_encode([
+                "status"         => 1,
+                "data"           => $destFile
             ]);
-//            } else {
-//                DB::table($this->tableName)->where($key, $priKey)->update([
-//                    "sort" => 0
-//                ]);
-//            }
-
-            return response()->json(["status" => 1, "data" => "操作成功"]);
-        } catch (\Throwable $e) {
-            return response()->json(["status" => 0, "msg" => "操作失败：" . $e->getMessage()]);
+        } catch (Exception $e) {
+            return json_encode([
+                "status" => 0,
+                "msg"    => $e->getMessage()
+            ]);
         }
     }
 

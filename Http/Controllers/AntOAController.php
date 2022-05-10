@@ -235,12 +235,14 @@ abstract class AntOAController extends Controller {
             $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
         $urlParamCalculator = new UrlParamCalculator($pageParams);
         $removeList = [];
-        foreach ($gridList->getHeaderButtonList() as $headerButtonItem) { //ListHeaderButtonBase
-            if (!$headerButtonItem->judgeIsShow($urlParamCalculator))
-                $removeList[] = $headerButtonItem;
-            $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
+        if($gridList != null) {
+            foreach ($gridList->getHeaderButtonList() as $headerButtonItem) { //ListHeaderButtonBase
+                if (!$headerButtonItem->judgeIsShow($urlParamCalculator))
+                    $removeList[] = $headerButtonItem;
+                $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
+            }
+            $gridList->removeHeaderButtons($removeList);
         }
-        $gridList->removeHeaderButtons($removeList);
         return json_encode([
             "status" => 1,
             "grid"   => [

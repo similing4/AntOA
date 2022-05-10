@@ -28,11 +28,15 @@ use Modules\AntOA\Http\Utils\Model\CreateColumnEnumCheckBox;
 use Modules\AntOA\Http\Utils\Model\CreateColumnEnumRadio;
 use Modules\AntOA\Http\Utils\Model\CreateColumnEnumTreeCheckBox;
 use Modules\AntOA\Http\Utils\Model\CreateColumnFile;
+use Modules\AntOA\Http\Utils\Model\CreateColumnFileLocal;
 use Modules\AntOA\Http\Utils\Model\CreateColumnFiles;
+use Modules\AntOA\Http\Utils\Model\CreateColumnFilesLocal;
 use Modules\AntOA\Http\Utils\Model\CreateColumnHidden;
 use Modules\AntOA\Http\Utils\Model\CreateColumnPassword;
 use Modules\AntOA\Http\Utils\Model\CreateColumnPicture;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPictureLocal;
 use Modules\AntOA\Http\Utils\Model\CreateColumnPictures;
+use Modules\AntOA\Http\Utils\Model\CreateColumnPicturesLocal;
 use Modules\AntOA\Http\Utils\Model\CreateColumnRichText;
 use Modules\AntOA\Http\Utils\Model\CreateColumnText;
 use Modules\AntOA\Http\Utils\Model\CreateColumnTextarea;
@@ -449,6 +453,55 @@ class GridCreateForm implements JsonSerializable {
      */
     public function rowRichTextButton(CreateRowButtonRichText $createRowButtonItem) {
         $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
+        return $this;
+    }
+
+
+    /**
+     * 指定一个图片选择框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function columnPictureLocal($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnPictureLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个文件选择框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function columnFileLocal($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnFileLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个图片多选框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function columnPicturesLocal($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnPicturesLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个文件多选框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateForm 返回this以便链式调用
+     */
+    public function columnFilesLocal($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnFilesLocal($col, $colTip, $defaultVal));
         return $this;
     }
 }

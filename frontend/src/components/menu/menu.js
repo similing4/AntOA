@@ -200,7 +200,7 @@ export default {
       let nodes = null;
       for(let i=0;i<menuData.length;i++){
         nodes = this.getNodePathInTree(menuData[i], (node)=>{
-          return node.path == route.path;
+          return node.path == route.path || node.path == route.fullPath;
         });
         if(nodes)
           break;

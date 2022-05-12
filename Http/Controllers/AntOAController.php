@@ -113,6 +113,9 @@ abstract class AntOAController extends Controller {
                 "detail_column_list" => "/api/" . $path . "/detail_column_list",
                 "api_column_change"  => "/api/" . $path . "/column_change",
                 "api_upload"         => "/api/" . $path . "/upload",
+                "list_page"          => "/" . $path . "/list",
+                "create_page"        => "/" . $path . "/create",
+                "edit_page"          => "/" . $path . "/edit"
             ]
         ];
     }

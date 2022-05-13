@@ -99,6 +99,89 @@ abstract class DBListOperator {
 ## GridList对象的filter系列实例方法
 filter系列方法用于列表页的筛选相关配置。该方法可以根据DBListOperator中查询的字段进行筛选。
 
+**注：下列内容中提到的“数据库”均指的是DBListOperator实例指定的查询结果。**
+
+### public function filter($filterItem);
+filter的通用方法
+#### 参数：
+* $filterItem 任意ListFilterBase子类的实例。所有继承自该类的实例均以ListFilter开头，且均定义于AntOA/Http/Utils/Model下。可用的实例如下：
+	- ListFilterCascader 级联筛选（如用于省市区）
+	- ListFilterStartTime 时间段开始时间筛选
+	- ListFilterEndTime 时间段结束时间筛选
+	- ListFilterEnum 下拉单选筛选（类似于html的select标签）
+	- ListFilterHidden 隐式筛选（根据URL参数筛选）
+	- ListFilterMultiSelect 多选筛选（使用whereIn筛选，没选择则不筛选）
+	- ListFilterText 文本筛选（like %内容%）
+	- ListFilterUID 根据当前登录的用户UID进行筛选
+#### 返回值：
+返回this供链式调用
+
+### public function filterHidden($col);
+隐式筛选（根据URL参数筛选）
+#### 参数：
+* $col 筛选的数据库对应的字段名。
+#### 返回值：
+返回this供链式调用
+
+### public function filterText($col, $colTip);
+文本筛选（like %内容%）
+#### 参数：
+* $col 筛选的数据库对应的字段名。
+* $colTip 提示内容
+#### 返回值：
+返回this供链式调用
+
+### public function filterStartTime($col, $colTip);
+时间段开始时间筛选
+#### 参数：
+* $col 筛选的数据库对应的字段名。
+* $colTip 提示内容
+#### 返回值：
+返回this供链式调用
+
+### public function filterEndTime($col, $colTip);
+时间段结束时间筛选
+#### 参数：
+* $col 筛选的数据库对应的字段名。
+* $colTip 提示内容
+#### 返回值：
+返回this供链式调用
+
+### public function filterEnum($col, $colTip, array $options);
+下拉单选筛选（类似于html的select标签）
+#### 参数：
+* $col 筛选的数据库对应的字段名。
+* $colTip 提示内容
+* $options 选项（EnumOption对象数组）
+#### 返回值：
+返回this供链式调用
+
+### public function filterMultiSelect($col, $colTip, array $options);
+多选筛选（使用whereIn筛选，没选择则不筛选）
+#### 参数：
+* $col 筛选的数据库对应的字段名。
+* $colTip 提示内容
+* $options 选项（EnumOption对象数组）
+#### 返回值：
+返回this供链式调用
+
+### public function filterCascader($col, $colTip, array $options);
+级联筛选（如用于省市区）
+#### 参数：
+* $col 筛选的数据库对应的字段名。
+* $colTip 提示内容
+* $options 选项（CascaderNode对象数组）
+#### 返回值：
+返回this供链式调用
+
+### public function filterUid($col);
+根据当前登录的用户UID进行筛选
+#### 参数：
+* $col 筛选的数据库对应的字段名。
+#### 返回值：
+返回this供链式调用
+
+
 ## GridList对象的column系列实例方法
 column系列方法用于列表页的表格的列的配置。该方法可以将DBListOperator中对应的查询字段通过一定的变化展示到页面上。
 
@@ -191,3 +274,20 @@ $gridList->columnEnum("status","状态", [
 * $unit 单位，默认为空（如100转为1元应传入“元”）
 #### 返回值：
 返回this供链式调用
+
+## GridList对象的button系列实例方法
+button系列方法用于列表页的按钮相关配置。列表页的按钮分为顶部按钮（HeaderButton）、每行按钮（RowButton）两种。
+
+## HeaderButton系列方法
+### public function headerNavigateButton(ListHeaderButtonNavigate $listHeaderButtonItem);
+### public function headerApiButton(ListHeaderButtonApi $listHeaderButtonItem);
+### public function headerBlobButton(ListHeaderButtonBlob $listHeaderButtonItem);
+### public function headerApiButtonWithConfirm(ListHeaderButtonApiWithConfirm $listHeaderButtonItem);
+### public function headerRichTextButton(ListHeaderButtonRichText $listHeaderButtonItem);
+
+## RowButton系列方法
+### public function rowNavigateButton(ListRowButtonNavigate $listRowButtonItem);
+### public function rowApiButton(ListRowButtonApi $listRowButtonItem);
+### public function rowBlobButton(ListRowButtonBlob $listRowButtonItem);
+### public function rowApiButtonWithConfirm(ListRowButtonApiWithConfirm $listRowButtonItem);
+### public function rowRichTextButton(ListRowButtonRichText $listRowButtonItem);

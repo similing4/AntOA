@@ -29,3 +29,4 @@
   * [配置路由/delete](5/config/delete.md)
   * [配置路由/column_change](5/config/column_change.md)
   * [配置路由/grid_config](5/config/grid_config.md)
+  * [配置路由/upload](5/config/upload.md)

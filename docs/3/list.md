@@ -275,19 +275,130 @@ $gridList->columnEnum("status","状态", [
 #### 返回值：
 返回this供链式调用
 
-## GridList对象的button系列实例方法
-button系列方法用于列表页的按钮相关配置。列表页的按钮分为顶部按钮（HeaderButton）、每行按钮（RowButton）两种。
+
 
 ## HeaderButton系列方法
+列表页的按钮分为顶部按钮（HeaderButton）、每行按钮（RowButton）两种。HeaderButton系列方法用于配置顶部按钮。
+
+默认情况下顶部按钮只有一个“创建”按钮，你可以使用useCreate(false);方法禁用创建按钮。
+下面的参数类均继承自ListHeaderButtonBase类，实例化时都需要实现如下两个方法：
+```
+/**
+ * 根据页面参数计算实际调用地址，返回值将会被用作finalUrl参数
+ * @param UrlParamCalculator $calculator 传入的页面参数的实例
+ * @return array<UrlParamCalculatorParamItem> 并入到baseURL的URL参数
+ */
+abstract public function calcButtonParam(UrlParamCalculator $calculator);
+
+/**
+ * 根据页面参数计算当前按钮是否显示
+ * @param UrlParamCalculator $calculator 传入的页面参数的实例
+ * @return bool 返回真则显示，否则不显示
+ */
+abstract public function judgeIsShow(UrlParamCalculator $calculator);
+```
+其中calcButtonParam方法用于计算按钮跳转或调用的目标链接的携带参数，其UrlParamCalculator $calculator封装了页面携带的参数信息。
+
+其中judgeIsShow方法用于根据页面参数判断是否显示这个按钮。
+
 ### public function headerNavigateButton(ListHeaderButtonNavigate $listHeaderButtonItem);
+设置跳转到新页面的按钮
+#### 参数：
+* $listHeaderButtonItem ListHeaderButtonNavigate实例。
+#### 返回值：
+返回this供链式调用
+
 ### public function headerApiButton(ListHeaderButtonApi $listHeaderButtonItem);
-### public function headerBlobButton(ListHeaderButtonBlob $listHeaderButtonItem);
+设置调用普通API接口的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为成功提示；失败时status为0，msg为失败原因）
+#### 参数：
+* $listHeaderButtonItem ListHeaderButtonApi实例。
+#### 返回值：
+返回this供链式调用
+
 ### public function headerApiButtonWithConfirm(ListHeaderButtonApiWithConfirm $listHeaderButtonItem);
+设置需要确认后才能调用普通API接口的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为成功提示；失败时status为0，msg为失败原因）
+#### 参数：
+* $listHeaderButtonItem ListHeaderButtonApiWithConfirm实例。
+#### 返回值：
+返回this供链式调用
+
+### public function headerBlobButton(ListHeaderButtonBlob $listHeaderButtonItem);
+设置调用返回文件流API接口的顶部按钮
+#### 参数：
+* $listHeaderButtonItem ListHeaderButtonBlob实例。这个实例在实例化时需要传入至少三个参数：
+	- $baseUrl 调用的URL地址（不带参数）
+	- $buttonText 按钮文本
+	- $downloadFilename 下载的文件名
+	- $buttonType = "primary" 按钮样式
+#### 返回值：
+返回this供链式调用
+
 ### public function headerRichTextButton(ListHeaderButtonRichText $listHeaderButtonItem);
+设置点击后根据提供的链接调用接口后将接口返回的内容作为富文本展示的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为富文本内容；失败时status为0，msg为失败原因）
+#### 参数：
+* $listHeaderButtonItem ListHeaderButtonRichText实例。
+#### 返回值：
+返回this供链式调用
 
 ## RowButton系列方法
+列表页的按钮分为顶部按钮（HeaderButton）、每行按钮（RowButton）两种。RowButton系列方法用于配置每行按钮。
+
+默认情况下每行按钮只有一个“编辑”按钮和一个“删除”按钮，你可以使用useEdit(false);方法禁用编辑按钮、useDelete(false);方法禁用删除按钮。
+下面的参数类均继承自ListRowButtonBase类，实例化时都需要实现如下两个方法：
+```
+/**
+ * 根据页面参数计算实际调用地址，返回值将会被用作finalUrl参数
+ * @param UrlParamCalculator $calculator 传入的页面参数的实例
+ * @return array<UrlParamCalculatorParamItem> 并入到baseURL的URL参数
+ */
+abstract public function calcButtonParam(UrlParamCalculator $calculator);
+
+/**
+ * 根据页面参数计算当前按钮是否显示
+ * @param UrlParamCalculator $calculator 传入的页面参数的实例
+ * @return bool 返回真则显示，否则不显示
+ */
+abstract public function judgeIsShow(UrlParamCalculator $calculator);
+```
+其中calcButtonParam方法用于计算按钮跳转或调用的目标链接的携带参数，其UrlParamCalculator $calculator封装了页面携带的参数信息及对应行的数据信息。
+
+其中judgeIsShow方法用于根据页面参数信息及对应行的数据信息判断是否显示这个按钮。
+
 ### public function rowNavigateButton(ListRowButtonNavigate $listRowButtonItem);
+设置跳转到新页面的按钮
+#### 参数：
+* $listRowButtonItem ListRowButtonNavigate实例。
+#### 返回值：
+返回this供链式调用
+
 ### public function rowApiButton(ListRowButtonApi $listRowButtonItem);
-### public function rowBlobButton(ListRowButtonBlob $listRowButtonItem);
+设置调用普通API接口的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为成功提示；失败时status为0，msg为失败原因）
+#### 参数：
+* $listRowButtonItem ListRowButtonApi实例。
+#### 返回值：
+返回this供链式调用
+
 ### public function rowApiButtonWithConfirm(ListRowButtonApiWithConfirm $listRowButtonItem);
+设置需要确认后才能调用普通API接口的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为成功提示；失败时status为0，msg为失败原因）
+#### 参数：
+* $listRowButtonItem ListRowButtonApiWithConfirm实例。
+#### 返回值：
+返回this供链式调用
+
+### public function rowBlobButton(ListRowButtonBlob $listRowButtonItem);
+设置调用返回文件流API接口的顶部按钮
+#### 参数：
+* $listRowButtonItem ListRowButtonBlob实例。这个实例在实例化时需要传入至少三个参数：
+	- $baseUrl 调用的URL地址（不带参数）
+	- $buttonText 按钮文本
+	- $downloadFilename 下载的文件名
+	- $buttonType = "primary" 按钮样式
+#### 返回值：
+返回this供链式调用
+
 ### public function rowRichTextButton(ListRowButtonRichText $listRowButtonItem);
+设置点击后根据提供的链接调用接口后将接口返回的内容作为富文本展示的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为富文本内容；失败时status为0，msg为失败原因）
+#### 参数：
+* $listRowButtonItem ListRowButtonRichText实例。
+#### 返回值：
+返回this供链式调用

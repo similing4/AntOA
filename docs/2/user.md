@@ -27,4 +27,21 @@ CREATE TABLE `antoa_role` (
 其id为antoa_user中role字段的每一项的值。
 
 ## 授权与鉴权过程
-用户后台登录页定义于AntOA/frontend/src/pages/login/Login.vue中，
+用户后台登录页定义于AntOA/frontend/src/pages/login/Login.vue中：
+
+1.首先登录页会调用鉴权接口：/api/antoa/auth/auth
+
+2.如果登录鉴权判断你已登录那么直接跳转第5步。
+
+3.输入账号密码登录会调用登录接口：/api/antoa/auth/login
+
+4.登录成功后Login.vue会将登录的Token写入localStorage.AuthToken中供接口调用使用。
+
+5.通过获取配置接口获取配置：/api/antoa/auth/config
+
+6.将获取到的配置commit到Vuex中用于菜单渲染：
+```
+this.$store.commit('setting/setMenuData', e.routes);
+this.$store.commit('setting/setCustomTitleList', e.title_map);
+```
+7.跳转到后台首页（Home页）

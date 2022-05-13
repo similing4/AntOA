@@ -7,7 +7,7 @@
   * [自定义后台首页](2/home.md)
   * [后台用户与授权相关](2/user.md)
 * 三、Grid的使用
-  * [控制器与Grid](3/grid.md)
+  * [AntOAController与Grid](3/grid.md)
   * [后台列表页](3/list.md)
   * [后台创建页](3/create.md)
   * [后台编辑页](3/edit.md)

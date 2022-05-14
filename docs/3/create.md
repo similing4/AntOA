@@ -78,128 +78,194 @@ column的通用方法
 ### public function columnText($col, $colTip, $defaultVal = '');
 设置一个普通文本输入的表单项
 #### 参数：
-    - 
-    -
-    -
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnNumberDivide($col, $colTip, $divide, $unit = '', $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $divide
+* $unit
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTextarea($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnPassword($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnSelect($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $options
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnRadio($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $options
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnCheckbox($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $options
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTreeCheckbox($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $options
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTimestamp($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnRichText($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 
 ### public function columnPicture($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnFile($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnPictures($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnFiles($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnCascader($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $options
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnDisplay($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnHidden($col);
 
 #### 参数：
+* $col
 #### 返回值：
 返回this供链式调用
 ### public function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '');
 
 #### 参数：
-#### 返回值：
-返回this供链式调用
-### public function columnApiButton(CreateRowButtonBase $buttonItem);
-
-#### 参数：
+* $col
+* $colTip
+* $gridListEasy
+* $gridListVModelCol
+* $gridListDisplayCol
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnPictureLocal($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnFileLocal($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnPicturesLocal($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用
 ### public function columnFilesLocal($col, $colTip, $defaultVal = '');
 
 #### 参数：
+* $col
+* $colTip
+* $defaultVal
 #### 返回值：
 返回this供链式调用

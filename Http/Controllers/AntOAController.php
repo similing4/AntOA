@@ -173,7 +173,8 @@ abstract class AntOAController extends Controller {
                         $array = json_decode($param->val, true);
                         $gridListDbObject->where($r->col, join($array, " "));
                     }
-                }
+                } else
+                    $r->onFilter($gridListDbObject, $urlParamCalculator, $uid);
             }
             $columns = [];
             foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
@@ -435,7 +436,8 @@ abstract class AntOAController extends Controller {
                                 $gridListDbObject->where($r->col, "<", $param->val);
                         } else if ($r instanceof ListFilterUID) {
                             $gridListDbObject->where($r->col, $uid);
-                        }
+                        } else
+                            $r->onFilter($gridListDbObject, $urlParamCalculator, $uid);
                     }
                     $vModelValTip = $gridListDbObject->doClone()->where($columnItem->gridListVModelCol, $vModelVal)->first();
                     if ($vModelValTip == null)

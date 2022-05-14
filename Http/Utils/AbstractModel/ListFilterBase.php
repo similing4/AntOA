@@ -12,6 +12,8 @@ namespace Modules\AntOA\Http\Utils\AbstractModel;
 
 
 use JsonSerializable;
+use Modules\AntOA\Http\Utils\DBListOperator;
+use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
 
 abstract class ListFilterBase implements JsonSerializable {
     /**
@@ -44,5 +46,7 @@ abstract class ListFilterBase implements JsonSerializable {
             "tip"     => $this->tip,
             "default" => $this->defaultVal
         ];
+    }
+    public function onFilter(DBListOperator $gridListDbObject, UrlParamCalculator $urlParamCalculator, $uid){
     }
 }

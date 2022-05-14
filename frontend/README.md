@@ -16,7 +16,7 @@ VUE_APP_API_BASE_URL=你的域名（如http://www.baidu.com，注意末尾没有
 
 #### 2.设置模块的 config.php 文件及初始化模块数据库 Seeder
 
-详见模块的 Wiki 或模块的 Readme.md
+详见根目录的 Readme.md
 
 ### 开发模式：
 
@@ -51,7 +51,7 @@ $ yarn
 $ yarn serve
 ```
 
-运行成功后浏览器访问http://localhost:8080/antoa/webpack/index 即可进行开发调试。
+运行成功后浏览器访问http://localhost:8080/antoa/webpack/ 即可进行开发调试。
 
 ### 部署模式：
 
@@ -60,6 +60,6 @@ $ yarn
 $ yarn build
 ```
 
-运行成功后浏览器访问 你的域名/antoa/webpack/index 即可查看部署效果。
+运行成功后浏览器访问 你的域名/antoa/webpack/ 即可查看部署效果。
 
-详细开发方式详见模块 Wiki
+详细开发方式详见AntOA开发文档。

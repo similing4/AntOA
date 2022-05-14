@@ -13,8 +13,7 @@
   * [后台编辑页](3/edit.md)
   * [多表联查](3/join.md)
 * 四、功能扩展
-  * [项目架构](4/init.md)
-  * [扩展开发](4/home.md)
+  * [扩展开发](4/extends.md)
   * [扩展页面](4/page.md)
 * 五、API文档
   * [/auth/login](5/auth_login.md)

@@ -222,7 +222,7 @@ export default {
 		async reset() {
 			try {
 				for (let i in this.gridCreateObject.createColumnCollection)
-					this.form[this.gridCreateObject.createColumnCollection[i].col] = "";
+					this.form[this.gridCreateObject.createColumnCollection[i].col] = (this.gridCreateObject.createColumnCollection[i].default ? this.gridCreateObject.createColumnCollection[i].default : "");
 			} catch (e) {
 				this.$message.error(e + "", 5);
 			}

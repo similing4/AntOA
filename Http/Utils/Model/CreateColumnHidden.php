@@ -18,8 +18,8 @@ class CreateColumnHidden extends CreateColumnBase {
      * 构造方法
      * @param String $col 列对应的字段
      */
-    public function __construct($col) {
-        parent::__construct($col, "");
+    public function __construct($col, $defaultVal = '') {
+        parent::__construct($col, "", $defaultVal);
     }
 
     public function jsonSerialize() {

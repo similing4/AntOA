@@ -78,194 +78,195 @@ column的通用方法
 ### public function columnText($col, $colTip, $defaultVal = '');
 设置一个普通文本输入的表单项
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnNumberDivide($col, $colTip, $divide, $unit = '', $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
+* $col 表单name
+* $colTip 表单项目左侧提示内容
 * $divide
 * $unit
-* $defaultVal
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTextarea($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnPassword($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnSelect($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
+* $col 表单name
+* $colTip 表单项目左侧提示内容
 * $options
-* $defaultVal
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnRadio($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
+* $col 表单name
+* $colTip 表单项目左侧提示内容
 * $options
-* $defaultVal
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnCheckbox($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
+* $col 表单name
+* $colTip 表单项目左侧提示内容
 * $options
-* $defaultVal
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTreeCheckbox($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
+* $col 表单name
+* $colTip 表单项目左侧提示内容
 * $options
-* $defaultVal
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTimestamp($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnRichText($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnPicture($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnFile($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnPictures($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnFiles($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnCascader($col, $colTip, array $options, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
+* $col 表单name
+* $colTip 表单项目左侧提示内容
 * $options
-* $defaultVal
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnDisplay($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
-### public function columnHidden($col);
+### public function columnHidden($col, $defaultVal);
 
 #### 参数：
-* $col
+* $col 表单name
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
+* $col 表单name
+* $colTip 表单项目左侧提示内容
 * $gridListEasy
 * $gridListVModelCol
 * $gridListDisplayCol
-* $defaultVal
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnPictureLocal($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnFileLocal($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnPicturesLocal($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnFilesLocal($col, $colTip, $defaultVal = '');
 
 #### 参数：
-* $col
-* $colTip
-* $defaultVal
+* $col 表单name
+* $colTip 表单项目左侧提示内容
+* $defaultVal 默认值
 #### 返回值：
 返回this供链式调用

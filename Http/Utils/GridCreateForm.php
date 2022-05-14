@@ -364,10 +364,11 @@ class GridCreateForm implements JsonSerializable {
     /**
      * 指定一个隐藏的行，会被提交，可以用来接其它页面传来的参数
      * @param String $col 数据库列名
+     * @param String $defaultVal 默认值
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnHidden($col) {
-        $this->createColumnCollection->addItem(new CreateColumnHidden($col));
+    public function columnHidden($col, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnHidden($col, $defaultVal));
         return $this;
     }
 

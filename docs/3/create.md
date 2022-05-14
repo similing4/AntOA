@@ -179,6 +179,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnFile($col, $colTip, $defaultVal = '');
 设置一个选择文件（上传到七牛云）的表单项。
 #### 参数：
@@ -187,6 +188,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnPictures($col, $colTip, $defaultVal = '');
 设置一个选择多个图片（上传到七牛云）的表单项。
 #### 参数：
@@ -195,6 +197,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnFiles($col, $colTip, $defaultVal = '');
 设置一个选择多个文件（上传到七牛云）的表单项。
 #### 参数：
@@ -203,6 +206,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnCascader($col, $colTip, array $options, $defaultVal = '');
 设置一个级联选择的表单项。
 #### 参数：
@@ -212,6 +216,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnDisplay($col, $colTip, $defaultVal = '');
 设置一个只用于展示的表单项（不会提交）。
 #### 参数：
@@ -220,6 +225,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnHidden($col, $defaultVal);
 设置一个隐藏的表单项（会提交但不会展示）。
 #### 参数：
@@ -227,6 +233,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '');
 设置一个表单项为一个按钮，点击该按钮后弹出列表页进行单选的表单项。
 #### 参数：
@@ -238,6 +245,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnPictureLocal($col, $colTip, $defaultVal = '');
 设置一个选择图片（上传到服务器本地）的表单项。
 #### 参数：
@@ -246,6 +254,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnFileLocal($col, $colTip, $defaultVal = '');
 设置一个选择文件（上传到服务器本地）的表单项。
 #### 参数：
@@ -254,6 +263,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnPicturesLocal($col, $colTip, $defaultVal = '');
 设置一个选择多个图片（上传到服务器本地）的表单项。
 #### 参数：
@@ -262,6 +272,7 @@ column的通用方法
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
 ### public function columnFilesLocal($col, $colTip, $defaultVal = '');
 设置一个选择多个文件（上传到服务器本地）的表单项。
 #### 参数：
@@ -274,4 +285,64 @@ column的通用方法
 ## GridCreateForm对象的按钮系列方法
 按钮系列方法用于表单项的对应的按钮配置。该方法可以将一个按钮添加到指定选项的右侧，点击这个按钮的时候调用自定义的接口实现功能。
 
-columnApiButton
+由于按钮系列方法的实体类均继承自CreateRowButtonBase，因此在实例化类时你需要手动实现实例的抽象方法：
+```
+abstract public function judgeIsShow(UrlParamCalculator $calculator);
+```
+
+### public function rowButton(CreateRowButtonBase $buttonItem);
+在指定表单项后方添加一个请求数据的按钮。按钮返回值可以赋值到当前已有表单项中（页面跳转的除外）。
+#### 参数：
+* $buttonItem 任意CreateRowButtonBase子类的实例。所有继承自该类的实例均以CreateRowButton开头，且均定义于AntOA/Http/Utils/Model下。可用的实例如下：
+    - CreateRowButtonApi 点击后直接调用API的按钮
+    - CreateRowButtonApiWithConfirm 点击后弹出确认框，用户确认后调用API接口的按钮
+    - CreateRowButtonBlob 点击后下载API接口返回的文件流的按钮
+    - CreateRowButtonNavigate 点击后跳转页面的按钮
+    - CreateRowButtonRichText 点击后弹出文本框展示API调用结果的按钮
+#### 返回值：
+返回this供链式调用
+
+### public function rowNavigateButton(CreateRowButtonNavigate $createRowButtonItem);
+在指定表单项后方添加一个用于跳转页面的按钮。
+#### 参数：
+* $createRowButtonItem CreateRowButtonNavigate类的实例
+#### 返回值：
+返回this供链式调用
+
+### public function rowApiButton(CreateRowButtonApi $createRowButtonItem);
+在指定表单项后方添加一个调用API并将返回值填充到表单的按钮。
+#### 参数：
+* $createRowButtonItem CreateRowButtonApi类的实例
+#### 返回值：
+返回this供链式调用
+
+### public function rowBlobButton(CreateRowButtonBlob $createRowButtonItem);
+在指定表单项后方添加一个调用API并将返回值作为文件流下载的按钮。
+#### 参数：
+* $createRowButtonItem CreateRowButtonBlob类的实例
+#### 返回值：
+返回this供链式调用
+
+### public function rowApiButtonWithConfirm(CreateRowButtonApiWithConfirm $createRowButtonItem);
+在指定表单项后方添加一个需要弹窗确认之后调用API并将返回值填充到表单的按钮。
+#### 参数：
+* $createRowButtonItem CreateRowButtonApiWithConfirm类的实例
+#### 返回值：
+返回this供链式调用
+
+### public function rowRichTextButton(CreateRowButtonRichText $createRowButtonItem);
+在指定表单项后方添加一个调用API并将返回值作为富文本弹窗展示的按钮。
+#### 参数：
+* $createRowButtonItem CreateRowButtonRichText类的实例
+#### 返回值：
+返回this供链式调用
+
+## GridCreateForm对象的钩子方法
+如果你想监听用户表单的内容的变化，你可以通过本方法来实现。比如你可以使用本功能实现点击按钮后切换展示的表单项。
+
+### public function setChangeHook(CreateOrEditColumnChangeHook $hook);
+为指定表单项添加一个变化监听钩子，这个值发生变化时会触发参数对应的回调方法。
+#### 参数：
+* $hook CreateOrEditColumnChangeHook类的实例，内含用于客户端回调的抽象方法。
+#### 返回值：
+返回this供链式调用

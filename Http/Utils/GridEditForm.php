@@ -391,7 +391,7 @@ class GridEditForm implements JsonSerializable {
      * @param EditRowButtonBase $buttonItem 需要添加的行按钮对象
      * @return GridEditForm 返回this以便链式调用
      */
-    public function columnApiButton(EditRowButtonBase $buttonItem) {
+    public function rowButton(EditRowButtonBase $buttonItem) {
         $this->editRowButtonBaseCollection->addItem($buttonItem);
         return $this;
     }

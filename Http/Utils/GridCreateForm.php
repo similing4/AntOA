@@ -392,7 +392,7 @@ class GridCreateForm implements JsonSerializable {
      * @param CreateRowButtonBase $buttonItem 需要添加的行按钮对象
      * @return GridCreateForm 返回this以便链式调用
      */
-    public function columnApiButton(CreateRowButtonBase $buttonItem) {
+    public function rowButton(CreateRowButtonBase $buttonItem) {
         $this->createRowButtonBaseCollection->addItem($buttonItem);
         return $this;
     }

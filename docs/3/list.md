@@ -402,3 +402,25 @@ abstract public function judgeIsShow(UrlParamCalculator $calculator);
 * $listRowButtonItem ListRowButtonRichText实例。
 #### 返回值：
 返回this供链式调用
+
+## 杂项方法
+### public function useCreate($bool);
+设置是否显示创建按钮及使用创建页面
+#### 参数：
+* $bool 为真时列表页上方按钮呈现创建按钮且创建页可以访问（前提设置了GridCreateForm配置），为假时创建按钮不展示且创建页不可用
+#### 返回值：
+返回this供链式调用
+
+### public function useEdit($bool);
+设置是否显示编辑按钮及使用编辑页面
+#### 参数：
+* $bool 为真时每一行列表数据的操作列中呈现编辑按钮且编辑页可以访问（前提设置了GridEditForm配置），为假时编辑按钮不展示且编辑页不可用
+#### 返回值：
+返回this供链式调用
+
+### public function useDelete($bool);
+设置是否显示删除按钮
+#### 参数：
+* $bool 为真时每一行列表数据的操作列中呈现删除按钮且删除接口可以访问，为假时删除按钮不展示且删除接口不可用
+#### 返回值：
+返回this供链式调用

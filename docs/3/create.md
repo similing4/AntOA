@@ -85,18 +85,18 @@ column的通用方法
 返回this供链式调用
 
 ### public function columnNumberDivide($col, $colTip, $divide, $unit = '', $defaultVal = '');
-
+设置一个用于展示数据与数据库字段为除以指定数值关系的表单项。如输入的是元数据库中存储是分的情况。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
-* $divide
-* $unit
+* $divide 除数
+* $unit 展现给用户的单位名，如元
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTextarea($col, $colTip, $defaultVal = '');
-
+设置一个多行文本域输入的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -105,7 +105,7 @@ column的通用方法
 返回this供链式调用
 
 ### public function columnPassword($col, $colTip, $defaultVal = '');
-
+设置一个密码输入的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -114,47 +114,47 @@ column的通用方法
 返回this供链式调用
 
 ### public function columnSelect($col, $colTip, array $options, $defaultVal = '');
-
+设置一个下拉单选的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
-* $options
+* $options 选项数组（array<EnumOption>类型）
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnRadio($col, $colTip, array $options, $defaultVal = '');
-
+设置一个Radio圆圈式的单选的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
-* $options
+* $options 选项数组（array<EnumOption>类型）
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnCheckbox($col, $colTip, array $options, $defaultVal = '');
-
+设置一个Checkbox方块打勾式的多选的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
-* $options
+* $options 选项数组（array<EnumOption>类型）
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTreeCheckbox($col, $colTip, array $options, $defaultVal = '');
-
+设置一个下拉多选的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
-* $options
+* $options 选项数组（array<TreeNode>类型）
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 
 ### public function columnTimestamp($col, $colTip, $defaultVal = '');
-
+设置一个时间输入的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -163,7 +163,7 @@ column的通用方法
 返回this供链式调用
 
 ### public function columnRichText($col, $colTip, $defaultVal = '');
-
+设置一个富文本输入的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -172,7 +172,7 @@ column的通用方法
 返回this供链式调用
 
 ### public function columnPicture($col, $colTip, $defaultVal = '');
-
+设置一个选择图片（上传到七牛云）的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -180,7 +180,7 @@ column的通用方法
 #### 返回值：
 返回this供链式调用
 ### public function columnFile($col, $colTip, $defaultVal = '');
-
+设置一个选择文件（上传到七牛云）的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -188,7 +188,7 @@ column的通用方法
 #### 返回值：
 返回this供链式调用
 ### public function columnPictures($col, $colTip, $defaultVal = '');
-
+设置一个选择多个图片（上传到七牛云）的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -196,7 +196,7 @@ column的通用方法
 #### 返回值：
 返回this供链式调用
 ### public function columnFiles($col, $colTip, $defaultVal = '');
-
+设置一个选择多个文件（上传到七牛云）的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -204,16 +204,16 @@ column的通用方法
 #### 返回值：
 返回this供链式调用
 ### public function columnCascader($col, $colTip, array $options, $defaultVal = '');
-
+设置一个级联选择的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
-* $options
+* $options 选项数组（array<CascaderNode>类型）
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnDisplay($col, $colTip, $defaultVal = '');
-
+设置一个只用于展示的表单项（不会提交）。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -221,25 +221,25 @@ column的通用方法
 #### 返回值：
 返回this供链式调用
 ### public function columnHidden($col, $defaultVal);
-
+设置一个隐藏的表单项（会提交但不会展示）。
 #### 参数：
 * $col 表单name
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '');
-
+设置一个表单项为一个按钮，点击该按钮后弹出列表页进行单选的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
-* $gridListEasy
-* $gridListVModelCol
-* $gridListDisplayCol
+* $gridListEasy GridList的简化版对象
+* $gridListVModelCol 需要作为表单值的GridListEasy查询结果列
+* $gridListDisplayCol 需要作为表单选项展示的GridListEasy查询结果列
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
 ### public function columnPictureLocal($col, $colTip, $defaultVal = '');
-
+设置一个选择图片（上传到服务器本地）的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -247,7 +247,7 @@ column的通用方法
 #### 返回值：
 返回this供链式调用
 ### public function columnFileLocal($col, $colTip, $defaultVal = '');
-
+设置一个选择文件（上传到服务器本地）的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -255,7 +255,7 @@ column的通用方法
 #### 返回值：
 返回this供链式调用
 ### public function columnPicturesLocal($col, $colTip, $defaultVal = '');
-
+设置一个选择多个图片（上传到服务器本地）的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
@@ -263,10 +263,15 @@ column的通用方法
 #### 返回值：
 返回this供链式调用
 ### public function columnFilesLocal($col, $colTip, $defaultVal = '');
-
+设置一个选择多个文件（上传到服务器本地）的表单项。
 #### 参数：
 * $col 表单name
 * $colTip 表单项目左侧提示内容
 * $defaultVal 默认值
 #### 返回值：
 返回this供链式调用
+
+## GridCreateForm对象的按钮系列方法
+按钮系列方法用于表单项的对应的按钮配置。该方法可以将一个按钮添加到指定选项的右侧，点击这个按钮的时候调用自定义的接口实现功能。
+
+columnApiButton

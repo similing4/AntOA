@@ -259,24 +259,23 @@ class PluginCreateColumnTest extends CreateColumnBase {
             "type" => "PluginCreateColumnTest"
         ]);
     }
-    public function onGuestVal($guestVal){
-        return $guestVal;
+    public function onGuestVal($req, $uid){
+        return $req[$this->col];
     }
 }
 ```
 这里解释一下后端逻辑处理方法：
-#### public function onGuestVal($guestVal);
+#### public function onGuestVal($req, $uid);
 前端发起创建请求时供插件调用的方法。参数以外本实例自带的属性可以参考CreateColumnBase类的定义，其中$this->col可以获取当前配置的字段是哪一个字段。
 ##### 参数
-	- $guestVal 客户端传来的该字段的值，你可以拿来处理该字段
+	- $req 客户端传来的所有参数
 	- $uid 当前登录的用户ID
 ##### 返回值
-这个方法没有返回值，如果你不需要处理后端逻辑甚至可以不重写本方法。
+返回需要展示到前端的值
 
 ### 使用
 使用GridList的filter方法传入你定义的CreateColumnBase子类实例即可。例：
 ```
-$grid->list(new class(DB::table("user")) extends DBListOperator{})
-	->columnText("username", "用户名")
-	->filter(new PluginListFilterTest("username", "用户名"));
+$grid->createForm(new class(DB::table("user")) extends DBCreateOperator{})
+	->column(new PluginCreateColumnTest('name', '用户名称', "测试用户"));
 ```

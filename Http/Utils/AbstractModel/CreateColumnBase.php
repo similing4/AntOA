@@ -60,13 +60,4 @@ abstract class CreateColumnBase implements JsonSerializable {
     public function onGuestVal($guestVal){
         return $guestVal;
     }
-
-    /**
-     * 当服务端数据传出时
-     * @param $serverVal
-     * @return string 返回需要接下来
-     */
-    public function onServerVal($serverVal){
-        return $serverVal;
-    }
 }

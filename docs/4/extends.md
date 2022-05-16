@@ -279,3 +279,113 @@ class PluginCreateColumnTest extends CreateColumnBase {
 $grid->createForm(new class(DB::table("user")) extends DBCreateOperator{})
 	->column(new PluginCreateColumnTest('name', '用户名称', "测试用户"));
 ```
+
+
+## EditColumn 系列插件
+### 命名规范
+EditColumn系列插件命名需要以PluginEditColumn开头，否则不识别。后端实体类返回json的type字段需要与前端的插件名称、后端插件类名一致。
+### 插件前端部分编写
+EditColumn系列插件开发需要新建对应的Module（模块）开发，前端部分你需要在对应的模块中创建antoa_components/PluginEditColumn文件夹，在里面编写EditColumn系列插件的前端页面。
+
+假设你的模块名称为AntOAPlugins，要创建的EditColumn系列插件为PluginEditColumn，那么你需要在AntOAPlugins/antoa_components/PluginEditColumn文件夹中创建PluginEditColumnTest.vue文件并在内部编写代码。该文件是一个Vue的组件。下面以一个输入框搜索的插件编写方法举例：
+```
+<template>
+  <a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
+    <a-input :placeholder="'请填写' + column.tip" :value="value" @change="onChange"></a-input>
+    <slot />
+  </a-form-item>
+</template>
+<script>
+export default {
+  props: {
+    column: {
+      type: Object,
+      default () {
+        return {
+          "col": "id",
+          "tip": "",
+          "default": "",
+          "type": "PluginEditColumnTest"
+        };
+      }
+    },
+    gridApiObject: {
+      type: Object,
+      default () {
+        return {
+          api_column_change: "",
+          create: "",
+          create_page: "",
+          delete: "",
+          detail: "",
+          detail_column_list: "",
+          edit_page: "",
+          list: "",
+          list_page: "",
+          path: "",
+          save: "",
+          api_upload: ""
+        };
+      },
+    },
+    value: {
+      type: [String, Number]
+    }
+  },
+  data() {
+    return {};
+  },
+  methods: {
+    onChange(e) {
+      this.$emit("input", e.target.value);
+    }
+  }
+}
+</script>
+```
+编写完成后你需要到AntOA/frontend文件夹中重新使用yarn build进行编译才能使用。如果你是前端想在开发过程中使用你可以直接把整个网站代码down下来然后在AntOA/frontend文件夹中使用yarn serve 进行调试~
+
+### 插件后端部分编写
+EditColumn系列插件开发需要新建对应的Module（模块）开发，后端部分你可以在任意位置创建继承自Modules\AntOA\Http\Utils\AbstractModel\EditColumnBase类的子类并重写父类onGuestVal方法来实现后端功能。
+
+假设你的模块名称为AntOAPlugins，要创建的EditColumn系列插件为PluginEditColumnTest，那么你可以在AntOAPlugins/Http/Requests中创建PluginEditColumnTest类继承PluginEditColumnBase。下面以一个输入框搜索的插件编写方法举例：
+```
+use Modules\AntOA\Http\Utils\AbstractModel\EditColumnBase;
+class PluginEditColumnTest extends EditColumnBase {
+    public function jsonSerialize() {
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "PluginEditColumnTest"
+        ]);
+    }
+    public function onGuestVal($req, $uid){
+        return $req[$this->col];
+    }
+
+    public function onServerVal($res, $uid){
+        return $res[$this->col];
+    }
+}
+```
+这里解释一下后端逻辑处理方法：
+#### public function onGuestVal($req, $uid);
+前端发起保存修改请求时供插件调用的方法。参数以外本实例自带的属性可以参考EditColumnBase类的定义，其中$this->col可以获取当前配置的字段是哪一个字段。
+##### 参数
+  - $req 客户端传来的所有参数
+  - $uid 当前登录的用户ID
+##### 返回值
+返回需要更新到数据库的值
+
+#### public function onServerVal($res, $uid);
+前端发起编辑页获取详细数据请求时供插件调用的方法。参数以外本实例自带的属性可以参考EditColumnBase类的定义，其中$this->col可以获取当前配置的字段是哪一个字段。
+##### 参数
+  - $res 服务端的查询结果
+  - $uid 当前登录的用户ID
+##### 返回值
+返回需要展示到前端的值
+
+### 使用
+使用GridList的filter方法传入你定义的EditColumnBase子类实例即可。例：
+```
+$grid->editForm(new class(DB::table("user")) extends DBEditOperator{})
+  ->column(new PluginEditColumnTest('name', '用户名称'));
+```

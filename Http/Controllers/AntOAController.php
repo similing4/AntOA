@@ -305,10 +305,11 @@ abstract class AntOAController extends Controller {
      */
     public function api_detail(Request $request) {
         try {
+            $uid = null;
             if ($this->gridObj->getEditForm() == null)
                 throw new Exception("页面配置信息不存在");
             try {
-                $this->getUserInfo($request);
+                $uid = $this->getUserInfo($request);
             } catch (Exception $e) {
                 return json_encode([
                     "status" => 0,
@@ -323,7 +324,7 @@ abstract class AntOAController extends Controller {
                 throw new Exception("该项目不存在");
             $res = json_decode(json_encode($res), true);
             foreach ($gridEditForm->getEditColumnList() as $col) //EditColumnBase
-                $res[$col->col] = $col->onServerVal($res[$col->col]);
+                $res[$col->col] = $col->onServerVal($res, $uid);
             $hook = $this->gridObj->getDetailHook();
             if ($hook != null)
                 return json_encode($hook->hook([

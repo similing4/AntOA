@@ -63,10 +63,11 @@ abstract class EditColumnBase implements JsonSerializable {
 
     /**
      * 当服务端数据传出时
-     * @param $serverVal
+     * @param $res
+     * @param $uid
      * @return string 返回需要接下来
      */
-    public function onServerVal($serverVal){
-        return $serverVal;
+    public function onServerVal($res, $uid){
+        return $res[$this->col];
     }
 }

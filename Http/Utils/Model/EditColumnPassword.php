@@ -23,10 +23,11 @@ class EditColumnPassword extends EditColumnBase {
 
     /**
      * 当服务端数据传出时
-     * @param $serverVal
+     * @param $res
+	 * @param $uid
      * @return string 返回需要接下来
      */
-    public function onServerVal($serverVal){
+    public function onServerVal($res, $uid){
         return "";
     }
 }

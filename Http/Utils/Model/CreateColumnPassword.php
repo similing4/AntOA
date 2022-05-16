@@ -20,13 +20,4 @@ class CreateColumnPassword extends CreateColumnBase {
             "type" => "CreateColumnPassword"
         ]);
     }
-
-    /**
-     * 当服务端数据传出时
-     * @param $serverVal
-     * @return string 返回需要接下来
-     */
-    public function onServerVal($serverVal){
-        return "";
-    }
 }

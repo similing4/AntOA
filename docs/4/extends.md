@@ -71,7 +71,6 @@ ListFilter系列插件开发需要新建对应的Module（模块）开发，后�
 
 假设你的模块名称为AntOAPlugins，要创建的ListFilter系列插件为PluginListFilterTest，那么你可以在AntOAPlugins/Http/Requests中创建PluginListFilterTest类继承PluginListFilterBase。下面以一个输入框搜索的插件编写方法举例：
 ```
-namespace Modules\AntOAPlugins\Http\Requests;
 use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
 use Modules\AntOA\Http\Utils\DBListOperator;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
@@ -126,7 +125,7 @@ ListTableColumn系列插件开发需要新建对应的Module（模块）开发�
 <script>
 export default {
 	props: {
-		render: {
+		render: { //这里的render数据是后台经过json_encode传来的
 			type: Object,
 			default () {
 				return {
@@ -136,7 +135,7 @@ export default {
 				};
 			}
 		},
-		value: {
+		value: { //这里是用来展示的数据
 			type: [String, Number],
 			default: 0
 		}
@@ -153,7 +152,6 @@ ListTableColumn系列插件开发需要新建对应的Module（模块）开发�
 
 假设你的模块名称为AntOAPlugins，要创建的ListTableColumn系列插件为PluginListTableColumnTest，那么你可以在AntOAPlugins/Http/Requests中创建PluginListTableColumnTest类继承PluginListTableColumnBase。下面以一个在展示文本后面添加666的插件编写方法举例：
 ```
-namespace Modules\Race\Http\Requests;
 use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
 class PluginListTableColumnTest extends ListTableColumnBase {
@@ -185,34 +183,100 @@ $grid->list(new class(DB::table("user")) extends DBListOperator{})
 	->column(new PluginListTableColumnTest("username", "用户名"));
 ```
 
+## CreateColumn 系列插件
+### 命名规范
+CreateColumn系列插件命名需要以PluginCreateColumn开头，否则不识别。后端实体类返回json的type字段需要与前端的插件名称、后端插件类名一致。
+### 插件前端部分编写
+CreateColumn系列插件开发需要新建对应的Module（模块）开发，前端部分你需要在对应的模块中创建antoa_components/PluginCreateColumn文件夹，在里面编写CreateColumn系列插件的前端页面。
 
+假设你的模块名称为AntOAPlugins，要创建的CreateColumn系列插件为PluginCreateColumn，那么你需要在AntOAPlugins/antoa_components/PluginCreateColumn文件夹中创建PluginCreateColumnTest.vue文件并在内部编写代码。该文件是一个Vue的组件。下面以一个输入框搜索的插件编写方法举例：
+```
+<template>
+	<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
+		<a-input :placeholder="'请填写' + column.tip" :value="value" @change="onChange"></a-input>
+		<slot />
+	</a-form-item>
+</template>
+<script>
+export default {
+	props: {
+		column: {
+			type: Object,
+			default () {
+				return {
+					"col": "id",
+					"tip": "",
+					"default": "",
+					"type": "PluginCreateColumnTest"
+				};
+			}
+		},
+		gridApiObject: {
+			type: Object,
+			default () {
+				return {
+					api_column_change: "",
+					create: "",
+					create_page: "",
+					delete: "",
+					detail: "",
+					detail_column_list: "",
+					edit_page: "",
+					list: "",
+					list_page: "",
+					path: "",
+					save: "",
+					api_upload: ""
+				};
+			},
+		},
+		value: {
+			type: [String, Number]
+		}
+	},
+	data() {
+		return {};
+	},
+	methods: {
+		onChange(e) {
+			this.$emit("input", e.target.value);
+		}
+	}
+}
+</script>
+```
+编写完成后你需要到AntOA/frontend文件夹中重新使用yarn build进行编译才能使用。如果你是前端想在开发过程中使用你可以直接把整个网站代码down下来然后在AntOA/frontend文件夹中使用yarn serve 进行调试~
 
+### 插件后端部分编写
+CreateColumn系列插件开发需要新建对应的Module（模块）开发，后端部分你可以在任意位置创建继承自Modules\AntOA\Http\Utils\AbstractModel\CreateColumnBase类的子类并重写父类onGuestVal方法来实现后端功能。
 
+假设你的模块名称为AntOAPlugins，要创建的CreateColumn系列插件为PluginCreateColumnTest，那么你可以在AntOAPlugins/Http/Requests中创建PluginCreateColumnTest类继承PluginCreateColumnBase。下面以一个输入框搜索的插件编写方法举例：
+```
+use Modules\AntOA\Http\Utils\AbstractModel\CreateColumnBase;
+class PluginCreateColumnTest extends CreateColumnBase {
+    public function jsonSerialize() {
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "PluginCreateColumnTest"
+        ]);
+    }
+    public function onGuestVal($guestVal){
+        return $guestVal;
+    }
+}
+```
+这里解释一下后端逻辑处理方法：
+#### public function onGuestVal($guestVal);
+前端发起创建请求时供插件调用的方法。参数以外本实例自带的属性可以参考CreateColumnBase类的定义，其中$this->col可以获取当前配置的字段是哪一个字段。
+##### 参数
+	- $guestVal 客户端传来的该字段的值，你可以拿来处理该字段
+	- $uid 当前登录的用户ID
+##### 返回值
+这个方法没有返回值，如果你不需要处理后端逻辑甚至可以不重写本方法。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### 使用
+使用GridList的filter方法传入你定义的CreateColumnBase子类实例即可。例：
+```
+$grid->list(new class(DB::table("user")) extends DBListOperator{})
+	->columnText("username", "用户名")
+	->filter(new PluginListFilterTest("username", "用户名"));
+```

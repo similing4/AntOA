@@ -14,7 +14,7 @@
   * [多表联查](3/join.md)
 * 四、功能扩展
   * [扩展开发](4/extends.md)
-  * [扩展页面](4/page.md)
+  * [扩展页面与全局插件](4/page.md)
 * 五、API文档
   * [/auth/login](5/auth_login.md)
   * [/auth/auth](5/auth_auth.md)

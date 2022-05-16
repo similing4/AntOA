@@ -280,7 +280,7 @@ abstract class AntOAController extends Controller {
             $gridCreateForm = $this->gridObj->getCreateForm();
             $param = [];
             foreach ($gridCreateForm->getCreateColumnList() as $col) //EditColumnBase
-                $param[$col->col] = $col->onGuestVal($req[$col->col], $uid);
+                $param[$col->col] = $col->onGuestVal($req, $uid);
             $hook = $this->gridObj->getCreateHook();
             if ($hook != null)
                 $param = $hook->hook($param);
@@ -364,7 +364,7 @@ abstract class AntOAController extends Controller {
             $gridEditForm = $this->gridObj->getEditForm();
             $param = [];
             foreach ($gridEditForm->getEditColumnList() as $col) //EditColumnBase
-                $param[$col->col] = $col->onGuestVal($req[$col->col], $uid);
+                $param[$col->col] = $col->onGuestVal($req, $uid);
             $hook = $this->gridObj->getSaveHook();
             if ($hook != null)
                 $param = $hook->hook($param);

@@ -54,11 +54,11 @@ abstract class EditColumnBase implements JsonSerializable {
 
     /**
      * 当客户端数据传入时
-     * @param $guestVal
+     * @param $req
      * @return string 返回需要接下来
      */
-    public function onGuestVal($guestVal, $uid){
-        return $guestVal;
+    public function onGuestVal($req, $uid){
+        return $req[$this->col];
     }
 
     /**

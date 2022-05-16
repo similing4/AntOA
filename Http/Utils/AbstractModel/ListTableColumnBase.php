@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Utils\AbstractModel;
 
 
+use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
 use JsonSerializable;
 
 abstract class ListTableColumnBase implements JsonSerializable {
@@ -38,5 +39,8 @@ abstract class ListTableColumnBase implements JsonSerializable {
             "col" => $this->col,
             "tip" => $this->tip
         ];
+    }
+
+    public function onParse(&$searchResultItem, UrlParamCalculator $urlParamCalculator, $uid){
     }
 }

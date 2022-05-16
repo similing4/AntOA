@@ -191,6 +191,8 @@ abstract class AntOAController extends Controller {
                 foreach ($gridList->getTableColumnList() as $column) {
                     if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
                         $searchResultItem[$column->col] = '';
+                    else
+                        $column->onParse($searchResultItem, $urlParamCalculator, $uid);
                     $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
                 }
                 $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
@@ -459,6 +461,8 @@ abstract class AntOAController extends Controller {
                         foreach ($gridList->getTableColumnList() as $column) {
                             if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
                                 $searchResultItem[$column->col] = '';
+                            else
+                                $column->onParse($searchResultItem, $urlParamCalculator, $uid);
                             $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
                         }
                         $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);

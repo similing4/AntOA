@@ -110,3 +110,109 @@ $grid->list(new class(DB::table("user")) extends DBListOperator{})
 ```
 
 ## ListTableColumn 系列插件
+### 命名规范
+ListTableColumn系列插件命名需要以PluginListTableColumn开头，否则不识别。后端实体类返回json的type字段需要与前端的插件名称、后端插件类名一致。
+
+### 插件前端部分编写
+ListTableColumn系列插件开发需要新建对应的Module（模块）开发，前端部分你需要在对应的模块中创建antoa_components/PluginListTableColumn文件夹，在里面编写ListTableColumn系列插件的前端页面。
+
+假设你的模块名称为AntOAPlugins，要创建的ListTableColumn系列插件为ListTableColumnTest，那么你需要在AntOAPlugins/antoa_components/PluginListTableColumn文件夹中创建PluginListTableColumnTest.vue文件并在内部编写代码。该文件是一个Vue的组件。下面以一个在展示文本后面添加666的插件编写方法举例：
+```
+<template>
+	<div>
+		{{value}}666
+	</div>
+</template>
+<script>
+export default {
+	props: {
+		render: {
+			type: Object,
+			default () {
+				return {
+					"type": "PluginListTableColumnTest",
+					"col": "",
+					"tip": ""
+				};
+			}
+		},
+		value: {
+			type: [String, Number],
+			default: 0
+		}
+	},
+	data() {
+		return {};
+	}
+}
+</script>
+```
+编写完成后你需要到AntOA/frontend文件夹中重新使用yarn build进行编译才能使用。如果你是前端想在开发过程中使用你可以直接把整个网站代码down下来然后在AntOA/frontend文件夹中使用yarn serve 进行调试~
+### 插件后端部分编写
+ListTableColumn系列插件开发需要新建对应的Module（模块）开发，后端部分你可以在任意位置创建继承自Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase类的子类并重写父类onParse方法来实现后端功能。
+
+假设你的模块名称为AntOAPlugins，要创建的ListTableColumn系列插件为PluginListTableColumnTest，那么你可以在AntOAPlugins/Http/Requests中创建PluginListTableColumnTest类继承PluginListTableColumnBase。下面以一个在展示文本后面添加666的插件编写方法举例：
+```
+namespace Modules\Race\Http\Requests;
+use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase;
+use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
+class PluginListTableColumnTest extends ListTableColumnBase {
+    public function jsonSerialize() {
+        return array_merge(parent::jsonSerialize(), [
+            "type" => "PluginListTableColumnTest"
+        ]);
+    }
+
+    public function onParse(&$searchResultItem, UrlParamCalculator $urlParamCalculator, $uid){
+        $searchResultItem[$this->col] = $searchResultItem[$this->col] . "666";
+    }
+}
+```
+这里解释一下后端逻辑处理方法：
+#### public function onParse(&$searchResultItem, UrlParamCalculator $urlParamCalculator, $uid);
+后端查询结果查询出来之后供插件调用的方法。参数以外本实例自带的属性可以参考ListTableColumnBase类的定义，其中$this->col可以获取当前配置的字段是哪一个字段。
+##### 参数
+	- $searchResultItem 键值对数组类型，每一行的查询数据（尽量不要用foreach遍历，因为其可能带有额外定义的变量）
+	- $urlParamCalculator UrlParamCalculator类型，你可以通过这个对象获取前端页面传来的任意参数
+	- $uid 当前登录的用户ID
+##### 返回值
+这个方法没有返回值，如果你不需要处理后端逻辑甚至可以不重写本方法。
+
+### 使用
+使用GridList的column方法传入你定义的ListTableColumnBase子类实例即可。例：
+```
+$grid->list(new class(DB::table("user")) extends DBListOperator{})
+	->column(new PluginListTableColumnTest("username", "用户名"));
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

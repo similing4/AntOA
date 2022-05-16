@@ -265,10 +265,11 @@ abstract class AntOAController extends Controller {
      */
     public function api_create(Request $request) {
         try {
+            $uid = null;
             if ($this->gridObj->getCreateForm() == null)
                 throw new Exception("页面配置信息不存在");
             try {
-                $this->getUserInfo($request);
+                $uid = $this->getUserInfo($request);
             } catch (Exception $e) {
                 return json_encode([
                     "status" => 0,
@@ -279,7 +280,7 @@ abstract class AntOAController extends Controller {
             $gridCreateForm = $this->gridObj->getCreateForm();
             $param = [];
             foreach ($gridCreateForm->getCreateColumnList() as $col) //EditColumnBase
-                $param[$col->col] = $col->onGuestVal($req[$col->col]);
+                $param[$col->col] = $col->onGuestVal($req[$col->col], $uid);
             $hook = $this->gridObj->getCreateHook();
             if ($hook != null)
                 $param = $hook->hook($param);
@@ -348,10 +349,11 @@ abstract class AntOAController extends Controller {
      */
     public function api_save(Request $request) {
         try {
+            $uid = null;
             if ($this->gridObj->getEditForm() == null)
                 throw new Exception("页面配置信息不存在");
             try {
-                $this->getUserInfo($request);
+                $uid = $this->getUserInfo($request);
             } catch (Exception $e) {
                 return json_encode([
                     "status" => 0,
@@ -362,7 +364,7 @@ abstract class AntOAController extends Controller {
             $gridEditForm = $this->gridObj->getEditForm();
             $param = [];
             foreach ($gridEditForm->getEditColumnList() as $col) //EditColumnBase
-                $param[$col->col] = $col->onGuestVal($req[$col->col]);
+                $param[$col->col] = $col->onGuestVal($req[$col->col], $uid);
             $hook = $this->gridObj->getSaveHook();
             if ($hook != null)
                 $param = $hook->hook($param);

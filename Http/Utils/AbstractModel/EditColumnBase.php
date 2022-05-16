@@ -57,7 +57,7 @@ abstract class EditColumnBase implements JsonSerializable {
      * @param $guestVal
      * @return string 返回需要接下来
      */
-    public function onGuestVal($guestVal){
+    public function onGuestVal($guestVal, $uid){
         return $guestVal;
     }
 

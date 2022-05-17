@@ -4,6 +4,10 @@
 [![Apache2.0](https://img.shields.io/github/license/similing4/AntOA)](https://github.com/similing4/AntOA/blob/master/LICENSE)
 [![Release](https://img.shields.io/github/v/release/similing4/AntOA)](https://github.com/similing4/AntOA/releases/latest)
 
+## 文档
+[Github](https://similing4.github.io/AntOA)
+[Gitee](https://similing.gitee.io/AntOA)
+
 ## 功能展示
 ```php
 class RaceController extends AntOAController {

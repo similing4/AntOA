@@ -5,9 +5,9 @@
  *  {
  *    name: '菜单名称',
  *    path: '菜单路由',
+ *    visible: 'boolean, 是否可见, 默认 true',
  *    meta: {
- *      icon: '菜单图标',
- *      invisible: 'boolean, 是否不可见, 默认 false',
+ *      icon: '菜单图标'
  *    },
  *    children: [子菜单配置]
  *  },
@@ -15,8 +15,7 @@
  *    name: '菜单名称',
  *    path: '菜单路由',
  *    meta: {
- *      icon: '菜单图标',
- *      invisible: 'boolean, 是否不可见, 默认 false',
+ *      icon: '菜单图标'
  *    },
  *    children: [子菜单配置]
  *  }
@@ -142,14 +141,12 @@ export default {
       )
     },
     renderItem: function(h, menu) {
-      const meta = menu.meta
-      if (!meta || !meta.invisible) {
+      if (menu.visible !== false) {
         let renderChildren = false
         const children = menu.children
         if (children != undefined) {
           for (let i = 0; i < children.length; i++) {
-            const childMeta = children[i].meta
-            if (!childMeta || !childMeta.invisible) {
+            if (children[i].visible !== false) {
               renderChildren = true
               break
             }

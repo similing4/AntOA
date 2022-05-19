@@ -46,7 +46,13 @@ export default {
 					save: ""
 				}
 			}
-		}
+		},
+        selectedRows: {
+		    type: Array,
+            default(){
+		        return [];
+            }
+        }
 	},
 	data() {
 		return {
@@ -65,6 +71,7 @@ export default {
 		},
 		async onHeaderButtonClick(headerButtonItem) {
 			let param = this.$route.query;
+			param.antoa_row_selected = this.selectedRows;
 			if (headerButtonItem.type === "ListHeaderButtonApi") {
 				let res = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).call();
 				if (!res.status)

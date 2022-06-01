@@ -156,7 +156,10 @@ export default {
 		doSubmit(index, rowButton, record){
 			let finalUrl = this.record.BUTTON_FINAL_URL_DATA[index];
 			this.$refs['modal_' + index][0].submit(async (param)=>{
-				let res = await this.$api(finalUrl).method("POST").param(param).call();
+				let res = await this.$api(finalUrl).method("POST").param({
+					query: param,
+					row: record
+				}).call();
 				if (!res.status)
 					this.$message.error(res.msg);
 				else

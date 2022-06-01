@@ -2,17 +2,23 @@
 	<div>
 		<a-button @click="onEditClick(record[gridListObject.primaryKey])" type="primary" v-if="gridListObject.hasEdit" style="margin: 5px;">编辑</a-button>
 		<a-button @click="onDeleteClick(record[gridListObject.primaryKey])" type="danger" v-if="gridListObject.hasDelete" style="margin: 5px;">删除</a-button>
-		<a-button @click="onRowButtonClick(rowButton, record, index)" :type="rowButton.buttonType" v-for="(rowButton,index) in gridListObject.listRowButtonCollection" :key="index" v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
+		<a-button @click="onRowButtonClick(rowButton, record, index)" :type="rowButton.buttonType" v-for="(rowButton,index) in gridListObject.listRowButtonCollection" :key="index + '_a'" v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
 			{{ rowButton.buttonText }}
 		</a-button>
 		<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
 			<div v-html="richHtmlModal.html"></div>
 		</a-modal>
 		<confirm-dialog ref="confirmDialog"></confirm-dialog>
+		<div v-for="(rowButton,index) in gridListObject.listRowButtonCollection" :key="index + '_b'">
+			<a-modal :visible="!!isShowCreateModal[index]" @ok="doSubmit(index, rowButton, record)" @cancel="isShowCreateModal[index] = false;$forceUpdate()" v-if="record['BUTTON_CONDITION_DATA'][index] && rowButton.type === 'ListRowButtonWithForm'">
+				<easy-create-form-modal :grid-create-object="rowButton.gridCreateForm" :grid-api-object="gridApiObject" :index="index" :ref="'modal_' + index"></easy-create-form-modal>
+			</a-modal>
+		</div>
 	</div>
 </template>
 <script>
 import confirmDialog from "@/components/tool/ConfirmDialog.vue";
+import EasyCreateFormModal from "./EasyCreateFormModal.vue";
 export default {
 	props: {
 		gridListObject: {
@@ -63,11 +69,13 @@ export default {
 			richHtmlModal: {
 				isShow: false,
 				html: ""
-			}
+			},
+			isShowCreateModal: []
 		};
 	},
 	components:{
-		confirmDialog
+		confirmDialog,
+		EasyCreateFormModal
 	},
 	methods: {
 		loadPage() {
@@ -117,6 +125,12 @@ export default {
 				} catch (e) {
 					this.$message.error("文件导出时发生了错误：" + e, 5);
 				}
+			} else if (rowButtonItem.type === "ListRowButtonWithForm") {
+				this.isShowCreateModal[index] = true;
+				this.$forceUpdate();
+				this.$nextTick(()=>{
+					this.$refs['modal_' + index][0].reset()
+				})
 			}
 		},
 		onEditClick(id) {
@@ -139,6 +153,19 @@ export default {
 				}
 			});
 		},
+		doSubmit(index, rowButton, record){
+			let finalUrl = this.record.BUTTON_FINAL_URL_DATA[index];
+			this.$refs['modal_' + index][0].submit(async (param)=>{
+				let res = await this.$api(finalUrl).method("POST").param(param).call();
+				if (!res.status)
+					this.$message.error(res.msg);
+				else
+					this.$message.success(res.data);
+				this.isShowCreateModal[index] = false;
+				this.loadPage();
+				this.$forceUpdate();
+			});
+		}
 	}
 };
 </script>

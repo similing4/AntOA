@@ -25,7 +25,7 @@ abstract class ListRowButtonWithForm extends ListRowButtonBase {
      * ListRowButtonWithForm constructor.
      * @param $baseUrl
      * @param $buttonText
-     * @param $gridCreateForm
+     * @param GridCreateFormEasy $gridCreateForm
      * @param string $buttonType
      */
     public function __construct($baseUrl, $buttonText, $gridCreateForm, $buttonType = "primary") {

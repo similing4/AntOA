@@ -94,6 +94,14 @@ export default {
         },
         value: {
             type: [String, Number]
+        },
+        type: {
+            type: String,
+            default: "create"
+        },
+        index: {
+            type: [Number, String],
+            default: 0
         }
     },
     data() {
@@ -195,7 +203,7 @@ export default {
             Object.assign(param, this.tableModel.searchObj, {
                 page: this.tableModel.pagination.current
             });
-            let res = await this.$api(this.gridApiObject.detail_column_list + "?type=create&col=" + this.column.col + "&val=" + this.value).method("POST").param(param).call();
+            let res = await this.$api(this.gridApiObject.detail_column_list + "?type=" + this.type + "&col=" + this.column.col + "&val=" + this.value + "&index=" + this.index).method("POST").param(param).call();
             if (res.status == 0)
                 throw res.msg;
             this.tableModel.pagination.total = res.total;
@@ -213,7 +221,7 @@ export default {
             this.$forceUpdate()
             this.currentFormTip = record[this.column.gridListDisplayCol];
         },
-        remove(){
+        remove() {
             this.$emit("input", "");
             this.currentFormTip = "";
         }

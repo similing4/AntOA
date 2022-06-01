@@ -27,6 +27,7 @@ use Modules\AntOA\Http\Utils\Model\ListFilterMultiSelect;
 use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterText;
 use Modules\AntOA\Http\Utils\Model\ListFilterUID;
+use Modules\AntOA\Http\Utils\Model\ListRowButtonWithForm;
 use Modules\AntOA\Http\Utils\Model\ListTableColumnDisplay;
 use Modules\AntOA\Http\Utils\Model\ListTableColumnRichDisplay;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
@@ -239,7 +240,7 @@ abstract class AntOAController extends Controller {
             $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
         $urlParamCalculator = new UrlParamCalculator($pageParams);
         $removeList = [];
-        if($gridList != null) {
+        if ($gridList != null) {
             foreach ($gridList->getHeaderButtonList() as $headerButtonItem) { //ListHeaderButtonBase
                 if (!$headerButtonItem->judgeIsShow($urlParamCalculator))
                     $removeList[] = $headerButtonItem;
@@ -549,6 +550,78 @@ abstract class AntOAController extends Controller {
                     return json_encode($res);
                 }
             }
+        } else if ($type == "easy_row") {
+            $index = $request->get("index");
+            $buttonList = $this->gridObj->getGridList()->getRowButtonList();
+            foreach ($buttonList[$index]->gridCreateForm->getCreateColumnList() as $columnItem) {
+                if ($columnItem instanceof CreateColumnChildrenChoose && $column == $columnItem->col) {
+                    $req = json_decode($request->getContent(), true);
+                    $pageParams = [];
+                    foreach ($req as $k => $v)
+                        $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
+                    $urlParamCalculator = new UrlParamCalculator($pageParams);
+                    $gridList = $columnItem->gridListEasy;
+                    $gridListDbObject = $gridList->getDBObject()->doClone();
+                    $req = json_decode($request->getContent(), true);
+                    foreach ($gridList->getFilterList() as $r) {
+                        $param = $urlParamCalculator->getPageParamByKey($r->col);
+                        if ($r instanceof ListFilterText) {
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, 'like', "%" . $param->val . "%");
+                        } else if ($r instanceof ListFilterHidden || $r instanceof ListFilterEnum) {
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, $param->val);
+                        } else if ($r instanceof ListFilterStartTime) {
+                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_starttime");
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, ">", $param->val);
+                        } else if ($r instanceof ListFilterEndTime) {
+                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_endtime");
+                            if ($param !== null && $param->val != '')
+                                $gridListDbObject->where($r->col, "<", $param->val);
+                        } else if ($r instanceof ListFilterUID) {
+                            $gridListDbObject->where($r->col, $uid);
+                        } else
+                            $r->onFilter($gridListDbObject, $urlParamCalculator, $uid);
+                    }
+                    $vModelValTip = $gridListDbObject->doClone()->where($columnItem->gridListVModelCol, $vModelVal)->first();
+                    if ($vModelValTip == null)
+                        $vModelValTip = "";
+                    else
+                        $vModelValTip = json_decode(json_encode($vModelValTip), true)[$columnItem->gridListDisplayCol];
+                    $columns = [];
+                    foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
+                        if (($column instanceof ListTableColumnDisplay) || ($column instanceof ListTableColumnRichDisplay))
+                            continue;
+                        $columns[] = $column->col;
+                    }
+                    $res = $gridListDbObject->select($columns)->paginate(8);
+                    $res = json_decode(json_encode($res), true);
+                    foreach ($res['data'] as &$searchResultItem) {
+                        $searchResultItem['BUTTON_CONDITION_DATA'] = [];
+                        $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
+                        $searchResultParams = [];
+                        foreach ($gridList->getTableColumnList() as $column) {
+                            if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
+                                $searchResultItem[$column->col] = '';
+                            else
+                                $column->onParse($searchResultItem, $urlParamCalculator, $uid);
+                            $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
+                        }
+                        $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
+                        foreach ($gridList->getRowButtonList() as $rowButtonItem) {
+                            $searchResultItem['BUTTON_FINAL_URL_DATA'][] = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
+                            $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
+                        }
+                    }
+                    $res['status'] = 1;
+                    $res['vModelValTip'] = $vModelValTip;
+                    $hook = $columnItem->getHook();
+                    if ($hook != null)
+                        return json_encode($hook->hook($res));
+                    return json_encode($res);
+                }
+            }
         }
         return json_encode([
             "status" => 0,
@@ -636,8 +709,17 @@ abstract class AntOAController extends Controller {
                 if ($this->gridObj->getEditForm() == null)
                     throw new Exception("页面配置信息不存在");
                 $changeHookList = $this->gridObj->getEditForm()->getChangeHookList();
-            } else
-                throw new Exception("非法操作");
+            } else if ($type == "easy_row") {
+                if (!array_key_exists("index", $content))
+                    throw new Exception("非法操作");
+                $index = $content['index'];
+                if ($this->gridObj->getGridList() == null)
+                    throw new Exception("页面配置信息不存在");
+                $buttonList = $this->gridObj->getGridList()->getRowButtonList();//->getChangeHookList();
+                if (!$buttonList[$index] instanceof ListRowButtonWithForm)
+                    throw new Exception("非法操作");
+                $changeHookList = $buttonList[$index]->gridCreateForm->getChangeHookList();
+            }
             $changeHookList = array_filter($changeHookList, function ($t) use ($col) {
                 return $t->col == $col;
             });
@@ -691,16 +773,16 @@ abstract class AntOAController extends Controller {
             }
             $file = $request->file('file');
             $fileExt = $file->getClientOriginalExtension();
-            if(!in_array($fileExt,["png","jpg","gif","zip","xls","xlsx","jpeg","webp","webm","mp4","mp3","3gp","avi","ppt","doc","pptx","docx","txt","rar","7z"]))
+            if (!in_array($fileExt, ["png", "jpg", "gif", "zip", "xls", "xlsx", "jpeg", "webp", "webm", "mp4", "mp3", "3gp", "avi", "ppt", "doc", "pptx", "docx", "txt", "rar", "7z"]))
                 throw new Exception("非法后缀名");
             $destDir = base_path("public/antoa_uploads");
             $destFile = $uid . "_" . time() . md5($file->getFilename()) . "." . $fileExt;
-            if(!file_exists($destDir))
+            if (!file_exists($destDir))
                 mkdir($destDir);
             $file->move($destDir, $destFile);
             return json_encode([
-                "status"         => 1,
-                "data"           => "/antoa_uploads/" . $destFile
+                "status" => 1,
+                "data"   => "/antoa_uploads/" . $destFile
             ]);
         } catch (Exception $e) {
             return json_encode([

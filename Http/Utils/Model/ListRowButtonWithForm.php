@@ -35,7 +35,8 @@ abstract class ListRowButtonWithForm extends ListRowButtonBase {
 
     public function jsonSerialize() {
         return array_merge(parent::jsonSerialize(), [
-            "type" => "ListRowButtonWithForm"
+            "type" => "ListRowButtonWithForm",
+            "gridCreateForm" => $this->gridCreateForm
         ]);
     }
 }

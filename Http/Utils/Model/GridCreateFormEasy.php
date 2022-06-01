@@ -1,0 +1,428 @@
+<?php
+/**
+ * FileName:GridCreateFormEasyEasy.php
+ * Author:Shengxinyu
+ * Email:845206213@qq.com
+ * Date:2022/6/1/001
+ * Time:11:56
+ */
+declare(strict_types=1);
+
+namespace Modules\AntOA\Http\Utils\Model;
+
+
+use JsonSerializable;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateColumnBase;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateColumnCollection;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateOrEditColumnChangeHookCollection;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateRowButtonBase;
+use Modules\AntOA\Http\Utils\AbstractModel\CreateRowButtonBaseCollection;
+use Modules\AntOA\Http\Utils\hook\CreateOrEditColumnChangeHook;
+
+class GridCreateFormEasy implements JsonSerializable {
+    /**
+     * @var CreateColumnCollection
+     * 编辑页的所有表单项
+     */
+    private $createColumnCollection;
+    /**
+     * @var CreateRowButtonBaseCollection
+     * 编辑页的每行自定义API按钮
+     */
+    private $createRowButtonBaseCollection;
+    /**
+     * @var CreateOrEditColumnChangeHookCollection
+     * 数据变更时的钩子
+     */
+    private $createOrEditColumnChangeHookCollection;
+
+    /**
+     * 构造方法
+     */
+    public function __construct() {
+        $this->createColumnCollection = new CreateColumnCollection();
+        $this->createRowButtonBaseCollection = new CreateRowButtonBaseCollection();
+        $this->createOrEditColumnChangeHookCollection = new CreateOrEditColumnChangeHookCollection();
+    }
+
+    /**
+     * 获取内容变更钩子列表
+     * @return array<CreateOrEditColumnChangeHook> 返回行数据变更时的钩子
+     */
+    public function getChangeHookList() {
+        return $this->createOrEditColumnChangeHookCollection->getItems();
+    }
+
+    /**
+     * 序列化对象
+     * @return array 序列化后的JSON
+     */
+    public function jsonSerialize() {
+        return [
+            "createColumnCollection"                   => $this->createColumnCollection,
+            "createRowButtonBaseCollection"            => $this->createRowButtonBaseCollection,
+            "createOrEditColumnChangeHookCollection" => $this->createOrEditColumnChangeHookCollection
+        ];
+    }
+    /**
+     * 获取所有列对象
+     * @return array<CreateColumnBase>
+     */
+    public function getCreateColumnList() {
+        return $this->createColumnCollection->getItems();
+    }
+
+    /**
+     * 指定一列
+     * @param CreateColumnBase $columnItem 编辑页的行对象
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function column(CreateColumnBase $columnItem) {
+        $this->createColumnCollection->addItem($columnItem);
+        return $this;
+    }
+
+    /**
+     * 指定一个文本输入框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnText($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnText($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个进行预除运算的数字字段，提交时会乘回来
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param Number $divide 除数
+     * @param string $unit 单位，默认为空
+     * @param String $defaultVal 默认值（没除的数）
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnNumberDivide($col, $colTip, $divide, $unit = '', $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnDivideNumber($col, $colTip, $divide, $unit, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个Textarea
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnTextarea($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnTextarea($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个密码输入框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnPassword($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnPassword($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个下拉单选框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param array<EnumOption> $options 单选的选项
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnSelect($col, $colTip, array $options, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnEnum($col, $colTip, $options, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个Radio单选框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param array<EnumOption> $options 单选的选项
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnRadio($col, $colTip, array $options, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnEnumRadio($col, $colTip, $options, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个多选框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param array<EnumOption> $options 多选的选项
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnCheckbox($col, $colTip, array $options, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnEnumCheckBox($col, $colTip, $options, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个树形多选框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param array<TreeNode> $options 详见https://www.antdv.com/components/tree-select-cn
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnTreeCheckbox($col, $colTip, array $options, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnEnumTreeCheckBox($col, $colTip, $options, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个时间选择输入框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnTimestamp($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnTimestamp($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个时富文本输入框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnRichText($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnRichText($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个图片选择框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnPicture($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnPicture($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个文件选择框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnFile($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnFile($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个图片多选框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnPictures($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnPictures($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个文件多选框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnFiles($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnFiles($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个级联选择框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param array<CascaderNode> $options 详见https://www.antdv.com/components/cascader-cn
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnCascader($col, $colTip, array $options, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnCascader($col, $colTip, $options, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个展示框，不会被提交
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 没有对应的查询值时的默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnDisplay($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnDisplay($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个隐藏的行，会被提交，可以用来接其它页面传来的参数
+     * @param String $col 数据库列名
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnHidden($col, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnHidden($col, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个子表选择行，子表的第一个设置的列会被作为最终选择的值
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param GridListEasy $gridListEasy 用于选择的GridList实例
+     * @param String $gridListVModelCol 选中列表项后需要作为表单值的列表列（如列表为select uid,username from user，那么此值为uid时将会将对应选中行的uid值作为对应表单值传给后端）
+     * @param String $gridListDisplayCol 选中列表项后展示在表单中的值对应的列表列（如列表为select uid,username from user，那么此值为username时将会将对应选中行的username值展示在表单上）
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnChildrenChoose($col, $colTip, GridListEasy $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnChildrenChoose($col, $colTip, $gridListEasy, $gridListVModelCol, $gridListDisplayCol, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一列后方请求数据的按钮
+     * @param CreateRowButtonBase $buttonItem 需要添加的行按钮对象
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function rowButton(CreateRowButtonBase $buttonItem) {
+        $this->createRowButtonBaseCollection->addItem($buttonItem);
+        return $this;
+    }
+
+    /**
+     * 添加内容变更钩子
+     * @param CreateOrEditColumnChangeHook $hook 行数据变更时的钩子
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function setChangeHook(CreateOrEditColumnChangeHook $hook) {
+        $this->createOrEditColumnChangeHookCollection->addItem($hook);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行页面跳转按钮
+     * @param CreateRowButtonNavigate $createRowButtonItem 按钮项
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function rowNavigateButton(CreateRowButtonNavigate $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行API调用按钮
+     * @param CreateRowButtonApi $createRowButtonItem 按钮项
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function rowApiButton(CreateRowButtonApi $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行文件BLOB下载调用按钮
+     * @param CreateRowButtonBlob $createRowButtonItem 按钮项
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function rowBlobButton(CreateRowButtonBlob $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个需要弹窗确认的每行API调用按钮
+     * @param CreateRowButtonApiWithConfirm $createRowButtonItem 按钮项
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function rowApiButtonWithConfirm(CreateRowButtonApiWithConfirm $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行弹窗展示富文本的模态框的按钮
+     * @param CreateRowButtonRichText $createRowButtonItem 按钮项
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function rowRichTextButton(CreateRowButtonRichText $createRowButtonItem) {
+        $this->createRowButtonBaseCollection->addItem($createRowButtonItem);
+        return $this;
+    }
+
+
+    /**
+     * 指定一个图片选择框并上传到服务器本地public/antoa_uploads/下
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnPictureLocal($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnPictureLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个文件选择框并上传到服务器本地public/antoa_uploads/下
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnFileLocal($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnFileLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个图片多选框并上传到服务器本地public/antoa_uploads/下
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnPicturesLocal($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnPicturesLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个文件多选框并上传到服务器本地public/antoa_uploads/下
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnFilesLocal($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnFilesLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+}

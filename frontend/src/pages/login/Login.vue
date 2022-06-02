@@ -133,7 +133,7 @@ export default {
 				}
 				this.$store.commit('setting/setMenuData', e.routes);
 				this.$store.commit('setting/setCustomTitleList', e.title_map);
-				this.$router.push("/home");
+				this.$router.push(e.home_page ? e.home_page : "/home");
 			} catch (e) {
 				this.$message.error(e + "", 5)
 			}

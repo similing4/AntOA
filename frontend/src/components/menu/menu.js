@@ -133,7 +133,7 @@ export default {
       )]
       let itemArr = []
       menu.children.forEach(function(item) {
-        if(item.visible !== false)
+        if (item.visible !== false)
           itemArr.push(this_.renderItem(h, item))
       })
       return h(SubMenu, { key: menu.key },
@@ -159,7 +159,7 @@ export default {
       let this_ = this
       let menuArr = []
       menuTree.forEach(function(menu, i) {
-        if(menu.visible !== false)
+        if (menu.visible !== false)
           menuArr.push(this_.renderItem(h, menu, '0', i))
       })
       return menuArr
@@ -178,15 +178,18 @@ export default {
     updateMenu() {
       const matchedRoutes = this.$route.matched.filter(item => item.path !== '')
       let selectNodes = this.getSelectedNodes(this.$route);
-      let selectedKeys = selectNodes.map((t)=>t.key);
-      if(selectNodes[0].visible === false){
-        for(let i = selectNodes[1].children.indexOf(selectNodes[0]);i >= 0;i--)
-          if(selectNodes[1].children[i].visible !== false){
+      let selectedKeys = selectNodes.map((t) => t.key);
+      if (selectNodes[0] && selectNodes[0].visible === false) {
+        for (let i = selectNodes[1].children.indexOf(selectNodes[0]); i >= 0; i--)
+          if (selectNodes[1].children[i].visible !== false) {
             selectedKeys[0] = selectNodes[1].children[i].key;
             break;
           }
       }
-      this.selectedKeys = [selectedKeys[0]];
+      if (selectedKeys[0])
+        this.selectedKeys = [selectedKeys[0]];
+      else
+        this.selectedKeys = [];
       let openKeys = selectedKeys;
       if (!fastEqual(openKeys, this.sOpenKeys)) {
         this.collapsed || this.mode === 'horizontal' ? this.cachedOpenKeys = openKeys : this.sOpenKeys = openKeys
@@ -195,23 +198,23 @@ export default {
     getSelectedNodes(route) {
       let menuData = JSON.parse(localStorage.antOAMenuData);
       let nodes = null;
-      for(let i=0;i<menuData.length;i++){
-        nodes = this.getNodePathInTree(menuData[i], (node)=>{
+      for (let i = 0; i < menuData.length; i++) {
+        nodes = this.getNodePathInTree(menuData[i], (node) => {
           return node.path == route.path || node.path == route.fullPath;
         });
-        if(nodes)
+        if (nodes)
           break;
       }
       return nodes ? nodes : [];
       //return route.matched.map(item => item.path)
     },
-    getNodePathInTree(root, testfunc){
-      if(testfunc(root))
+    getNodePathInTree(root, testfunc) {
+      if (testfunc(root))
         return [root];
-      if(root.children)
-        for(let i=0;i<root.children.length;i++){
+      if (root.children)
+        for (let i = 0; i < root.children.length; i++) {
           let ret = this.getNodePathInTree(root.children[i], testfunc);
-          if(ret)
+          if (ret)
             return ret.concat([root]);
         }
       return null;

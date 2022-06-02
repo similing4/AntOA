@@ -372,21 +372,21 @@ abstract public function judgeIsShow(UrlParamCalculator $calculator);
 返回this供链式调用
 
 ### public function rowApiButton(ListRowButtonApi $listRowButtonItem);
-设置调用普通API接口的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为成功提示；失败时status为0，msg为失败原因）
+设置调用普通API接口的每行按钮（返回值应返回JSON，其字段成功时status为1，data为成功提示；失败时status为0，msg为失败原因）
 #### 参数：
 * $listRowButtonItem ListRowButtonApi实例。
 #### 返回值：
 返回this供链式调用
 
 ### public function rowApiButtonWithConfirm(ListRowButtonApiWithConfirm $listRowButtonItem);
-设置需要确认后才能调用普通API接口的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为成功提示；失败时status为0，msg为失败原因）
+设置需要确认后才能调用普通API接口的每行按钮（返回值应返回JSON，其字段成功时status为1，data为成功提示；失败时status为0，msg为失败原因）
 #### 参数：
 * $listRowButtonItem ListRowButtonApiWithConfirm实例。
 #### 返回值：
 返回this供链式调用
 
 ### public function rowBlobButton(ListRowButtonBlob $listRowButtonItem);
-设置调用返回文件流API接口的顶部按钮
+设置调用返回文件流API接口的每行按钮
 #### 参数：
 * $listRowButtonItem ListRowButtonBlob实例。这个实例在实例化时需要传入至少三个参数：
 	- $baseUrl 调用的URL地址（不带参数）
@@ -397,9 +397,16 @@ abstract public function judgeIsShow(UrlParamCalculator $calculator);
 返回this供链式调用
 
 ### public function rowRichTextButton(ListRowButtonRichText $listRowButtonItem);
-设置点击后根据提供的链接调用接口后将接口返回的内容作为富文本展示的顶部按钮（返回值应返回JSON，其字段成功时status为1，data为富文本内容；失败时status为0，msg为失败原因）
+设置点击后根据提供的链接调用接口后将接口返回的内容作为富文本展示的每行按钮（返回值应返回JSON，其字段成功时status为1，data为富文本内容；失败时status为0，msg为失败原因）
 #### 参数：
 * $listRowButtonItem ListRowButtonRichText实例。
+#### 返回值：
+返回this供链式调用
+
+### public function rowApiButtonWithForm(ListRowButtonWithForm $listRowButtonItem);
+设置点击后弹出表单模态框且点击确定能够提交到指定的调用接口的每行按钮（返回值应返回JSON，其字段成功时status为1，data为富文本内容；失败时status为0，msg为失败原因）
+#### 参数：
+* $listRowButtonItem ListRowButtonWithForm实例，注，其构造方法需要传入GridCreateFormEasy实例，该实例与GridCreateForm实例大体相同。
 #### 返回值：
 返回this供链式调用
 

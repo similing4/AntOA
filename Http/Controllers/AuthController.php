@@ -108,7 +108,8 @@ class AuthController {
                 "host"      => $qiniu['url'],
                 "token"     => $token,
                 "routes"    => $routes,
-                "title_map" => $titleMap
+                "title_map" => $titleMap,
+                "home_page" => config("antoa.config.home_page")
             ]);
         } catch (Exception $e) {
             return json_encode([

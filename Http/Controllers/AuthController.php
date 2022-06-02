@@ -109,7 +109,7 @@ class AuthController {
                 "token"     => $token,
                 "routes"    => $routes,
                 "title_map" => $titleMap,
-                "home_page" => config("antoa.config.home_page")
+                "home_page" => config("antoa.home_page")
             ]);
         } catch (Exception $e) {
             return json_encode([

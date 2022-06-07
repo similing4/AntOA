@@ -33,6 +33,7 @@ use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApiWithConfirm;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonBlob;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonNavigate;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonRichText;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonWithForm;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonApi;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonApiWithConfirm;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonBlob;
@@ -339,6 +340,7 @@ class GridList implements JsonSerializable {
         $this->listFilterCollection->addItem(new ListFilterEnum($col, $colTip, $options));
         return $this;
     }
+
     /**
      * 指定多选类型筛选列
      * @param String $col 列名
@@ -362,6 +364,7 @@ class GridList implements JsonSerializable {
         $this->listFilterCollection->addItem(new ListFilterCascader($col, $colTip, $options));
         return $this;
     }
+
     /**
      * 创建一个筛选项
      * @param ListFilterBase $filterItem 筛选对象
@@ -464,6 +467,16 @@ class GridList implements JsonSerializable {
     }
 
     /**
+     * 创建一个需要弹窗输入内容的模态框的顶部按钮
+     * @param ListHeaderButtonWithForm $listHeaderButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function headerApiButtonWithForm(ListHeaderButtonWithForm $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
+        return $this;
+    }
+
+    /**
      * 创建一个每行页面跳转按钮
      * @param ListRowButtonNavigate $listRowButtonItem 按钮项
      * @return GridList 返回this以便链式调用
@@ -512,27 +525,6 @@ class GridList implements JsonSerializable {
         $this->listRowButtonCollection->addItem($listRowButtonItem);
         return $this;
     }
-
-
-    /**
-     * 创建一个需要弹窗输入内容的每行API调用按钮
-     * @param String $buttonName 按钮的内容文字
-     * @param String $url 表单提交的目标链接，post请求
-     * @param String $buttonType 按钮的type属性，默认为primary
-     * @param GridCreateForm $gridCreateForm GridCreateForm对象，待展示的表单
-     * @return GridList 返回this以便链式调用
-     *//*
-    public function rowApiButtonWithForm($buttonName, $url, $buttonType = 'primary', $gridCreateForm = null, $condition = null) {
-        $this->row_buttons[] = [
-            "btn_do_type"    => "api_form",
-            "title"          => $buttonName,
-            "url"            => $url,
-            "type"           => $buttonType,
-            "extra"          => $gridCreateForm,
-            "show_condition" => $condition
-        ];
-        return $this;
-    }*/
 
     /**
      * 创建一个需要弹窗输入内容的模态框的按钮

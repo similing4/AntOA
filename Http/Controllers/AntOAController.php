@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\AntOA\Http\Utils\AbstractModel\ListHeaderButtonBase;
 use Modules\AntOA\Http\Utils\AuthInterface;
 use Modules\AntOA\Http\Utils\Grid;
 use Modules\AntOA\Http\Utils\Model\CreateColumnChildrenChoose;
@@ -27,6 +28,7 @@ use Modules\AntOA\Http\Utils\Model\ListFilterMultiSelect;
 use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterText;
 use Modules\AntOA\Http\Utils\Model\ListFilterUID;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonWithForm;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonWithForm;
 use Modules\AntOA\Http\Utils\Model\ListTableColumnDisplay;
 use Modules\AntOA\Http\Utils\Model\ListTableColumnRichDisplay;
@@ -719,6 +721,16 @@ abstract class AntOAController extends Controller {
                 if (!$buttonList[$index] instanceof ListRowButtonWithForm)
                     throw new Exception("非法操作");
                 $changeHookList = $buttonList[$index]->gridCreateForm->getChangeHookList();
+            } else if ($type == "easy_header") {
+                if (!array_key_exists("index", $content))
+                    throw new Exception("非法操作");
+                $index = $content['index'];
+                if ($this->gridObj->getGridList() == null)
+                    throw new Exception("页面配置信息不存在");
+                $buttonList = $this->gridObj->getGridList()->getHeaderButtonList();//->getChangeHookList();
+                if (!$buttonList[$index] instanceof ListHeaderButtonWithForm)
+                    throw new Exception("非法操作");
+                $changeHookList = $buttonList[$index]->gridCreateForm->getChangeHookList();
             }
             $changeHookList = array_filter($changeHookList, function ($t) use ($col) {
                 return $t->col == $col;
@@ -757,7 +769,7 @@ abstract class AntOAController extends Controller {
                         $column = $col;
                 if ($column == null)
                     throw new Exception("非法请求");
-            } else {
+            } else if ($_type == "edit") {
                 $gridEditForm = $this->gridObj->getEditForm();
                 if ($gridEditForm == null)
                     throw new Exception("非法请求");
@@ -770,7 +782,16 @@ abstract class AntOAController extends Controller {
                         $column = $col;
                 if ($column == null)
                     throw new Exception("非法请求");
-            }
+            } else if ($_type == "easy_header") {
+                $headerList = $this->gridObj->getGridList()->getHeaderButtonList();
+                if (!$this->checkHasUploadButton($headerList, "header"))
+                    throw new Exception("非法请求");
+            } else if ($_type == "easy_row") {
+                $headerList = $this->gridObj->getGridList()->getRowButtonList();
+                if (!$this->checkHasUploadButton($headerList, "row"))
+                    throw new Exception("非法请求");
+            } else
+                throw new Exception("非法请求");
             $file = $request->file('file');
             $fileExt = $file->getClientOriginalExtension();
             if (!in_array($fileExt, ["png", "jpg", "gif", "zip", "xls", "xlsx", "jpeg", "webp", "webm", "mp4", "mp3", "3gp", "avi", "ppt", "doc", "pptx", "docx", "txt", "rar", "7z"]))
@@ -790,6 +811,47 @@ abstract class AntOAController extends Controller {
                 "msg"    => $e->getMessage()
             ]);
         }
+    }
+
+    /**
+     * 判断按钮列表中是否包含上传按钮
+     * @param array<ListHeaderButtonBase> $buttonList
+     * @param string $type 类型，header与row
+     * @return bool
+     */
+    private function checkHasUploadButton($buttonList, $type) {
+        if ($type == "header") {
+            foreach ($buttonList as $headerButton) {
+                if ($headerButton instanceof ListHeaderButtonWithForm) {
+                    foreach ($headerButton->gridCreateForm->getCreateColumnList() as $column) {
+                        if ($column instanceof CreateColumnFileLocal)
+                            return true;
+                        if ($column instanceof CreateColumnFilesLocal)
+                            return true;
+                        if ($column instanceof CreateColumnPictureLocal)
+                            return true;
+                        if ($column instanceof CreateColumnPicturesLocal)
+                            return true;
+                    }
+                }
+            }
+        } else if ($type == "row") {
+            foreach ($buttonList as $rowButton) {
+                if ($rowButton instanceof ListRowButtonWithForm) {
+                    foreach ($rowButton->gridCreateForm->getCreateColumnList() as $column) {
+                        if ($column instanceof CreateColumnFileLocal)
+                            return true;
+                        if ($column instanceof CreateColumnFilesLocal)
+                            return true;
+                        if ($column instanceof CreateColumnPictureLocal)
+                            return true;
+                        if ($column instanceof CreateColumnPicturesLocal)
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**

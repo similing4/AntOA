@@ -2,70 +2,70 @@
 	<div>
 		<a-form v-if="isLoadOk">
 			<template v-for="(column,index) in gridCreateObject.createColumnCollection">
-				<CreateColumnCascader :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnCascader'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnCascader :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnCascader'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnCascader>
-				<CreateColumnText :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnText'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnText :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnText'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnText>
-				<CreateColumnChildrenChoose :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnChildrenChoose'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" type="easy_row" :index="index">
+				<CreateColumnChildrenChoose :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnChildrenChoose'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnChildrenChoose>
-				<CreateColumnDisplay :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnDisplay'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnDisplay :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnDisplay'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnDisplay>
-				<CreateColumnDivideNumber :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnDivideNumber'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnDivideNumber :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnDivideNumber'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnDivideNumber>
-				<CreateColumnEnum :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnEnum'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnEnum :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnEnum'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnEnum>
-				<CreateColumnEnumCheckBox :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnEnumCheckBox'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnEnumCheckBox :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnEnumCheckBox'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnEnumCheckBox>
-				<CreateColumnEnumRadio :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnEnumRadio'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnEnumRadio :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnEnumRadio'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnEnumRadio>
-				<CreateColumnEnumTreeCheckBox :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnEnumTreeCheckBox'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnEnumTreeCheckBox :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnEnumTreeCheckBox'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnEnumTreeCheckBox>
-				<CreateColumnFile :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFile'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnFile :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFile'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnFile>
-				<CreateColumnFiles :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFiles'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnFiles :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFiles'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnFiles>
-				<CreateColumnFileLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFileLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnFileLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFileLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnFileLocal>
-				<CreateColumnFilesLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFilesLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnFilesLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnFilesLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnFilesLocal>
-				<CreateColumnPassword :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPassword'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnPassword :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPassword'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPassword>
-				<CreateColumnPicture :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPicture'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnPicture :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPicture'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPicture>
-				<CreateColumnPictures :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPictures'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnPictures :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPictures'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPictures>
-				<CreateColumnPictureLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPictureLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnPictureLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPictureLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPictureLocal>
-				<CreateColumnPicturesLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPicturesLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnPicturesLocal :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnPicturesLocal'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPicturesLocal>
-				<CreateColumnRichText :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnRichText'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnRichText :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnRichText'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnRichText>
-				<CreateColumnTextarea :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnTextarea'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnTextarea :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnTextarea'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnTextarea>
-				<CreateColumnTimestamp :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnTimestamp'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnTimestamp :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnTimestamp'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnTimestamp>
-				<CreateColumnPlugin :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type.startsWith('PluginCreateColumn')" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+				<CreateColumnPlugin :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type.startsWith('PluginCreateColumn')" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPlugin>
 			</template>
@@ -124,6 +124,10 @@ export default {
 		index: {
 			type: [Number, String],
 			default: 0
+		},
+		type: {
+			type: String,
+			default: "easy_row"
 		}
 	},
 	data() {
@@ -190,7 +194,7 @@ export default {
 		async onHookCall(hookCol) {
 			try {
 				let res = await this.$api(this.gridApiObject.api_column_change).method("POST").param({
-					type: "easy_row",
+					type: this.type,
 					index: this.index,
 					form: this.form,
 					page: this.$route.query,

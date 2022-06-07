@@ -2,7 +2,7 @@
 	<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
 		<a-button type="primary" @click="openurl(value)" v-if="value != ''">下载</a-button>
 		<a-button type="danger" @click="onChange('')" v-if="value != ''">删除</a-button>
-		<upload-button @uploadfinished="onChange($event[0].response)" accept="*/*" :multiple="false" type="create" :col="column.col" :path="gridApiObject.api_upload"></upload-button>
+		<upload-button @uploadfinished="onChange($event[0].response)" accept="*/*" :multiple="false" :type="type" :col="column.col" :path="gridApiObject.api_upload"></upload-button>
 		<slot />
 	</a-form-item>
 </template>
@@ -43,7 +43,15 @@ export default {
 		},
 		value: {
 			type: [String, Number]
-		}
+		},
+        type: {
+            type: String,
+            default: "create"
+        },
+        index: {
+            type: [Number, String],
+            default: 0
+        }
 	},
 	data() {
 		return {};
@@ -53,21 +61,7 @@ export default {
 	},
 	methods: {
 		openurl(url) {
-			if (url.startsWith("http"))
-				return window.open(url);
-			let beforePage = localStorage.beforePage;
-			if (!beforePage)
-				beforePage = "[]";
-			beforePage = JSON.parse(beforePage);
-			beforePage = beforePage.filter((item) => {
-				return item.after != url;
-			});
-			beforePage.push({
-				before: this.$route.fullPath,
-				after: url
-			});
-			localStorage.beforePage = JSON.stringify(beforePage);
-			this.$router.push(url);
+			window.open(process.env.VUE_APP_API_BASE_URL + url);
 		},
 		onChange(e) {
 			this.$emit("input", e);

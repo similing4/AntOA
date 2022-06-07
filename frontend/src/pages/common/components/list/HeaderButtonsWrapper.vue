@@ -1,17 +1,23 @@
 <template>
 	<div>
 		<a-button style="margin-right:15px" @click="onCreateClick" type="primary" v-if="gridListObject.hasCreate">创建</a-button>
-		<a-button style="margin-right:15px" @click="onHeaderButtonClick(headerButton)" :type="headerButton.buttonType" v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index">
+		<a-button style="margin-right:15px" @click="onHeaderButtonClick(headerButton, index)" :type="headerButton.buttonType" v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index">
 			{{headerButton.buttonText }}
 		</a-button>
 		<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
 			<div v-html="richHtmlModal.html"></div>
 		</a-modal>
 		<confirm-dialog ref="confirmDialog"></confirm-dialog>
+		<div v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index + '_b'">
+			<a-modal :visible="!!isShowCreateModal[index]" @ok="doSubmit(index, headerButton)" @cancel="isShowCreateModal[index] = false;$forceUpdate()" v-if="headerButton.type === 'ListHeaderButtonWithForm'">
+				<easy-create-form-modal :grid-create-object="headerButton.gridCreateForm" :grid-api-object="gridApiObject" :index="index" :ref="'modal_' + index" type="easy_header"></easy-create-form-modal>
+			</a-modal>
+		</div>
 	</div>
 </template>
 <script>
 import confirmDialog from "@/components/tool/ConfirmDialog.vue";
+import EasyCreateFormModal from "./EasyCreateFormModal.vue";
 export default {
 	props: {
 		gridListObject: {
@@ -59,17 +65,19 @@ export default {
 			richHtmlModal: {
 				isShow: false,
 				html: ""
-			}
+			},
+			isShowCreateModal: []
 		};
 	},
 	components: {
-		confirmDialog
+		confirmDialog,
+		EasyCreateFormModal
 	},
 	methods: {
 		loadPage() {
 			this.$emit("loadpage");
 		},
-		async onHeaderButtonClick(headerButtonItem) {
+		async onHeaderButtonClick(headerButtonItem, index) {
 			let param = this.$route.query;
 			param.antoa_row_selected = this.selectedRows;
 			if (headerButtonItem.type === "ListHeaderButtonApi") {
@@ -111,6 +119,12 @@ export default {
 				} catch (e) {
 					this.$message.error("文件导出时发生了错误：" + e, 5);
 				}
+			} else if (headerButtonItem.type === "ListHeaderButtonWithForm") {
+				this.isShowCreateModal[index] = true;
+				this.$forceUpdate();
+				this.$nextTick(()=>{
+					this.$refs['modal_' + index][0].reset()
+				})
 			}
 		},
 		onCreateClick() {
@@ -120,6 +134,21 @@ export default {
 				params.push(i + "=" + param[i]);
 			this.$emit('openurl', this.gridApiObject.create_page + "?" + params.join("&"));
 		},
+		doSubmit(index, headerButton){
+			this.$refs['modal_' + index][0].submit(async (param)=>{
+				let res = await this.$api(headerButton.baseUrl).method("POST").param({
+					query: param,
+					antoa_row_selected: this.selectedRows
+				}).call();
+				if (!res.status)
+					this.$message.error(res.msg);
+				else
+					this.$message.success(res.data);
+				this.isShowCreateModal[index] = false;
+				this.loadPage();
+				this.$forceUpdate();
+			});
+		}
 	}
 }
 </script>

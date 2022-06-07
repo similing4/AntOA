@@ -20,7 +20,7 @@
 			</div>
 			<div>
 				<a-space class="antoa-list-operator">
-					<HeaderButtonsWrapper :grid-list-object="gridListObject" :grid-api-object="gridApiObject" :selected-rows="tableModel.selectedRows" @openurl="openurl" @loadpage="loadPage" />
+					<HeaderButtonsWrapper :grid-list-object="gridListObject" :grid-api-object="gridApiObject" :selected-rows="tableModel.selectedRows" :table-model="tableModel" @openurl="openurl" @loadpage="loadPage" />
 				</a-space>
 				<div style="margin-bottom: 16px">
 					<a-alert type="info" :show-icon="true">

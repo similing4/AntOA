@@ -58,7 +58,13 @@ export default {
             default(){
 		        return [];
             }
-        }
+        },
+		tableModel: {
+			type: Object,
+			default(){
+				return {};
+			}
+		}
 	},
 	data() {
 		return {
@@ -80,6 +86,10 @@ export default {
 		async onHeaderButtonClick(headerButtonItem, index) {
 			let param = this.$route.query;
 			param.antoa_row_selected = this.selectedRows;
+			param.search_obj = {};
+			Object.assign(param.search_obj, this.tableModel.searchObj, {
+				page: this.tableModel.pagination.current
+			});
 			if (headerButtonItem.type === "ListHeaderButtonApi") {
 				let res = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).call();
 				if (!res.status)
@@ -135,10 +145,15 @@ export default {
 			this.$emit('openurl', this.gridApiObject.create_page + "?" + params.join("&"));
 		},
 		doSubmit(index, headerButton){
+			let search_obj = {};
+			Object.assign(search_obj, this.tableModel.searchObj, {
+				page: this.tableModel.pagination.current
+			});
 			this.$refs['modal_' + index][0].submit(async (param)=>{
 				let res = await this.$api(headerButton.baseUrl).method("POST").param({
 					query: param,
-					antoa_row_selected: this.selectedRows
+					antoa_row_selected: this.selectedRows,
+					search_obj
 				}).call();
 				if (!res.status)
 					this.$message.error(res.msg);

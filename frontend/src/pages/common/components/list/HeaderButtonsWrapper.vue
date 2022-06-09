@@ -157,9 +157,10 @@ export default {
 				}).call();
 				if (!res.status)
 					this.$message.error(res.msg);
-				else
+				else{
 					this.$message.success(res.data);
-				this.isShowCreateModal[index] = false;
+					this.isShowCreateModal[index] = false;
+				}
 				this.loadPage();
 				this.$forceUpdate();
 			});

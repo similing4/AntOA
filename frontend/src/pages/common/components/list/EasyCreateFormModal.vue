@@ -170,8 +170,6 @@ export default {
 				this.displayColumns.push(createColumnItem.col);
 			});
 			await this.reset();
-			for (let i = 0; i < this.gridCreateObject.createOrEditColumnChangeHookCollection.length; i++)
-				await this.onHookCall(this.gridCreateObject.createOrEditColumnChangeHookCollection[i].col);
 			this.isLoadOk = true;
 		} catch (e) {
 			this.$message.error("配置加载错误：" + e, 5);
@@ -217,6 +215,8 @@ export default {
 			try {
 				for (let i in this.gridCreateObject.createColumnCollection)
 					this.form[this.gridCreateObject.createColumnCollection[i].col] = (this.gridCreateObject.createColumnCollection[i].default ? this.gridCreateObject.createColumnCollection[i].default : "");
+				for (let i = 0; i < this.gridCreateObject.createOrEditColumnChangeHookCollection.length; i++)
+					await this.onHookCall(this.gridCreateObject.createOrEditColumnChangeHookCollection[i].col);
 				this.$forceUpdate();
 			} catch (e) {
 				this.$message.error(e + "", 5);

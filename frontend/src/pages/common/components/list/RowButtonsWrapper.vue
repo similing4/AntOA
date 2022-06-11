@@ -11,7 +11,7 @@
 		<confirm-dialog ref="confirmDialog"></confirm-dialog>
 		<div v-for="(rowButton,index) in gridListObject.listRowButtonCollection" :key="index + '_b'">
 			<a-modal :visible="!!isShowCreateModal[index]" @ok="doSubmit(index, rowButton, record)" @cancel="isShowCreateModal[index] = false;$forceUpdate()" v-if="record['BUTTON_CONDITION_DATA'][index] && rowButton.type === 'ListRowButtonWithForm'">
-				<easy-create-form-modal :grid-create-object="rowButton.gridCreateForm" :grid-api-object="gridApiObject" :index="index" :ref="'modal_' + index"></easy-create-form-modal>
+				<easy-create-form-modal :grid-create-object="rowButton.gridCreateForm" :grid-api-object="gridApiObject" :index="index" :ref="'modal_' + index" :row-data="record"></easy-create-form-modal>
 			</a-modal>
 		</div>
 	</div>

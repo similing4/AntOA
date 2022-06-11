@@ -128,6 +128,12 @@ export default {
 		type: {
 			type: String,
 			default: "easy_row"
+		},
+		rowData: {
+			type: Object,
+			default () {
+				return {};
+			}
 		}
 	},
 	data() {
@@ -195,7 +201,10 @@ export default {
 					type: this.type,
 					index: this.index,
 					form: this.form,
-					page: this.$route.query,
+					page: {
+						query: this.$route.query,
+						record: this.rowData
+					},
 					col: hookCol
 				}).call();
 				if (res.status)

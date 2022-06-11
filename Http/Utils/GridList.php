@@ -369,7 +369,6 @@ class GridList implements JsonSerializable {
      * 创建一个筛选项
      * @param ListFilterBase $filterItem 筛选对象
      * @return GridList 返回this以便链式调用
-     * @deprecated
      */
     public function filter($filterItem) {
         $this->listFilterCollection->addItem($filterItem);

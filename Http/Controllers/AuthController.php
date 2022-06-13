@@ -178,9 +178,12 @@ class AuthController {
                 $configRoutesItem['path'] = "/home";
             }
         }
-        $configRoutes = array_filter($configRoutes, function ($r) {
-            return !array_key_exists("visible", $r) || $r['visible'];
+        $configRoutes = array_filter($configRoutes, function ($r) use($user) {
+            $limitVailed = true;
+            if (array_key_exists('role_limit', $r))
+                $limitVailed = $r['role_limit']($user);
+            return (!array_key_exists("visible", $r) || $r['visible']) && $limitVailed;
         });
-        return $configRoutes;
+        return array_values($configRoutes);
     }
 }

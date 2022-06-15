@@ -48,13 +48,15 @@ const progressDone = () => {
 }
 
 const onShowCall = (to) => {
-	for (var i in to.matched)
-		try {
-			if (to.matched[i].instances.default.onShow)
-				to.matched[i].instances.default.onShow();
-		} catch (e) {
-			continue;
-		}
+	setTimeout(()=>{
+		for (var i in to.matched)
+			try {//console.log(to.matched[i].instances.default.loadPage);
+				if (to.matched[i].instances.default.onShow)
+					to.matched[i].instances.default.onShow();
+			} catch (e) {
+				continue;
+			}
+	}, 1000);
 }
 /**
  * 加载导航守卫

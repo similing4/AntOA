@@ -210,9 +210,11 @@ export default {
 			this.$router.push(url);
 		},
 		doSearch() {
+			this.tableModel.pagination.current = 1;
 			return this.loadPage();
 		},
 		resetSearch() {
+			this.tableModel.pagination.current = 1;
 			for (const i in this.tableModel.searchObj)
 				this.tableModel.searchObj[i] = (this.$route.query[i] ? this.$route.query[i] : '');
 			this.doSearch();

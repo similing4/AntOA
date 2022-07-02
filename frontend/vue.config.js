@@ -66,17 +66,17 @@ module.exports = {
 	    }
     	modulesList += "\n" + exportScripts + "\nexport default ret;";
     	fs.writeFileSync(moduleListExportFile, modulesList);
-    	
+
 	    let ListFilterPluginGeneralFile = path.resolve(__dirname, "./src/pages/common/components/ListFilterPluginGeneral.vue");
 	    let ListTableColumnPluginGeneralFile = path.resolve(__dirname, "./src/pages/common/components/ListTableColumnPluginGeneral.vue");
 	    let CreateColumnPluginGeneralFile = path.resolve(__dirname, "./src/pages/common/components/CreateColumnPluginGeneral.vue");
 	    let EditColumnPluginGeneralFile = path.resolve(__dirname, "./src/pages/common/components/EditColumnPluginGeneral.vue");
-	    
+
 	    let ListFilterPluginGeneralFileComponentsList = [];
 	    let ListTableColumnPluginGeneralFileComponentsList = [];
 	    let CreateColumnPluginGeneralFileComponentsList = [];
 	    let EditColumnPluginGeneralFileComponentsList = [];
-    	
+
     	for(let i = 0;i < modules.length;i ++){
     	    let moduleName = modules[i];
     	    let pluginListFilterPath = path.resolve(__dirname, "../../" + moduleName + "/antoa_components/PluginListFilter");
@@ -124,12 +124,12 @@ module.exports = {
     	        }));
     	    }
     	}
-    	
-    	fs.writeFileSync(ListFilterPluginGeneralFile, `<template>` + ListFilterPluginGeneralFileComponentsList.map((t)=>`<` + t.name + ` v-if="item.type == '` + t.name + `'" :item="item" :value="value" @input="$emit('input',$event)" />`).join("") + `</template><script>` + ListFilterPluginGeneralFileComponentsList.map((t)=>`import ` + t.name + ` from "` + t.path + `";`).join("") + `export default{props:["item","value"],data(){return {};},components:{` + ListFilterPluginGeneralFileComponentsList.map((t)=> t.name + `,`).join("") + `}}</script>`);
-    	fs.writeFileSync(ListTableColumnPluginGeneralFile, `<template>` + ListTableColumnPluginGeneralFileComponentsList.map((t)=>`<` + t.name + ` v-if="render.type == '` + t.name + `'" :value="value" @input="$emit('input',$event)" />`).join("") + `</template><script>` + ListTableColumnPluginGeneralFileComponentsList.map((t)=>`import ` + t.name + ` from "` + t.path + `";`).join("") + `export default{props:["render","value"],data(){return {};},components:{` + ListTableColumnPluginGeneralFileComponentsList.map((t)=> t.name + `,`).join("") + `}}</script>`);
-    	fs.writeFileSync(CreateColumnPluginGeneralFile, `<template>` + CreateColumnPluginGeneralFileComponentsList.map((t)=>`<` + t.name + ` v-if="column.type == '` + t.name + `'" :column="column" :gridApiObject="gridApiObject" :value="value" @input="$emit('input',$event)"><slot /></` + t.name + `>`).join("") + `</template><script>` + CreateColumnPluginGeneralFileComponentsList.map((t)=>`import ` + t.name + ` from "` + t.path + `";`).join("") + `export default{props:["column","gridApiObject","value"],data(){return {};},components:{` + CreateColumnPluginGeneralFileComponentsList.map((t)=> t.name + `,`).join("") + `}}</script>`);
-    	fs.writeFileSync(EditColumnPluginGeneralFile, `<template>` + EditColumnPluginGeneralFileComponentsList.map((t)=>`<` + t.name + ` v-if="column.type == '` + t.name + `'" :column="column" :gridApiObject="gridApiObject" :value="value" @input="$emit('input',$event)"><slot /></` + t.name + `>`).join("") + `</template><script>` + EditColumnPluginGeneralFileComponentsList.map((t)=>`import ` + t.name + ` from "` + t.path + `";`).join("") + `export default{props:["column","gridApiObject","value"],data(){return {};},components:{` + EditColumnPluginGeneralFileComponentsList.map((t)=> t.name + `,`).join("") + `}}</script>`);
-    	
+
+    	fs.writeFileSync(ListFilterPluginGeneralFile, `<template><div>` + ListFilterPluginGeneralFileComponentsList.map((t)=>`<` + t.name + ` v-if="item.type == '` + t.name + `'" :item="item" :value="value" @input="$emit('input',$event)" />`).join("") + `</div></template><script>` + ListFilterPluginGeneralFileComponentsList.map((t)=>`import ` + t.name + ` from "` + t.path + `";`).join("") + `export default{props:["item","value"],data(){return {};},components:{` + ListFilterPluginGeneralFileComponentsList.map((t)=> t.name + `,`).join("") + `}}</script>`);
+    	fs.writeFileSync(ListTableColumnPluginGeneralFile, `<template><div>` + ListTableColumnPluginGeneralFileComponentsList.map((t)=>`<` + t.name + ` v-if="render.type == '` + t.name + `'" :value="value" @input="$emit('input',$event)" />`).join("") + `</div></template><script>` + ListTableColumnPluginGeneralFileComponentsList.map((t)=>`import ` + t.name + ` from "` + t.path + `";`).join("") + `export default{props:["render","value"],data(){return {};},components:{` + ListTableColumnPluginGeneralFileComponentsList.map((t)=> t.name + `,`).join("") + `}}</script>`);
+    	fs.writeFileSync(CreateColumnPluginGeneralFile, `<template><div>` + CreateColumnPluginGeneralFileComponentsList.map((t)=>`<` + t.name + ` v-if="column.type == '` + t.name + `'" :column="column" :gridApiObject="gridApiObject" :value="value" @input="$emit('input',$event)"><slot /></` + t.name + `>`).join("") + `</div></template><script>` + CreateColumnPluginGeneralFileComponentsList.map((t)=>`import ` + t.name + ` from "` + t.path + `";`).join("") + `export default{props:["column","gridApiObject","value"],data(){return {};},components:{` + CreateColumnPluginGeneralFileComponentsList.map((t)=> t.name + `,`).join("") + `}}</script>`);
+    	fs.writeFileSync(EditColumnPluginGeneralFile, `<template><div>` + EditColumnPluginGeneralFileComponentsList.map((t)=>`<` + t.name + ` v-if="column.type == '` + t.name + `'" :column="column" :gridApiObject="gridApiObject" :value="value" @input="$emit('input',$event)"><slot /></` + t.name + `>`).join("") + `</div></template><script>` + EditColumnPluginGeneralFileComponentsList.map((t)=>`import ` + t.name + ` from "` + t.path + `";`).join("") + `export default{props:["column","gridApiObject","value"],data(){return {};},components:{` + EditColumnPluginGeneralFileComponentsList.map((t)=> t.name + `,`).join("") + `}}</script>`);
+
 		config.entry.app = ["babel-polyfill", "whatwg-fetch", "./src/main.js"];
 		config.performance = {
 			hints: false

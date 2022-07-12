@@ -28,7 +28,7 @@
 					let password = this.password;
 					if (password !== this.password2)
 						throw "两次密码输入不一致";
-					let res = await this.$api("/api/antoa/antoa/user/change_password").method("POST").param({
+					let res = await this.$api("/api/antoa/user/change_password").method("POST").param({
 						password: password
 					}).call();
 					if (res.status) {

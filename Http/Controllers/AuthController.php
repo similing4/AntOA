@@ -71,7 +71,8 @@ class AuthController {
         if ($uid) {
             return json_encode([
                 "status" => 1,
-                "data"   => $uid
+                "data"   => $uid,
+                "role"   => json_decode(DB::table("antoa_user")->where("id", $uid)->value("role"), true)
             ]);
         }
         return json_encode([

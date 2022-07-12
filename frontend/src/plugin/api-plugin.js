@@ -37,7 +37,7 @@ class DataModel {
 		return !!localStorage.AuthToken;
 	}
 
-	async call() {
+	async call(isFull) {
 		const headers = {};
 		if (localStorage.AuthToken)
 			headers.Authorization = localStorage.AuthToken;
@@ -53,6 +53,8 @@ class DataModel {
 			else
 				res = await axios.get(this._url + "?" + this._getUrlParam(), config);
 		}
+		if(isFull)
+			return res;
 		return res.data;
 	}
 	async upload(file){

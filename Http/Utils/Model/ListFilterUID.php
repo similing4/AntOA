@@ -12,6 +12,7 @@ namespace Modules\AntOA\Http\Utils\Model;
 
 
 use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
+use Modules\AntOA\Http\Utils\DBListOperator;
 
 /**
  * NameSpace: Modules\AntOA\Http\Utils\Model
@@ -31,5 +32,9 @@ class ListFilterUID extends ListFilterBase {
         return array_merge(parent::jsonSerialize(), [
             "type" => "ListFilterUID"
         ]);
+    }
+
+    public function onFilter(DBListOperator $gridListDbObject, UrlParamCalculator $urlParamCalculator, $uid) {
+        $gridListDbObject->where($this->col, $uid);
     }
 }

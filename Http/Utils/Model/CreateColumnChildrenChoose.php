@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Utils\Model;
 
 
+use Illuminate\Http\Request;
 use Modules\AntOA\Http\Utils\AbstractModel\CreateColumnBase;
 use Modules\AntOA\Http\Utils\hook\ListHook;
 
@@ -69,5 +70,65 @@ class CreateColumnChildrenChoose extends CreateColumnBase {
      */
     public function getHook() {
         return $this->hook;
+    }
+
+    /**
+     * 是否需要使用ApiDetailColumnList接口
+     * @return bool 是否需要
+     */
+    public function isColumnNeedDealApiDetailColumnList(){
+        return true;
+    }
+
+    /**
+     * @param Request $request 请求数据
+     * @param string $uid 登录用户UID
+     * @return string 返回给前端的json数据
+     */
+    public function dealApiDetailColumnList(Request $request, $uid){
+        $vModelVal = $request->get("val");
+        $req = json_decode($request->getContent(), true);
+        $pageParams = [];
+        foreach ($req as $k => $v)
+            $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
+        $urlParamCalculator = new UrlParamCalculator($pageParams);
+        $gridList = $this->gridListEasy;
+        $gridListDbObject = $gridList->getDBObject()->doClone();
+        foreach ($gridList->getFilterList() as $r)
+            $r->onFilter($gridListDbObject, $urlParamCalculator, $uid);
+        $vModelValTip = $gridListDbObject->doClone()->where($this->gridListVModelCol, $vModelVal)->first();
+        if ($vModelValTip == null)
+            $vModelValTip = "";
+        else
+            $vModelValTip = json_decode(json_encode($vModelValTip), true)[$this->gridListDisplayCol];
+        $columns = [];
+        foreach ($gridList->getTableColumnList() as $column)
+            if (!$column->isTypeDisplay())
+                $columns[] = $column->col;
+        $res = $gridListDbObject->select($columns)->paginate(8);
+        $res = json_decode(json_encode($res), true);
+        foreach ($res['data'] as &$searchResultItem) {
+            $searchResultItem['BUTTON_CONDITION_DATA'] = [];
+            $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
+            $searchResultParams = [];
+            foreach ($gridList->getTableColumnList() as $column) {
+                if ($column->isTypeDisplay())
+                    $searchResultItem[$column->col] = '';
+                else
+                    $column->onParse($searchResultItem, $urlParamCalculator, $uid);
+                $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
+            }
+            $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
+            foreach ($gridList->getRowButtonList() as $rowButtonItem) {
+                $searchResultItem['BUTTON_FINAL_URL_DATA'][] = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
+                $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
+            }
+        }
+        $res['status'] = 1;
+        $res['vModelValTip'] = $vModelValTip;
+        $hook = $this->getHook();
+        if ($hook != null)
+            return json_encode($hook->hook($res));
+        return json_encode($res);
     }
 }

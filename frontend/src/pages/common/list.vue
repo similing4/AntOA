@@ -182,12 +182,14 @@ export default {
 						"customRender": col.col
 					}
 				};
-			}).concat([{
-				"title": "操作",
-				"scopedSlots": {
-					"customRender": "action"
-				}
-			}]);
+			});
+			if(this.gridListObject.listRowButtonCollection.length > 0)
+                this.tableModel.columns = this.tableModel.columns.concat([{
+                    "title": "操作",
+                    "scopedSlots": {
+                        "customRender": "action"
+                    }
+                }]);
 		},
 		onShow() {
 			this.loadPage();

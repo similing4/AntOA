@@ -20,4 +20,12 @@ class EditColumnPictureLocal extends EditColumnBase {
             "type" => "EditColumnPictureLocal"
         ]);
     }
+
+    /**
+     * 是否需要使用ApiUpload接口（接口中type为edit时才会调用）
+     * @return bool 是否需要
+     */
+    public function isColumnNeedDealApiUpload(){
+        return true;
+    }
 }

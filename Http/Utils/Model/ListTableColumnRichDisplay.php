@@ -24,4 +24,8 @@ class ListTableColumnRichDisplay extends ListTableColumnBase {
             "type" => "ListTableColumnRichDisplay"
         ]);
     }
+
+    public function isTypeDisplay(){
+        return true;
+    }
 }

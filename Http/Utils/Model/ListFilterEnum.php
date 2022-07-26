@@ -12,6 +12,7 @@ namespace Modules\AntOA\Http\Utils\Model;
 
 
 use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
+use Modules\AntOA\Http\Utils\DBListOperator;
 
 /**
  * NameSpace: Modules\AntOA\Http\Utils\Model
@@ -41,5 +42,11 @@ class ListFilterEnum extends ListFilterBase {
             "type" => "ListFilterEnum",
             "enum" => $this->options
         ]);
+    }
+
+    public function onFilter(DBListOperator $gridListDbObject, UrlParamCalculator $urlParamCalculator, $uid) {
+        $param = $urlParamCalculator->getPageParamByKey($this->col);
+        if ($param !== null && $param->val != '')
+            $gridListDbObject->where($this->col, $param->val);
     }
 }

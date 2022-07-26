@@ -2,7 +2,6 @@
 
 namespace Modules\AntOA\Http\Controllers;
 
-use App\Traits\ReturnMessage;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -10,28 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\AntOA\Http\Utils\AbstractModel\ListHeaderButtonBase;
 use Modules\AntOA\Http\Utils\AuthInterface;
 use Modules\AntOA\Http\Utils\Grid;
-use Modules\AntOA\Http\Utils\Model\CreateColumnChildrenChoose;
-use Modules\AntOA\Http\Utils\Model\CreateColumnFileLocal;
-use Modules\AntOA\Http\Utils\Model\CreateColumnFilesLocal;
-use Modules\AntOA\Http\Utils\Model\CreateColumnPictureLocal;
-use Modules\AntOA\Http\Utils\Model\CreateColumnPicturesLocal;
-use Modules\AntOA\Http\Utils\Model\EditColumnChildrenChoose;
-use Modules\AntOA\Http\Utils\Model\EditColumnFileLocal;
-use Modules\AntOA\Http\Utils\Model\EditColumnFilesLocal;
-use Modules\AntOA\Http\Utils\Model\EditColumnPictureLocal;
-use Modules\AntOA\Http\Utils\Model\EditColumnPicturesLocal;
-use Modules\AntOA\Http\Utils\Model\ListFilterCascader;
-use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
-use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
-use Modules\AntOA\Http\Utils\Model\ListFilterHidden;
-use Modules\AntOA\Http\Utils\Model\ListFilterMultiSelect;
-use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
-use Modules\AntOA\Http\Utils\Model\ListFilterText;
-use Modules\AntOA\Http\Utils\Model\ListFilterUID;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonWithForm;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonWithForm;
-use Modules\AntOA\Http\Utils\Model\ListTableColumnDisplay;
-use Modules\AntOA\Http\Utils\Model\ListTableColumnRichDisplay;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculatorParamItem;
 
@@ -130,17 +109,9 @@ abstract class AntOAController extends Controller {
      */
     public function api_list(Request $request) {
         try {
+            $uid = $this->getUserInfo($request);
             if ($this->gridObj->getGridList() == null)
                 throw new Exception("页面配置信息不存在");
-            $uid = null;
-            try {
-                $uid = $this->getUserInfo($request);
-            } catch (Exception $e) {
-                return json_encode([
-                    "status" => 0,
-                    "msg"    => "登录失效"
-                ]);
-            }
             $gridListDbObject = $this->gridObj->getGridList()->getDBObject();
             $gridList = $this->gridObj->getGridList();
             $req = json_decode($request->getContent(), true);
@@ -148,42 +119,12 @@ abstract class AntOAController extends Controller {
             foreach ($req as $k => $v)
                 $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
             $urlParamCalculator = new UrlParamCalculator($pageParams);
-            foreach ($gridList->getFilterList() as $r) { //ListFilterBase
-                $param = $urlParamCalculator->getPageParamByKey($r->col);
-                if ($r instanceof ListFilterText) {
-                    if ($param !== null && $param->val != '')
-                        $gridListDbObject->where($r->col, 'like', "%" . $param->val . "%");
-                } else if ($r instanceof ListFilterHidden || $r instanceof ListFilterEnum) {
-                    if ($param !== null && $param->val != '')
-                        $gridListDbObject->where($r->col, $param->val);
-                } else if ($r instanceof ListFilterStartTime) {
-                    $param = $urlParamCalculator->getPageParamByKey($r->col . "_starttime");
-                    if ($param !== null && $param->val != '')
-                        $gridListDbObject->where($r->col, ">", $param->val);
-                } else if ($r instanceof ListFilterEndTime) {
-                    $param = $urlParamCalculator->getPageParamByKey($r->col . "_endtime");
-                    if ($param !== null && $param->val != '')
-                        $gridListDbObject->where($r->col, "<", $param->val);
-                } else if ($r instanceof ListFilterUID) {
-                    $gridListDbObject->where($r->col, $uid);
-                } else if ($r instanceof ListFilterMultiSelect) {
-                    if ($param !== null && $param->val != '') {
-                        $array = json_decode($param->val, true);
-                        $gridListDbObject->whereIn($r->col, $array);
-                    }
-                } else if ($r instanceof ListFilterCascader) {
-                    if ($param !== null && $param->val != '') {
-                        $array = json_decode($param->val, true);
-                        $gridListDbObject->where($r->col, join($array, " "));
-                    }
-                } else
-                    $r->onFilter($gridListDbObject, $urlParamCalculator, $uid);
-            }
+            foreach ($gridList->getFilterList() as $r)
+                $r->onFilter($gridListDbObject, $urlParamCalculator, $uid);
             $columns = [];
             foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
-                if (($column instanceof ListTableColumnDisplay) || ($column instanceof ListTableColumnRichDisplay))
-                    continue;
-                $columns[] = $column->col;
+                if (!$column->isTypeDisplay())
+                    $columns[] = $column->col;
             }
             $res = $gridListDbObject->select($columns)->paginate(15);
             $res = json_decode(json_encode($res), true);
@@ -192,7 +133,7 @@ abstract class AntOAController extends Controller {
                 $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
                 $searchResultParams = [];
                 foreach ($gridList->getTableColumnList() as $column) {
-                    if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
+                    if ($column->isTypeDisplay())
                         $searchResultItem[$column->col] = '';
                     else
                         $column->onParse($searchResultItem, $urlParamCalculator, $uid);
@@ -226,39 +167,38 @@ abstract class AntOAController extends Controller {
     public function api_grid_config(Request $request) {
         try {
             $this->getUserInfo($request);
+            $gridList = $this->gridObj->getGridList();
+            $gridCreate = $this->gridObj->getCreateForm();
+            $gridEdit = $this->gridObj->getEditForm();
+            $req = json_decode($request->getContent(), true);
+            $pageParams = [];
+            foreach ($req as $k => $v)
+                $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
+            $urlParamCalculator = new UrlParamCalculator($pageParams);
+            $removeList = [];
+            if ($gridList != null) {
+                foreach ($gridList->getHeaderButtonList() as $headerButtonItem) { //ListHeaderButtonBase
+                    if (!$headerButtonItem->judgeIsShow($urlParamCalculator))
+                        $removeList[] = $headerButtonItem;
+                    $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
+                }
+                $gridList->removeHeaderButtons($removeList);
+            }
+            return json_encode([
+                "status" => 1,
+                "grid"   => [
+                    "list"   => $gridList,
+                    "create" => $gridCreate,
+                    "edit"   => $gridEdit
+                ],
+                "api"    => $this->getCustomParam($request)['api']
+            ]);
         } catch (Exception $e) {
             return json_encode([
                 "status" => 0,
-                "msg"    => "登录失效"
+                "msg"    => $e->getMessage()
             ]);
         }
-        $gridList = $this->gridObj->getGridList();
-        $gridCreate = $this->gridObj->getCreateForm();
-        $gridEdit = $this->gridObj->getEditForm();
-
-        $req = json_decode($request->getContent(), true);
-        $pageParams = [];
-        foreach ($req as $k => $v)
-            $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
-        $urlParamCalculator = new UrlParamCalculator($pageParams);
-        $removeList = [];
-        if ($gridList != null) {
-            foreach ($gridList->getHeaderButtonList() as $headerButtonItem) { //ListHeaderButtonBase
-                if (!$headerButtonItem->judgeIsShow($urlParamCalculator))
-                    $removeList[] = $headerButtonItem;
-                $headerButtonItem->finalUrl = $headerButtonItem->calcButtonFinalUrl($urlParamCalculator);
-            }
-            $gridList->removeHeaderButtons($removeList);
-        }
-        return json_encode([
-            "status" => 1,
-            "grid"   => [
-                "list"   => $gridList,
-                "create" => $gridCreate,
-                "edit"   => $gridEdit
-            ],
-            "api"    => $this->getCustomParam($request)['api']
-        ]);
     }
 
     /**
@@ -268,17 +208,9 @@ abstract class AntOAController extends Controller {
      */
     public function api_create(Request $request) {
         try {
-            $uid = null;
+            $uid = $this->getUserInfo($request);
             if ($this->gridObj->getCreateForm() == null)
                 throw new Exception("页面配置信息不存在");
-            try {
-                $uid = $this->getUserInfo($request);
-            } catch (Exception $e) {
-                return json_encode([
-                    "status" => 0,
-                    "msg"    => "登录失效"
-                ]);
-            }
             $req = json_decode($request->getContent(), true);
             $gridCreateForm = $this->gridObj->getCreateForm();
             $param = [];
@@ -392,243 +324,38 @@ abstract class AntOAController extends Controller {
      * @return String 通用成功失败返回
      */
     public function api_detail_column_list(Request $request) {
-        $uid = 0;
         try {
             $uid = $this->getUserInfo($request);
-        } catch (Exception $e) {
-            return json_encode([
-                "status" => 0,
-                "msg"    => "登录失效"
-            ]);
-        }
-        $type = $request->get("type");
-        $column = $request->get("col");
-        $vModelVal = $request->get("val");
-        try {
+            $type = $request->get("type");
+            $column = $request->get("col");
             if ($this->gridObj->getEditForm() == null && $type == "edit")
                 throw new Exception("页面配置信息不存在");
             if ($this->gridObj->getCreateForm() == null && $type == "create")
                 throw new Exception("页面配置信息不存在");
+            if ($type == "create") {
+                foreach ($this->gridObj->getCreateForm()->getCreateColumnList() as $columnItem) {
+                    if ($columnItem->isColumnNeedDealApiDetailColumnList() && $column == $columnItem->col)
+                        return $columnItem->dealApiDetailColumnList($request, $uid);
+                }
+            } else if ($type == "edit") {
+                foreach ($this->gridObj->getEditForm()->getEditColumnList() as $columnItem) {
+                    if ($columnItem->isColumnNeedDealApiDetailColumnList() && $column == $columnItem->col)
+                        return $columnItem->dealApiDetailColumnList($request, $uid);
+                }
+            } else if ($type == "easy_row") {
+                $index = $request->get("index");
+                $buttonList = $this->gridObj->getGridList()->getRowButtonList();
+                if (!$buttonList[$index]->isColumnNeedDealApiDetailColumnList())
+                    throw new Exception("该数据不存在，请检查RowButton相关配置！");
+                $buttonList[$index]->dealApiDetailColumnList($request, $uid);
+            }
+            throw new Exception("指定字段不存在");
         } catch (Exception $e) {
             return json_encode([
                 "status" => 0,
                 "msg"    => $e->getMessage()
             ]);
         }
-        if ($type == "create") {
-            foreach ($this->gridObj->getCreateForm()->getCreateColumnList() as $columnItem) {
-                if ($columnItem instanceof CreateColumnChildrenChoose && $column == $columnItem->col) {
-                    $req = json_decode($request->getContent(), true);
-                    $pageParams = [];
-                    foreach ($req as $k => $v)
-                        $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
-                    $urlParamCalculator = new UrlParamCalculator($pageParams);
-                    $gridList = $columnItem->gridListEasy;
-                    $gridListDbObject = $gridList->getDBObject()->doClone();
-                    $req = json_decode($request->getContent(), true);
-                    foreach ($gridList->getFilterList() as $r) {
-                        $param = $urlParamCalculator->getPageParamByKey($r->col);
-                        if ($r instanceof ListFilterText) {
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, 'like', "%" . $param->val . "%");
-                        } else if ($r instanceof ListFilterHidden || $r instanceof ListFilterEnum) {
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, $param->val);
-                        } else if ($r instanceof ListFilterStartTime) {
-                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_starttime");
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, ">", $param->val);
-                        } else if ($r instanceof ListFilterEndTime) {
-                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_endtime");
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, "<", $param->val);
-                        } else if ($r instanceof ListFilterUID) {
-                            $gridListDbObject->where($r->col, $uid);
-                        } else
-                            $r->onFilter($gridListDbObject, $urlParamCalculator, $uid);
-                    }
-                    $vModelValTip = $gridListDbObject->doClone()->where($columnItem->gridListVModelCol, $vModelVal)->first();
-                    if ($vModelValTip == null)
-                        $vModelValTip = "";
-                    else
-                        $vModelValTip = json_decode(json_encode($vModelValTip), true)[$columnItem->gridListDisplayCol];
-                    $columns = [];
-                    foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
-                        if (($column instanceof ListTableColumnDisplay) || ($column instanceof ListTableColumnRichDisplay))
-                            continue;
-                        $columns[] = $column->col;
-                    }
-                    $res = $gridListDbObject->select($columns)->paginate(8);
-                    $res = json_decode(json_encode($res), true);
-                    foreach ($res['data'] as &$searchResultItem) {
-                        $searchResultItem['BUTTON_CONDITION_DATA'] = [];
-                        $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
-                        $searchResultParams = [];
-                        foreach ($gridList->getTableColumnList() as $column) {
-                            if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
-                                $searchResultItem[$column->col] = '';
-                            else
-                                $column->onParse($searchResultItem, $urlParamCalculator, $uid);
-                            $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
-                        }
-                        $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
-                        foreach ($gridList->getRowButtonList() as $rowButtonItem) {
-                            $searchResultItem['BUTTON_FINAL_URL_DATA'][] = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
-                            $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
-                        }
-                    }
-                    $res['status'] = 1;
-                    $res['vModelValTip'] = $vModelValTip;
-                    $hook = $columnItem->getHook();
-                    if ($hook != null)
-                        return json_encode($hook->hook($res));
-                    return json_encode($res);
-                }
-            }
-        } else if ($type == "edit") {
-            foreach ($this->gridObj->getEditForm()->getEditColumnList() as $columnItem) {
-                if ($columnItem instanceof EditColumnChildrenChoose && $column == $columnItem->col) {
-                    $req = json_decode($request->getContent(), true);
-                    $pageParams = [];
-                    foreach ($req as $k => $v)
-                        $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
-                    $urlParamCalculator = new UrlParamCalculator($pageParams);
-                    $gridList = $columnItem->gridListEasy;
-                    $gridListDbObject = $gridList->getDBObject()->doClone();
-                    $req = json_decode($request->getContent(), true);
-                    foreach ($gridList->getFilterList() as $r) {
-                        $param = $urlParamCalculator->getPageParamByKey($r->col);
-                        if ($r instanceof ListFilterText) {
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, 'like', "%" . $param->val . "%");
-                        } else if ($r instanceof ListFilterHidden || $r instanceof ListFilterEnum) {
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, $param->val);
-                        } else if ($r instanceof ListFilterStartTime) {
-                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_starttime");
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, ">", $param->val);
-                        } else if ($r instanceof ListFilterEndTime) {
-                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_endtime");
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, "<", $param->val);
-                        } else if ($r instanceof ListFilterUID) {
-                            $gridListDbObject->where($r->col, $uid);
-                        }
-                    }
-                    $vModelValTip = $gridListDbObject->doClone()->where($columnItem->gridListVModelCol, $vModelVal)->first();
-                    if ($vModelValTip == null)
-                        $vModelValTip = "";
-                    else
-                        $vModelValTip = json_decode(json_encode($vModelValTip), true)[$columnItem->gridListDisplayCol];
-                    $columns = [];
-                    foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
-                        if (($column instanceof ListTableColumnDisplay) || ($column instanceof ListTableColumnRichDisplay))
-                            continue;
-                        $columns[] = $column->col;
-                    }
-                    $res = $gridListDbObject->select($columns)->paginate(8);
-                    $res = json_decode(json_encode($res), true);
-                    foreach ($res['data'] as &$searchResultItem) {
-                        $searchResultItem['BUTTON_CONDITION_DATA'] = [];
-                        $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
-                        $searchResultParams = [];
-                        foreach ($gridList->getTableColumnList() as $column) {
-                            if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
-                                $searchResultItem[$column->col] = '';
-                            $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
-                        }
-                        $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
-                        foreach ($gridList->getRowButtonList() as $rowButtonItem) {
-                            $searchResultItem['BUTTON_FINAL_URL_DATA'][] = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
-                            $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
-                        }
-                    }
-                    $res['status'] = 1;
-                    $res['vModelValTip'] = $vModelValTip;
-                    $hook = $columnItem->getHook();
-                    if ($hook != null)
-                        return json_encode($hook->hook($res));
-                    return json_encode($res);
-                }
-            }
-        } else if ($type == "easy_row") {
-            $index = $request->get("index");
-            $buttonList = $this->gridObj->getGridList()->getRowButtonList();
-            foreach ($buttonList[$index]->gridCreateForm->getCreateColumnList() as $columnItem) {
-                if ($columnItem instanceof CreateColumnChildrenChoose && $column == $columnItem->col) {
-                    $req = json_decode($request->getContent(), true);
-                    $pageParams = [];
-                    foreach ($req as $k => $v)
-                        $pageParams[] = new UrlParamCalculatorParamItem($k, $v);
-                    $urlParamCalculator = new UrlParamCalculator($pageParams);
-                    $gridList = $columnItem->gridListEasy;
-                    $gridListDbObject = $gridList->getDBObject()->doClone();
-                    $req = json_decode($request->getContent(), true);
-                    foreach ($gridList->getFilterList() as $r) {
-                        $param = $urlParamCalculator->getPageParamByKey($r->col);
-                        if ($r instanceof ListFilterText) {
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, 'like', "%" . $param->val . "%");
-                        } else if ($r instanceof ListFilterHidden || $r instanceof ListFilterEnum) {
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, $param->val);
-                        } else if ($r instanceof ListFilterStartTime) {
-                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_starttime");
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, ">", $param->val);
-                        } else if ($r instanceof ListFilterEndTime) {
-                            $param = $urlParamCalculator->getPageParamByKey($r->col . "_endtime");
-                            if ($param !== null && $param->val != '')
-                                $gridListDbObject->where($r->col, "<", $param->val);
-                        } else if ($r instanceof ListFilterUID) {
-                            $gridListDbObject->where($r->col, $uid);
-                        } else
-                            $r->onFilter($gridListDbObject, $urlParamCalculator, $uid);
-                    }
-                    $vModelValTip = $gridListDbObject->doClone()->where($columnItem->gridListVModelCol, $vModelVal)->first();
-                    if ($vModelValTip == null)
-                        $vModelValTip = "";
-                    else
-                        $vModelValTip = json_decode(json_encode($vModelValTip), true)[$columnItem->gridListDisplayCol];
-                    $columns = [];
-                    foreach ($gridList->getTableColumnList() as $column) { // ListTableColumnBase
-                        if (($column instanceof ListTableColumnDisplay) || ($column instanceof ListTableColumnRichDisplay))
-                            continue;
-                        $columns[] = $column->col;
-                    }
-                    $res = $gridListDbObject->select($columns)->paginate(8);
-                    $res = json_decode(json_encode($res), true);
-                    foreach ($res['data'] as &$searchResultItem) {
-                        $searchResultItem['BUTTON_CONDITION_DATA'] = [];
-                        $searchResultItem['BUTTON_FINAL_URL_DATA'] = [];
-                        $searchResultParams = [];
-                        foreach ($gridList->getTableColumnList() as $column) {
-                            if ($column instanceof ListTableColumnDisplay || $column instanceof ListTableColumnRichDisplay)
-                                $searchResultItem[$column->col] = '';
-                            else
-                                $column->onParse($searchResultItem, $urlParamCalculator, $uid);
-                            $searchResultParams[] = new UrlParamCalculatorParamItem($column->col, $searchResultItem[$column->col]);
-                        }
-                        $rowParamCalculator = new UrlParamCalculator($pageParams, $searchResultParams);
-                        foreach ($gridList->getRowButtonList() as $rowButtonItem) {
-                            $searchResultItem['BUTTON_FINAL_URL_DATA'][] = $rowButtonItem->calcButtonFinalUrl($rowParamCalculator);
-                            $searchResultItem['BUTTON_CONDITION_DATA'][] = $rowButtonItem->judgeIsShow($rowParamCalculator);
-                        }
-                    }
-                    $res['status'] = 1;
-                    $res['vModelValTip'] = $vModelValTip;
-                    $hook = $columnItem->getHook();
-                    if ($hook != null)
-                        return json_encode($hook->hook($res));
-                    return json_encode($res);
-                }
-            }
-        }
-        return json_encode([
-            "status" => 0,
-            "msg"    => "指定字段不存在"
-        ]);
     }
 
     /**
@@ -643,21 +370,7 @@ abstract class AntOAController extends Controller {
                 throw new Exception("页面配置信息不存在");
             if (!$this->gridObj->getGridList()->hasDelete)
                 throw new Exception("非法操作");
-        } catch (Exception $e) {
-            return json_encode([
-                "status" => 0,
-                "msg"    => $e->getMessage()
-            ]);
-        }
-        try {
             $this->getUserInfo($request);
-        } catch (Exception $e) {
-            return json_encode([
-                "status" => 0,
-                "msg"    => "登录失效"
-            ]);
-        }
-        try {
             $obj = $this->gridObj->getGridList()->getDBObject();
             $id = $request->get("id");
             if (!$id)
@@ -670,8 +383,6 @@ abstract class AntOAController extends Controller {
                 $id = $hook->hook($id);
             if ($id != null)
                 $obj->delete($id);
-            $resp = json_encode($resp);
-            $resp = json_decode($resp, true);
             return json_encode([
                 "status" => 1,
                 "data"   => "删除成功"
@@ -762,10 +473,7 @@ abstract class AntOAController extends Controller {
                     throw new Exception("非法请求");
                 $column = null;
                 foreach ($gridCreateForm->getCreateColumnList() as $col)
-                    if ($_col == $col->col && ($col instanceof CreateColumnFileLocal
-                            || $col instanceof CreateColumnFilesLocal
-                            || $col instanceof CreateColumnPictureLocal
-                            || $col instanceof CreateColumnPicturesLocal))
+                    if ($_col == $col->col && $col->isColumnNeedDealApiUpload())
                         $column = $col;
                 if ($column == null)
                     throw new Exception("非法请求");
@@ -775,10 +483,7 @@ abstract class AntOAController extends Controller {
                     throw new Exception("非法请求");
                 $column = null;
                 foreach ($gridEditForm->getEditColumnList() as $col)
-                    if ($_col == $col->col && ($col instanceof EditColumnFileLocal
-                            || $col instanceof EditColumnFilesLocal
-                            || $col instanceof EditColumnPictureLocal
-                            || $col instanceof EditColumnPicturesLocal))
+                    if ($_col == $col->col && $col)
                         $column = $col;
                 if ($column == null)
                     throw new Exception("非法请求");
@@ -821,35 +526,13 @@ abstract class AntOAController extends Controller {
      */
     private function checkHasUploadButton($buttonList, $type) {
         if ($type == "header") {
-            foreach ($buttonList as $headerButton) {
-                if ($headerButton instanceof ListHeaderButtonWithForm) {
-                    foreach ($headerButton->gridCreateForm->getCreateColumnList() as $column) {
-                        if ($column instanceof CreateColumnFileLocal)
-                            return true;
-                        if ($column instanceof CreateColumnFilesLocal)
-                            return true;
-                        if ($column instanceof CreateColumnPictureLocal)
-                            return true;
-                        if ($column instanceof CreateColumnPicturesLocal)
-                            return true;
-                    }
-                }
-            }
+            foreach ($buttonList as $headerButton)
+                if ($headerButton->isColumnNeedApiUpload())
+                    return true;
         } else if ($type == "row") {
-            foreach ($buttonList as $rowButton) {
-                if ($rowButton instanceof ListRowButtonWithForm) {
-                    foreach ($rowButton->gridCreateForm->getCreateColumnList() as $column) {
-                        if ($column instanceof CreateColumnFileLocal)
-                            return true;
-                        if ($column instanceof CreateColumnFilesLocal)
-                            return true;
-                        if ($column instanceof CreateColumnPictureLocal)
-                            return true;
-                        if ($column instanceof CreateColumnPicturesLocal)
-                            return true;
-                    }
-                }
-            }
+            foreach ($buttonList as $rowButton)
+                if ($rowButton->isColumnNeedApiUpload())
+                    return true;
         }
         return false;
     }

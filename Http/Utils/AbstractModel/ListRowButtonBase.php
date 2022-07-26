@@ -11,7 +11,9 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Utils\AbstractModel;
 
 
+use Illuminate\Http\Request;
 use JsonSerializable;
+use Modules\AntOA\Http\Utils\Model\GridCreateFormEasy;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculator;
 use Modules\AntOA\Http\Utils\Model\UrlParamCalculatorParamItem;
 
@@ -66,5 +68,33 @@ abstract class ListRowButtonBase implements JsonSerializable {
             "baseUrl"    => $this->baseUrl,
             "finalUrl"   => $this->finalUrl
         ];
+    }
+
+    /**
+     * 是否需要使用ApiDetailColumnList接口
+     * @return bool 是否需要
+     */
+    public function isColumnNeedDealApiDetailColumnList(){
+        return false;
+    }
+
+    /**
+     * 是否需要使用ApiUpload接口
+     * @return bool 是否需要
+     */
+    public function isColumnNeedApiUpload(){
+        return false;
+    }
+
+    /**
+     * @param Request $request 请求数据
+     * @param string $uid 登录用户UID
+     * @return string 返回给前端的json数据
+     */
+    public function dealApiDetailColumnList(Request $request, $uid){
+        return json_encode([
+            "status" => 0,
+            "msg" => "接口不存在"
+        ]);
     }
 }

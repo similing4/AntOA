@@ -11,9 +11,9 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Controllers;
 
 
-use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\AntOA\Http\Utils\AuthInterface;
 
@@ -42,7 +42,7 @@ class AntOAUserController extends Controller {
             throw new Exception("账户已被封禁");
         return $uid;
     }
-    
+
     public function changePassword(Request $request) {
         try {
             $uid = $this->getUserInfo($request);

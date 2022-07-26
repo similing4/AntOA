@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Utils\Model;
 
 use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
+use Modules\AntOA\Http\Utils\DBListOperator;
 
 /**
  * NameSpace: Modules\AntOA\Http\Utils\Model
@@ -40,5 +41,13 @@ class ListFilterMultiSelect extends ListFilterBase {
             "type" => "ListFilterMultiSelect",
             "enum" => $this->options
         ]);
+    }
+
+    public function onFilter(DBListOperator $gridListDbObject, UrlParamCalculator $urlParamCalculator, $uid) {
+        $param = $urlParamCalculator->getPageParamByKey($this->col);
+        if ($param !== null && $param->val != '') {
+            $array = json_decode($param->val, true);
+            $gridListDbObject->whereIn($this->col, $array);
+        }
     }
 }

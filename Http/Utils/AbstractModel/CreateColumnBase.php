@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Utils\AbstractModel;
 
 
+use Illuminate\Http\Request;
 use JsonSerializable;
 
 /**
@@ -52,12 +53,35 @@ abstract class CreateColumnBase implements JsonSerializable {
         ];
     }
 
-    /**
-     * 当客户端数据传入时
-     * @param $req
-     * @return string 返回需要接下来
-     */
     public function onGuestVal($req, $uid){
         return $req[$this->col];
+    }
+
+    /**
+     * 是否需要使用ApiDetailColumnList接口（接口中type为create时才会调用）
+     * @return bool 是否需要
+     */
+    public function isColumnNeedDealApiDetailColumnList(){
+        return false;
+    }
+
+    /**
+     * 是否需要使用ApiUpload接口（接口中type为create时才会调用）
+     * @return bool 是否需要
+     */
+    public function isColumnNeedDealApiUpload(){
+        return false;
+    }
+
+    /**
+     * @param Request $request 请求数据
+     * @param string $uid 登录用户UID
+     * @return string 返回给前端的json数据
+     */
+    public function dealApiDetailColumnList(Request $request, $uid){
+        return json_encode([
+            "status" => 0,
+            "msg" => "接口不存在"
+        ]);
     }
 }

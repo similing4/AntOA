@@ -12,6 +12,7 @@ namespace Modules\AntOA\Http\Utils\Model;
 
 
 use Modules\AntOA\Http\Utils\AbstractModel\ListFilterBase;
+use Modules\AntOA\Http\Utils\DBListOperator;
 
 /**
  * NameSpace: Modules\AntOA\Http\Utils\Model
@@ -24,5 +25,11 @@ class ListFilterEndTime extends ListFilterBase {
         return array_merge(parent::jsonSerialize(), [
             "type" => "ListFilterEndTime"
         ]);
+    }
+
+    public function onFilter(DBListOperator $gridListDbObject, UrlParamCalculator $urlParamCalculator, $uid) {
+        $param = $urlParamCalculator->getPageParamByKey($this->col . "_endtime");
+        if ($param !== null && $param->val != '')
+            $gridListDbObject->where($this->col, "<", $param->val);
     }
 }

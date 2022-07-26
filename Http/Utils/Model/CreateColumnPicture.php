@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Modules\AntOA\Http\Utils\Model;
 
 
+use Illuminate\Http\Request;
 use Modules\AntOA\Http\Utils\AbstractModel\CreateColumnBase;
 
 class CreateColumnPicture extends CreateColumnBase {

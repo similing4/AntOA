@@ -24,4 +24,8 @@ class ListTableColumnDisplay extends ListTableColumnBase {
             "type" => "ListTableColumnDisplay"
         ]);
     }
+
+    public function isTypeDisplay(){
+        return true;
+    }
 }

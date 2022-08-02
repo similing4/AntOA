@@ -3,7 +3,7 @@
 		<a-card v-if="isLoadOk">
 			<div style="margin-bottom: 16px">
 				<a-row>
-					<a-col :md="12" :sm="24" v-for="(filterItem,indexT) in gridListObject.listFilterCollection.filter((t)=>t.type != 'ListFilterHidden')" :key="indexT">
+					<a-col :md="12" :sm="24" v-for="(filterItem,indexT) in gridListObject.listFilterCollection.filter((t)=>t.type != 'ListFilterHidden' && t.type != 'ListFilterUID')" :key="indexT">
 						<ListFilterEnum v-if="filterItem.type == 'ListFilterEnum'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 						<ListFilterStartTime v-if="filterItem.type == 'ListFilterStartTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+ '_starttime']" />
 						<ListFilterEndTime v-if="filterItem.type == 'ListFilterEndTime'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col+  '_endtime']" />
@@ -12,7 +12,7 @@
 						<ListFilterCascader v-if="filterItem.type == 'ListFilterCascader'" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 						<ListFilterPlugin v-if="filterItem.type.startsWith('PluginListFilter')" :item="filterItem" v-model="tableModel.searchObj[filterItem.col]" />
 					</a-col>
-					<span style="float: right; margin-top: 3px;" v-if="gridListObject.listFilterCollection.filter((t)=>t.type != 'ListFilterHidden').length > 0">
+					<span style="float: right; margin-top: 3px;" v-if="gridListObject.listFilterCollection.filter((t)=>t.type != 'ListFilterHidden' && t.type != 'ListFilterUID').length > 0">
 						<a-button type="primary" @click="doSearch">查询</a-button>
 						<a-button style="margin-left: 8px" @click="resetSearch">重置</a-button>
 					</span>

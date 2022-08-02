@@ -80,6 +80,22 @@ class MultiTableDBListOperator extends DBListOperator {
     }
 
     /**
+     * 重写父类whereIn方法，改为分表whereIn
+     * @param string $column
+     * @param mixed $values
+     * @param string $boolean
+     * @param bool $not
+     * @return MultiTableDBListOperator
+     * @throws Exception
+     */
+    public function whereIn($column, $values, $boolean = 'and', $not = false) {
+        $tableColumns = $this->getTableColumnsByColumnName($column);
+        if ($tableColumns)
+            return parent::whereIn($tableColumns->tableAlias . '.' . $tableColumns->tableColumnsMap[$column], $values, $boolean, $not);
+        throw new Exception("列" . $column . "不存在，请在tableColumnsMap中配置！");
+    }
+
+    /**
      * 重写父类方法，改为分表select
      * @param $columns
      * @return MultiTableDBListOperator

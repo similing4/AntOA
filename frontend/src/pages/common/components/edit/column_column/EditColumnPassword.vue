@@ -1,6 +1,6 @@
 <template>
 	<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
-		<a-input-password :placeholder="'请填写' + column.tip + '，不修改密码则请留空'" :value="value" @change="onChange"></a-input-password>
+		<a-input-password autocomplete="new-password" :placeholder="'请填写' + column.tip + '，不修改密码则请留空'" :value="value" @change="onChange"></a-input-password>
 		<slot />
 	</a-form-item>
 </template>

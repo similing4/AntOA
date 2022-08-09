@@ -18,7 +18,7 @@ const routerMap = [{
 		noAuth: true
 	},
 	path: '/login',
-	component: () => import('@/pages/login/Login.vue')
+	component: () => import('@/pages/login/Login.js')
 }, {
 	meta: {
 		noAuth: true

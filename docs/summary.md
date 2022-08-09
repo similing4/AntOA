@@ -4,7 +4,6 @@
 * 二、开始使用
   * [快速开发一个用户管理功能](2/quick.md)
   * [路由与页面结构介绍](2/router.md)
-  * [自定义后台首页](2/home.md)
   * [后台用户与授权相关](2/user.md)
 * 三、Grid的使用
   * [AntOAController与Grid](3/grid.md)
@@ -15,6 +14,7 @@
 * 四、功能扩展
   * [扩展开发](4/extends.md)
   * [扩展页面与全局插件](4/page.md)
+  * [自定义后台首页](4/home.md)
 * 五、API文档
   * [/auth/login](5/auth_login.md)
   * [/auth/auth](5/auth_auth.md)

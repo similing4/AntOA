@@ -15,6 +15,7 @@
   * [扩展开发](4/extends.md)
   * [扩展页面与全局插件](4/page.md)
   * [自定义后台首页](4/home.md)
+  * [自定义后台登录页](4/login.md)
 * 五、API文档
   * [/auth/login](5/auth_login.md)
   * [/auth/auth](5/auth_auth.md)

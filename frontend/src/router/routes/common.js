@@ -1,3 +1,4 @@
+import LoginPage from '@/pages/login/Login.js';
 // 视图组件
 const view = {
 	tabs: () => import('@/layouts/tabs'),
@@ -18,7 +19,7 @@ const routerMap = [{
 		noAuth: true
 	},
 	path: '/login',
-	component: () => import('@/pages/login/Login.js')
+	component: () => LoginPage
 }, {
 	meta: {
 		noAuth: true

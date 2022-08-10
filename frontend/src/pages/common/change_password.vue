@@ -32,7 +32,7 @@
 						password: password
 					}).call();
 					if (res.status) {
-						this.$message.success(res.msg, 5);
+						this.$message.success(res.data, 5);
 						this.password = "";
 						this.password2 = "";
 					} else

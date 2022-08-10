@@ -55,7 +55,7 @@ class AntOAUserController extends Controller {
             ]);
             return [
                 "status" => 1,
-                "msg"    => "密码修改成功"
+                "data"   => "密码修改成功"
             ];
         } catch (Exception $e) {
             return [

@@ -17,8 +17,8 @@
   * [自定义后台首页](4/home.md)
   * [自定义后台登录页](4/login.md)
 * 五、API文档
-  * [/antoa/auth/login](5/auth_login.md)
-  * [/antoa/auth/auth](5/auth_auth.md)
+  * [登录授权](5/auth_login.md)
+  * [获取用户授权信息](5/auth_auth.md)
   * [/antoa/auth/config](5/auth_config.md)
   * [/antoa/user/change_password](5/user_change_password.md)
   * [配置路由/list](5/config/list.md)

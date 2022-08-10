@@ -19,7 +19,7 @@
 * 五、API文档
   * [登录授权](5/auth_login.md)
   * [获取用户授权信息](5/auth_auth.md)
-  * [/antoa/auth/config](5/auth_config.md)
+  * [获取全局配置信息](5/auth_config.md)
   * [/antoa/user/change_password](5/user_change_password.md)
   * [配置路由/list](5/config/list.md)
   * [配置路由/create](5/config/create.md)

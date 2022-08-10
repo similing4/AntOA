@@ -67,13 +67,28 @@ GET
 | host | 七牛云文件链接Host | string | status为1时 | 在antoa.php中配置 |
 | token | 七牛云上传文件凭证 | string | status为1时 | 只有在设置了七牛云相关配置后才有效 |
 | home_page | 登录后跳转的首页地址 | string | status为1时 | 在antoa.php中配置，如未配置该字段则登录后跳转到home页面 |
-| routes | 前台路由 | array\<Route\> | status为1时 | 详见Route解释 |
+| routes | 前台路由（用于侧边展开） | array\<Route\> | status为1时 | 详见Route解释 |
 | title_map | 页面对应标题 | array\<RouteTitle\> | status为1时 | 详见RouteTitle解释 |
 | msg | 请求失败原因 | string | status为0时 | - |
 
 * Route
 
+该对象用于标识侧边栏各项的结构及其对应的页面
+
+| 字段名称 | 字段说明 | 类型 | 存在条件 | 备注 |
+| ---- | ---- | ---- | ---- | ---- |
+| name | 侧边栏显示的标题 | string | 一定存在 | - |
+| path | 侧边栏该项对应的页面路径 | string | 由配置文件决定 | 当children字段存在时该字段无效 |
+| children | 侧边栏该项对应的子项数组 | array<Route> | 由配置文件决定 | 该字段用于实现侧边栏树形结构 |
+
 * RouteTitle
+
+该对象用于标识侧边栏各项打开后对应的页面上方标签显示名称
+
+| 字段名称 | 字段说明 | 类型 | 存在条件 | 备注 |
+| ---- | ---- | ---- | ---- | ---- |
+| name | 显示的名称 | string | 一定存在 | - |
+| path | 侧边栏该项对应的页面路径 | string | 一定存在 | - |
 
 > CURL请求示例
 

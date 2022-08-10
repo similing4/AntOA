@@ -1,4 +1,3 @@
-# 自定义后台首页
 默认情况下，后台首页定义于AntOA/frontend/src/pages/home/Home.vue中。如果您想自定义首页，您可以在您的项目根目录建立AntOAHome.vue文件，例：
 ```
 <template>

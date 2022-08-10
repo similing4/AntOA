@@ -19,7 +19,10 @@ class UserController extends AntOAController {
 }
 ?>
 ```
-该类一共提供了九个接口：
+该类一共提供了九个接口和三个页面：
+
+> 接口
+
 ```
 Route::any($route . "/list", $controller . "@api_list"); //获取列表页的列表数据
 Route::post($route . "/create", $controller . "@api_create"); //创建页进行创建操作的接口
@@ -31,24 +34,47 @@ Route::post($route . "/column_change", $controller . "@api_column_change"); //�
 Route::post($route . "/grid_config", $controller . "@api_grid_config"); //获取后台配置的列表页创建页编辑页结构信息
 Route::post($route . "/upload", $controller . "@uploadFile"); //上传文件到服务端接口
 ```
+
+> 页面
+
+```
+$listPage = $route . "/list"; //列表页
+$createPage = $route . "/create"; //创建页
+$editPage = $route . "/edit"; //编辑页
+``` 
+
 为了方便开发，AntOA集成了这些路由的注册方法。假设需要注册UserController：
+
 ```
 RouteRegister::registerApi("/user", "UserController");
 ```
+
 那么你就有了如下这些接口：
+
 ```
 [
-    "/api/user/list" => "UserController@api_list", //获取列表页的列表数据
-    "/api/user/create" => "UserController@api_create", //创建页进行创建操作的接口
-    "/api/user/detail", "UserController@api_detail", //获取编辑页待编辑行数据的接口
-    "/api/user/detail_column_list","UserController@api_detail_column_list", //获取ColumnChildrenChoose功能的对应列表数据信息
-    "/api/user/save", "UserController@api_save", //编辑页进行保存修改操作的接口
-    "/api/user/delete", "UserController@api_delete", //列表页进行删除操作的接口
-    "/api/user/column_change", "UserController@api_column_change", //待监听的字段值发生改变时调用的钩子接口
-    "/api/user/grid_config", "UserController@api_grid_config", //获取后台配置的列表页创建页编辑页结构信息
-    "/api/user/upload", "UserController@uploadFile" //上传文件到服务端接口
+    "/api/user/list"                => "UserController@api_list",               //获取列表页的列表数据
+    "/api/user/create"              => "UserController@api_create",             //创建页进行创建操作的接口
+    "/api/user/detail"              => "UserController@api_detail",             //获取编辑页待编辑行数据的接口
+    "/api/user/detail_column_list"  => "UserController@api_detail_column_list", //获取ColumnChildrenChoose功能的对应列表数据信息
+    "/api/user/save"                => "UserController@api_save",               //编辑页进行保存修改操作的接口
+    "/api/user/delete"              => "UserController@api_delete",             //列表页进行删除操作的接口
+    "/api/user/column_change"       => "UserController@api_column_change",      //待监听的字段值发生改变时调用的钩子接口
+    "/api/user/grid_config"         => "UserController@api_grid_config",        //获取后台配置的列表页创建页编辑页结构信息
+    "/api/user/upload"              => "UserController@uploadFile"              //上传文件到服务端接口
 ]
 ```
+
+和如下这些页面（vue页面）
+
+```
+[
+    "/api/user/list",           //列表页
+    "/api/user/create",         //创建页
+    "/api/user/edit"            //编辑页
+]
+```
+
 这些接口是否可用受Grid对象控制。当然，你可以自己实现这些接口来实现功能，具体接口内容规范请参考《五、API文档》。
 
 ## 页面配置与Grid

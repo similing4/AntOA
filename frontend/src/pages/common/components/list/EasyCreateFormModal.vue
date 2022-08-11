@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<a-spin :spinning="!isLoadOk">
 		<a-form v-if="isLoadOk">
 			<template v-for="(column,index) in gridCreateObject.createColumnCollection">
 				<CreateColumnCascader :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnCascader'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
@@ -71,7 +71,7 @@
 			</template>
 		</a-form>
 		<confirm-dialog ref="confirmDialog"></confirm-dialog>
-	</div>
+	</a-spin>
 </template>
 <script>
 import moment from "moment";

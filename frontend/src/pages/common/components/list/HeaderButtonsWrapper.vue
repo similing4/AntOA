@@ -1,15 +1,17 @@
 <template>
-	<div>
+	<div style="display: flex">
 		<a-button style="margin-right:15px" @click="onCreateClick" type="primary" v-if="gridListObject.hasCreate">创建</a-button>
-		<a-button style="margin-right:15px" @click="onHeaderButtonClick(headerButton, index)" :type="headerButton.buttonType" v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index">
-			{{headerButton.buttonText }}
-		</a-button>
+		<a-spin v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index" :spinning="loadingIndex == index">
+			<a-button style="margin-right:15px" @click="onHeaderButtonClick(headerButton, index)" :type="headerButton.buttonType">
+				{{headerButton.buttonText }}
+			</a-button>
+		</a-spin>
 		<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
 			<div v-html="richHtmlModal.html"></div>
 		</a-modal>
 		<confirm-dialog ref="confirmDialog"></confirm-dialog>
 		<div v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index + '_b'">
-			<a-modal :visible="!!isShowCreateModal[index]" @ok="doSubmit(index, headerButton)" @cancel="isShowCreateModal[index] = false;$forceUpdate()" v-if="headerButton.type === 'ListHeaderButtonWithForm'">
+			<a-modal :visible="!!isShowCreateModal[index]" @ok="doSubmit(index, headerButton)" @cancel="isShowCreateModal[index] = false;$forceUpdate()" v-if="headerButton.type === 'ListHeaderButtonWithForm'" :confirmLoading="submitIndex == index">
 				<easy-create-form-modal :grid-create-object="headerButton.gridCreateForm" :grid-api-object="gridApiObject" :index="index" :ref="'modal_' + index" type="easy_header"></easy-create-form-modal>
 			</a-modal>
 		</div>
@@ -72,7 +74,9 @@ export default {
 				isShow: false,
 				html: ""
 			},
-			isShowCreateModal: []
+			isShowCreateModal: [],
+			loadingIndex: -1,
+			submitIndex: -1
 		};
 	},
 	components: {
@@ -84,6 +88,9 @@ export default {
 			this.$emit("loadpage");
 		},
 		async onHeaderButtonClick(headerButtonItem, index) {
+			if(this.loadingIndex == index)
+				return;
+			this.loadingIndex = index;
 			let param = this.$route.query;
 			param.antoa_row_selected = this.selectedRows;
 			param.search_obj = {};
@@ -136,6 +143,7 @@ export default {
 					this.$refs['modal_' + index][0].reset()
 				})
 			}
+			this.loadingIndex = -1;
 		},
 		onCreateClick() {
 			let param = this.$route.query;
@@ -145,6 +153,9 @@ export default {
 			this.$emit('openurl', this.gridApiObject.create_page + "?" + params.join("&"));
 		},
 		doSubmit(index, headerButton){
+			if(this.submitIndex == index)
+				return;
+			this.submitIndex = index;
 			let search_obj = {};
 			Object.assign(search_obj, this.tableModel.searchObj, {
 				page: this.tableModel.pagination.current
@@ -162,6 +173,7 @@ export default {
 					this.isShowCreateModal[index] = false;
 				}
 				this.loadPage();
+				this.submitIndex = -1;
 				this.$forceUpdate();
 			});
 		}

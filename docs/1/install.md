@@ -1,9 +1,17 @@
 ## 安装
 
 本项目是基于[nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)进行的开发，故而您需要[安装并创建laravel6.0](https://learnku.com/docs/laravel/6.x/installation/5124)并在其中使用composer引入该库：
+
 ```bash
 composer require nwidart/laravel-modules 7.3
 ```
+
+为了能够轻松合并composer，需要安装wikimedia/composer-merge-plugin库：
+
+```bash
+composer require wikimedia/composer-merge-plugin
+```
+
 安装好laravel-modules模块后您需要使用命令行创建AntOA模块：
 
 ```bash
@@ -16,6 +24,25 @@ php artisan module:make AntOA
 {
     "App\\": "app/",
     "Modules\\": "Modules/"
+}
+```
+
+修改项目根目录下的composer.json，修改extra节点如下：
+
+```
+{
+    "laravel": {
+        "dont-discover": []
+    },
+    "merge-plugin": {
+        "include": [
+            "Modules/*/composer.json"
+        ],
+        "recurse": true,
+        "replace": false,
+        "merge-dev": true,
+        "merge-extra": false
+    }
 }
 ```
 
@@ -58,6 +85,12 @@ yarn
 yarn build
 ```
 注意：每次新增带有AntOA模块的插件时（和页面相关的扩展功能）需要重新打包，即重新执行上述脚本。
+
+如果你更新了子包的composer配置，那么你需要在项目根目录使用脚本更新使其生效：
+
+```
+composer update
+```
 
 ## 初始配置及修改配置
 ### config.php

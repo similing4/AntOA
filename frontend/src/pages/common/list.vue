@@ -183,7 +183,7 @@ export default {
 					}
 				};
 			});
-			if(this.gridListObject.listRowButtonCollection.length > 0)
+			if(this.gridListObject.listRowButtonCollection.length > 0 || this.gridListObject.hasDelete || this.gridListObject.hasEdit)
                 this.tableModel.columns = this.tableModel.columns.concat([{
                     "title": "操作",
                     "scopedSlots": {

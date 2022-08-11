@@ -60,7 +60,7 @@ POST JSON
 | 字段名称 | 字段说明 | 类型 | 存在条件 | 备注 |
 | ---- | ---- | ---- | ---- | ---- |
 | status | 响应码 | integer | 一定存在 | 值为1时请求成功，否则请求失败 |
-| data | 请求成功提示 | string | status为1时 | - |
+| data | 查询结果，其字段与编辑页表单项对应 | string | status为1时 | - |
 | msg | 请求失败原因 | string | status为0时 | - |
 
 > CURL请求示例

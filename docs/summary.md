@@ -16,18 +16,18 @@
   * [扩展页面与全局插件](4/page.md)
   * [自定义后台首页](4/home.md)
   * [自定义后台登录页](4/login.md)
-* 五、API文档-基础系列
+* 五、接口文档-基础系列
   * [登录授权](5/auth_login.md)
   * [获取用户授权信息](5/auth_auth.md)
   * [获取全局配置信息](5/auth_config.md)
   * [修改密码](5/user_change_password.md)
-* 六、API文档-RouteRegister系列
+* 六、接口文档-RouteRegister系列
   * [RouteRegister与配置路由](5/config/about.md)
   * [获取配置路由的配置信息](5/config/grid_config.md)
-  * [配置路由/list](5/config/list.md)
-  * [配置路由/create](5/config/create.md)
+  * [配置路由/获取列表页数据](5/config/list.md)
+  * [配置路由/创建一条数据](5/config/create.md)
   * [配置路由/detail](5/config/detail.md)
-  * [配置路由/save](5/config/save.md)
+  * [配置路由/修改一条数据](5/config/save.md)
   * [配置路由/delete](5/config/delete.md)
   * [配置路由/detail_column_list](5/config/detail_column_list.md)
   * [配置路由/column_change](5/config/column_change.md)

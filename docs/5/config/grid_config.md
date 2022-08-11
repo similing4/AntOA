@@ -54,39 +54,18 @@ POST JSON
 				"col": "name",
 				"tip": "比赛名称",
 				"type": "ListTableColumnText"
-			}, {
-				"col": "reg_count",
-				"tip": "报名人数",
-				"type": "ListTableColumnText"
-			}, {
-				"col": "status",
-				"tip": "状态",
-				"type": "ListTableColumnEnum",
-				"enum": [{
-					"disabled": false,
-					"value": 0,
-					"title": "不可报名"
-				}, {
-					"disabled": false,
-					"value": 1,
-					"title": "可报名"
-				}]
-			}, {
-				"col": "detail_url",
-				"tip": "报名链接",
-				"type": "ListTableColumnRichDisplay"
 			}],
 			"listHeaderButtonCollection": [],
 			"listRowButtonCollection": [{
 				"buttonText": "报名记录",
 				"buttonType": "primary",
-				"baseUrl": "\/race\/register\/list",
+				"baseUrl": "/race/register/list",
 				"finalUrl": null,
 				"type": "ListRowButtonNavigate"
 			}, {
 				"buttonText": "比赛分组",
 				"buttonType": "primary",
-				"baseUrl": "\/race\/group\/list",
+				"baseUrl": "/race/group/list",
 				"finalUrl": null,
 				"type": "ListRowButtonNavigate"
 			}],
@@ -106,31 +85,6 @@ POST JSON
 				"tip": "比赛开始时间",
 				"default": "",
 				"type": "CreateColumnTimestamp"
-			}, {
-				"col": "register_end_time",
-				"tip": "报名截止时间",
-				"default": "",
-				"type": "CreateColumnTimestamp"
-			}, {
-				"col": "money_explain",
-				"tip": "奖金介绍",
-				"default": "",
-				"type": "CreateColumnRichText"
-			}, {
-				"col": "race_explain",
-				"tip": "比赛简介",
-				"default": "",
-				"type": "CreateColumnRichText"
-			}, {
-				"col": "race_qq_number",
-				"tip": "比赛QQ群",
-				"default": "",
-				"type": "CreateColumnText"
-			}, {
-				"col": "race_qq_url",
-				"tip": "比赛QQ群加群链接",
-				"default": "",
-				"type": "CreateColumnText"
 			}, {
 				"col": "status",
 				"tip": "状态",
@@ -166,31 +120,6 @@ POST JSON
 				"tip": "比赛开始时间",
 				"default": "",
 				"type": "EditColumnTimestamp"
-			}, {
-				"col": "register_end_time",
-				"tip": "报名截止时间",
-				"default": "",
-				"type": "EditColumnTimestamp"
-			}, {
-				"col": "money_explain",
-				"tip": "奖金介绍",
-				"default": "",
-				"type": "EditColumnRichText"
-			}, {
-				"col": "race_explain",
-				"tip": "比赛简介",
-				"default": "",
-				"type": "EditColumnRichText"
-			}, {
-				"col": "race_qq_number",
-				"tip": "比赛QQ群",
-				"default": "",
-				"type": "EditColumnText"
-			}, {
-				"col": "race_qq_url",
-				"tip": "比赛QQ群加群链接",
-				"default": "",
-				"type": "EditColumnText"
 			}, {
 				"col": "status",
 				"tip": "状态",
@@ -231,50 +160,24 @@ POST JSON
 				},
 				"gridListVModelCol": "game_uid",
 				"gridListDisplayCol": "game_nickname"
-			}, {
-				"col": "winner2",
-				"tip": "第二名（比赛结束后设置）",
-				"default": "",
-				"type": "EditColumnChildrenChoose",
-				"gridListEasy": {
-					"listFilterCollection": [{
-						"col": "id",
-						"tip": "",
-						"default": "",
-						"type": "ListFilterHidden"
-					}],
-					"listTableColumnCollection": [{
-						"col": "game_uid",
-						"tip": "雀魂UID",
-						"type": "ListTableColumnText"
-					}, {
-						"col": "game_nickname",
-						"tip": "雀魂昵称",
-						"type": "ListTableColumnText"
-					}],
-					"listHeaderButtonCollection": [],
-					"listRowButtonCollection": []
-				},
-				"gridListVModelCol": "game_uid",
-				"gridListDisplayCol": "game_nickname"
 			}],
 			"editRowButtonBaseCollection": [],
 			"createOrEditColumnChangeHookCollection": []
 		}
 	},
 	"api": {
-		"path": "api\/race\/home\/grid_config",
-		"list": "\/api\/race\/home\/list",
-		"create": "\/api\/race\/home\/create",
-		"detail": "\/api\/race\/home\/detail",
-		"save": "\/api\/race\/home\/save",
-		"delete": "\/api\/race\/home\/delete",
-		"detail_column_list": "\/api\/race\/home\/detail_column_list",
-		"api_column_change": "\/api\/race\/home\/column_change",
-		"api_upload": "\/api\/race\/home\/upload",
-		"list_page": "\/race\/home\/list",
-		"create_page": "\/race\/home\/create",
-		"edit_page": "\/race\/home\/edit"
+		"path": "api/race/home/grid_config",
+		"list": "/api/race/home/list",
+		"create": "/api/race/home/create",
+		"detail": "/api/race/home/detail",
+		"save": "/api/race/home/save",
+		"delete": "/api/race/home/delete",
+		"detail_column_list": "/api/race/home/detail_column_list",
+		"api_column_change": "/api/race/home/column_change",
+		"api_upload": "/api/race/home/upload",
+		"list_page": "/race/home/list",
+		"create_page": "/race/home/create",
+		"edit_page": "/race/home/edit"
 	}
 }
 ```
@@ -345,7 +248,7 @@ POST JSON
 
 * ListFilter
 
-该对象用于描述列表页上方的筛选项。后端使用filter系列方法时对应接口会产生该对象。配置方法详见《Grid的使用/后台列表页》
+该对象用于描述列表页上方的筛选项。后端使用filter系列方法时对应接口会产生该对象（有些filter系列的方法不会产生对象如filterUid、filterHidden）。配置方法详见《Grid的使用/后台列表页》
 
 | 字段名称 | 字段说明 | 类型 | 存在条件 | 备注 |
 | ---- | ---- | ---- | ---- | ---- |

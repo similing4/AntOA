@@ -1,4 +1,3 @@
-# 自定义后台登录页
 默认情况下，后台首页定义于AntOA/frontend/src/pages/login/Login.vue中。如果您想自定义登录页，您可以在您的项目根目录建立AntOALogin.vue文件，详情请见AntOA/frontend/src/pages/login/Login.vue。
 
 # 登录流程

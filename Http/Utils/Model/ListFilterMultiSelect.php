@@ -45,7 +45,7 @@ class ListFilterMultiSelect extends ListFilterBase {
 
     public function onFilter(DBListOperator $gridListDbObject, UrlParamCalculator $urlParamCalculator, $uid) {
         $param = $urlParamCalculator->getPageParamByKey($this->col);
-        if ($param !== null && $param->val != '') {
+        if ($param !== null && $param->val !== '') {
             $array = json_decode($param->val, true);
             $gridListDbObject->whereIn($this->col, $array);
         }

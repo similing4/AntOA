@@ -32,7 +32,7 @@ class ListFilterHidden extends ListFilterBase {
 
     public function onFilter(DBListOperator $gridListDbObject, UrlParamCalculator $urlParamCalculator, $uid) {
         $param = $urlParamCalculator->getPageParamByKey($this->col);
-        if ($param !== null && $param->val != '')
+        if ($param !== null && $param->val !== '')
             $gridListDbObject->where($this->col, $param->val);
     }
 }

@@ -37,7 +37,7 @@
 					</a-alert>
 				</div>
 				<standard-table :columns="tableModel.columns" :data-source="tableModel.dataSource" :selected-rows.sync="tableModel.selectedRows" :pagination="tableModel.pagination" :row-key="gridListObject.primaryKey" @change="onDataChange">
-					<template :slot="templateItem.col" slot-scope="{text, record}" v-for="templateItem in gridListObject.listTableColumnCollection">
+					<template :slot="'ANTOA_' + templateItem.col" slot-scope="{text, record}" v-for="templateItem in gridListObject.listTableColumnCollection">
 						<ListTableColumnEnum :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnEnum'" />
 						<ListTableColumnDivideNumber :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnDivideNumber'" />
 						<ListTableColumnRichText :render="templateItem" :value="record[templateItem.col]" v-if="templateItem.type == 'ListTableColumnRichText'" />
@@ -179,7 +179,7 @@ export default {
 				return {
 					"title": col.tip,
 					"scopedSlots": {
-						"customRender": col.col
+						"customRender": 'ANTOA_' + col.col
 					}
 				};
 			});

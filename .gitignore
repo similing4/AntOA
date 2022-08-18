@@ -5,3 +5,5 @@ frontend/src/pages/common/components/ListTableColumnPluginGeneral.vue
 frontend/src/pages/common/components/ListFilterPluginGeneral.vue
 frontend/src/pages/common/components/EditColumnPluginGeneral.vue
 frontend/src/pages/common/components/CreateColumnPluginGeneral.vue
+frontend/src/pages/home/Home.js
+frontend/src/pages/login/Login.js

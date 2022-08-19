@@ -16,13 +16,16 @@ Vue.use(Router);
 Vue.use(Antd);
 Vue.use(Plugins);
 let pluginRoutes = [];
+let basePluginRoutes = [];
 for(let i = 0; i < Object.values(external_module).length; i++){
     let plugin = Object.values(external_module)[i];
     Vue.use(plugin);
     if(plugin.routes)
         pluginRoutes = plugin.routes.concat(pluginRoutes);
+    if(plugin.base_routes)
+        basePluginRoutes = plugin.base_routes.concat(basePluginRoutes);
 }
-let router = routerInit(pluginRoutes);
+let router = routerInit(pluginRoutes, basePluginRoutes);
 for(let i = 0; i < Object.values(external_module).length; i++){
     let plugin = Object.values(external_module)[i];
     if(plugin.dealRouter)

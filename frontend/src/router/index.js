@@ -4,10 +4,10 @@ import routes from "./routes/common.js";
 import pages from "@/pages/page.js";
 import routerGuards from "./guards.js";
 
-export default function(pluginPages){
+export default function(pluginPages, basePluginRoutes){
     pages[0].children = pages[0].children.concat(pluginPages);
     const router = new Router({
-        routes: pages.concat(routes)
+        routes: pages.concat(routes).concat(basePluginRoutes)
     });
     routerGuards(router);
     return router;

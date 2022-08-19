@@ -6,11 +6,15 @@ export default {
   install(Vue){
     ;
   },
-  routes:[]
+  routes:[],
+  base_routes:[],
+  dealRouter(router){
+  	;
+  }
 };
 ```
-## 自定义页面
-如果你需要自定义页面，那么你需要将你自定义的页面放到routes数组中。例如我们自定义了一个test.vue页面，需要通过/test路径访问，那么我们需要如下定义：
+## 自定义后台子页面
+如果你需要自定义后台子页面（登录后的小页面），那么你需要将你自定义的页面放到routes数组中。例如我们自定义了一个test.vue页面，需要通过/test路径访问，那么我们需要如下定义：
 ```
 export default {
   install(Vue){
@@ -23,6 +27,9 @@ export default {
 };
 ```
 这里的component字段就是你的页面了。name为标签页上显示的内容，path为你的页面访问地址。编写之后需要重新进入到AntOA/frontend文件夹使用yarn build编译。前端需要强制刷新才能看到效果。
+
+## 自定义一整个页面
+如果你需要自定义整个页面（类似登录页这种页面），那么你需要将你自定义的页面放到base_routes数组中。定义方式同自定义后台子页面。编写之后同样需要重新进入到AntOA/frontend文件夹使用yarn build编译。前端需要强制刷新才能看到效果。
 
 **注意！在定义页面结束后你需要在全局的antoa.php页面配置文件中配置menu_routes，避免你在访问页面时不能正确展开侧边栏~**
 

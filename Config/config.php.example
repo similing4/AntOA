@@ -9,6 +9,7 @@ return [
     'name'        => 'AntOA',
     //菜单路由配置，path为完整URL链接，name为在菜单上显示的内容，breadcrumbname为面包屑上显示的标题，不设置默认为name
     //'home_page'   => '/admin/user/list', //登录后跳转的目标路由，不设置默认为首页
+    'login_diy'   => false, //自定义登录页后可以将该项设置为true以禁用默认登录接口
     'menu_routes' => [
         //前端页面的路由，html模式下为页面绝对地址，vue模式下为路由path地址
         [

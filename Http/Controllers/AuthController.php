@@ -32,6 +32,9 @@ class AuthController {
      */
     public function login(Request $request) {
         try {
+            $isLoginDiy = config("antoa.login_diy", false);
+            if($isLoginDiy)
+                throw new Error("自定义登录情况下默认登录接口禁用");
             $req = json_decode($request->getContent(), true);
             $username = $req["username"];
             $password = $req["password"];

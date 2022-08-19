@@ -21,7 +21,7 @@ for(let i = 0; i < Object.values(external_module).length; i++){
     let plugin = Object.values(external_module)[i];
     Vue.use(plugin);
     if(plugin.routes)
-        pluginRoutes = plugin.routes.concat(pluginRoutes);
+        pluginRoutes = plugin.routes;
     if(plugin.base_routes)
         basePluginRoutes = plugin.base_routes;
 }

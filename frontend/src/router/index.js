@@ -7,10 +7,10 @@ import routerGuards from "./guards.js";
 export default function(pluginPages, basePluginRoutes){
     pages[0].children = pages[0].children.concat(pluginPages);
     const router = new Router({
-        routes: pages.concat(routes).concat(basePluginRoutes.map(t=>{
+        routes: pages.concat(basePluginRoutes.map(t=>{
         	t.meta = { noAuth: true };
         	return t;
-        }))
+        })).concat(routes)
     });
     routerGuards(router);
     return router;

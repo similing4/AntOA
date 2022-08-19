@@ -23,7 +23,7 @@ for(let i = 0; i < Object.values(external_module).length; i++){
     if(plugin.routes)
         pluginRoutes = plugin.routes.concat(pluginRoutes);
     if(plugin.base_routes)
-        basePluginRoutes = plugin.base_routes.concat(basePluginRoutes);
+        basePluginRoutes = plugin.base_routes;
 }
 let router = routerInit(pluginRoutes, basePluginRoutes);
 for(let i = 0; i < Object.values(external_module).length; i++){

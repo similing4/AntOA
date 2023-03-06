@@ -15,7 +15,7 @@
 		</div>
 		<a-table :bordered="bordered" :loading="loading" :columns="columns" :dataSource="dataSource" :rowKey="rowKey"
 			:pagination="pagination" :expandedRowKeys="expandedRowKeys" :expandedRowRender="expandedRowRender"
-			@change="onChange"
+			@change="onChange" :scroll="{x: true}"
 			:rowSelection="selectedRows ? {selectedRowKeys: selectedRowKeys, onChange: updateSelect} : undefined">
 			<template slot-scope="text, record, index" :slot="slot"
 				v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') ">

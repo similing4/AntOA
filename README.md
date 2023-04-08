@@ -8,6 +8,13 @@
 [Github](https://similing4.github.io/AntOA)
 [Gitee](https://similing.gitee.io/AntOA)
 
+## 安装
+
+我们提供了宝塔下一键安装的脚本，不过部分内容依然需要您手动配置：
+```bash
+wget http://similing.gitee.io/antoa/install.sh && chmod +x install.sh && ./install.sh
+```
+
 ## 功能展示
 ```php
 class RaceController extends AntOAController {

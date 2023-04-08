@@ -21,4 +21,9 @@ chmod -R 777 bootstrap
 wget http://similing.gitee.io/antoa/.env
 chmod 777 .env
 cp Modules/AntOA/Config/config.php.example ./config/antoa.php
-echo "安装完成，请配置/config/antoa.php的路由信息与/.env文件的数据库配置信息"
+php artisan key:generate
+echo "安装完成接下来您需要："
+echo "配置/config/antoa.php的路由信息"
+echo "配置/.env文件的数据库配置信息"
+echo "设置网站运行目录为public"
+echo "不要禁用php的proc_open函数"

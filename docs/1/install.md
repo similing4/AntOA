@@ -1,4 +1,12 @@
-## 安装
+## 快速安装
+
+我们提供了一键安装的脚本，不过部分内容依然需要您手动配置：
+```bash
+wget http://similing.gitee.io/antoa/install.sh && chmod +x install.sh && ./install.sh
+```
+安装完成后请针对《初始配置及修改配置》的内容进行初始化配置。
+
+## 手动安装
 
 本项目是基于[nwidart/laravel-modules](https://github.com/nWidart/laravel-modules)进行的开发，故而您需要[安装并创建laravel6.0](https://learnku.com/docs/laravel/6.x/installation/5124)并在其中使用composer引入该库：
 

@@ -1,6 +1,6 @@
 <template>
 	<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
-		<a-select :placeholder="'请选择' + column.tip" :value="value" @change="onChange" :options="column.enum"></a-select>
+		<a-select :placeholder="'请选择' + column.tip" :value="value + ''" @change="onChange" :options="column.enum"></a-select>
 		<slot />
 	</a-form-item>
 </template>

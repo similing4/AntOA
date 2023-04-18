@@ -123,12 +123,17 @@ export default {
 				this.richHtmlModal.isShow = true;
 			} else if (headerButtonItem.type === "ListHeaderButtonBlob") {
 				try {
-					const blob = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).setBlob(true)
-						.call();
-					var downloadElement = document.createElement("a");
-					var href = window.URL.createObjectURL(blob);
+					let blob = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).setBlob(true).call(true);
+					let filename = /filename=(.*)/.exec(blob.headers["content-disposition"]);
+					if(!filename)
+						filename = rowButtonItem.downloadFilename;
+					else
+						filename = filename[1];
+					blob = blob.data;
+					let downloadElement = document.createElement("a");
+					let href = window.URL.createObjectURL(blob);
 					downloadElement.href = href;
-					downloadElement.download = headerButtonItem.downloadFilename;
+					downloadElement.download = filename;
 					document.body.appendChild(downloadElement);
 					downloadElement.click();
 					document.body.removeChild(downloadElement);

@@ -499,7 +499,7 @@ abstract class AntOAController extends Controller {
                 throw new Exception("非法请求");
             $file = $request->file('file');
             $fileExt = $file->getClientOriginalExtension();
-            if (!in_array($fileExt, ["png", "jpg", "gif", "zip", "xls", "xlsx", "jpeg", "webp", "webm", "mp4", "mp3", "3gp", "avi", "ppt", "doc", "pptx", "docx", "txt", "rar", "7z"]))
+            if (!in_array($fileExt, ["png", "jpg", "gif", "zip", "xls", "xlsx", "jpeg", "webp", "webm", "mp4", "mp3", "3gp", "avi", "ppt", "doc", "pptx", "docx", "txt", "rar", "7z", "csv"]))
                 throw new Exception("非法后缀名");
             $destDir = base_path("public/antoa_uploads");
             $destFile = $uid . "_" . time() . md5($file->getFilename()) . "." . $fileExt;

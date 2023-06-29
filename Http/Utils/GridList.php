@@ -32,6 +32,7 @@ use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApi;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApiWithConfirm;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonBlob;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonNavigate;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonNavigateDownload;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonRichText;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonWithForm;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonApi;
@@ -421,6 +422,16 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function headerNavigateButton(ListHeaderButtonNavigate $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个头部页面导出并跳转按钮
+     * @param ListHeaderButtonNavigateDownload $listHeaderButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function headerNavigateButtonDownload(ListHeaderButtonNavigateDownload $listHeaderButtonItem){
         $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
         return $this;
     }

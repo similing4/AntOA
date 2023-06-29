@@ -141,6 +141,16 @@ export default {
 				} catch (e) {
 					this.$message.error("文件导出时发生了错误：" + e, 5);
 				}
+			} else if (headerButtonItem.type === "ListHeaderButtonNavigateDownload") {
+				try {
+					let res = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).call();
+					if (!res.status)
+						throw new Error(res.msg);
+					else
+						window.open(res.data);
+				} catch (e) {
+					this.$message.error("文件导出时发生了错误：" + e, 5);
+				}
 			} else if (headerButtonItem.type === "ListHeaderButtonWithForm") {
 				this.isShowCreateModal[index] = true;
 				this.$forceUpdate();

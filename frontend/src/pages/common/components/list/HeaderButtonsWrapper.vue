@@ -147,7 +147,7 @@ export default {
 					if (!res.status)
 						throw new Error(res.msg);
 					else
-						window.open(res.data);
+						location.href = res.data;
 				} catch (e) {
 					this.$message.error("文件导出时发生了错误：" + e, 5);
 				}

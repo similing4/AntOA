@@ -51,6 +51,7 @@ export default {
 				let ret = {};
 				Object.assign(ret, t);
 				ret.label = ret.title;
+				ret.value = ret.value + '';
 				delete ret.title;
 				return ret;
 			});

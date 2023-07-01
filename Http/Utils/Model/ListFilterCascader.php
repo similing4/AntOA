@@ -47,7 +47,7 @@ class ListFilterCascader extends ListFilterBase {
         $param = $urlParamCalculator->getPageParamByKey($this->col);
         if ($param !== null && $param->val !== '') {
             $array = json_decode($param->val, true);
-            $gridListDbObject->where($this->col, join($array, " "));
+            $gridListDbObject->where($this->col, join(" ", $array));
         }
     }
 }

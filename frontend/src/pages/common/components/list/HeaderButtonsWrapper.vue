@@ -1,6 +1,6 @@
 <template>
 	<div style="display: flex;flex-wrap: wrap;">
-		<a-button style="margin:15px" @click="onCreateClick" type="primary" v-if="gridListObject.hasCreate">创建</a-button>
+		<a-button style="margin:5px 7.5px" @click="onCreateClick" type="primary" v-if="gridListObject.hasCreate">创建</a-button>
 		<a-spin v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index" :spinning="loadingIndex == index">
 			<a-button style="margin:5px 7.5px" @click="onHeaderButtonClick(headerButton, index)" :type="headerButton.buttonType">
 				{{headerButton.buttonText }}

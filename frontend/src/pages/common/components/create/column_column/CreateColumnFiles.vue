@@ -1,6 +1,7 @@
 <template>
 	<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
 		<div v-for="(fileItem,index) in parse(value)" :key="index">
+			{{fileItem.split("/")[fileItem.split("/").length - 1]}}
 			<a-button type="primary" @click="openurl(fileItem)">下载</a-button>
 			<a-button type="danger" @click="onChange(parse(value).filter((t)=>{return t != fileItem;}))">删除</a-button>
 		</div>

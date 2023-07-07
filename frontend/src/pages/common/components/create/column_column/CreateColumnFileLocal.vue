@@ -1,5 +1,6 @@
 <template>
 	<a-form-item :label="column.tip" :label-col="{span: 7}" :wrapper-col="{span: 10}">
+		{{value.split("/")[value.split("/").length - 1]}}
 		<a-button type="primary" @click="openurl(value)" v-if="value != ''">下载</a-button>
 		<a-button type="danger" @click="onChange('')" v-if="value != ''">删除</a-button>
 		<upload-button @uploadfinished="onChange($event[0].response)" accept="*/*" :multiple="false" :type="type" :col="column.col" :path="gridApiObject.api_upload"></upload-button>
@@ -44,19 +45,19 @@ export default {
 		value: {
 			type: [String, Number]
 		},
-        type: {
-            type: String,
-            default: "create"
-        },
-        index: {
-            type: [Number, String],
-            default: 0
-        }
+		type: {
+			type: String,
+			default: "create"
+		},
+		index: {
+			type: [Number, String],
+			default: 0
+		}
 	},
 	data() {
 		return {};
 	},
-	components:{
+	components: {
 		UploadButton
 	},
 	methods: {

@@ -28,6 +28,7 @@ use Modules\AntOA\Http\Utils\Model\ListFilterMultiSelect;
 use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterText;
 use Modules\AntOA\Http\Utils\Model\ListFilterUID;
+use Modules\AntOA\Http\Utils\Model\ListHeaderButtonClipboard;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApi;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApiWithConfirm;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonBlob;
@@ -35,6 +36,7 @@ use Modules\AntOA\Http\Utils\Model\ListHeaderButtonNavigate;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonNavigateDownload;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonRichText;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonWithForm;
+use Modules\AntOA\Http\Utils\Model\ListRowButtonClipboard;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonApi;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonApiWithConfirm;
 use Modules\AntOA\Http\Utils\Model\ListRowButtonBlob;
@@ -447,6 +449,16 @@ class GridList implements JsonSerializable {
     }
 
     /**
+     * 创建一个头部API复制按钮
+     * @param ListHeaderButtonClipboard $listHeaderButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function headerClipboardButton(ListHeaderButtonClipboard $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
+        return $this;
+    }
+
+    /**
      * 创建一个头部文件BLOB下载调用按钮
      * @param ListHeaderButtonBlob $listHeaderButtonItem 按钮项
      * @return GridList 返回this以便链式调用
@@ -492,6 +504,16 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function rowNavigateButton(ListRowButtonNavigate $listRowButtonItem) {
+        $this->listRowButtonCollection->addItem($listRowButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个每行API复制按钮
+     * @param ListRowButtonClipboard $listRowButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function rowClipboardButton(ListRowButtonClipboard $listRowButtonItem) {
         $this->listRowButtonCollection->addItem($listRowButtonItem);
         return $this;
     }

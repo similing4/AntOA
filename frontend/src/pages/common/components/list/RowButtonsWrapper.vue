@@ -137,7 +137,22 @@ export default {
 				this.$nextTick(()=>{
 					this.$refs['modal_' + index][0].reset()
 				})
+			} else if (rowButtonItem.type === "ListRowButtonClipboard") {
+				let res = await this.$api(finalUrl).method("POST").param(param).call();
+				if (!res.status)
+					this.$message.error(res.msg);
+				else
+					this.doCopy(res.data);
 			}
+		},
+		doCopy(content) {
+			let oInput = document.createElement('textarea')
+			oInput.value = content;
+			document.body.appendChild(oInput)
+			oInput.select() // 选择对象
+			document.execCommand("Copy") // 执行浏览器复制命令
+			this.$message.success("复制成功");
+			oInput.remove();
 		},
 		onEditClick(id) {
 			if(!id)

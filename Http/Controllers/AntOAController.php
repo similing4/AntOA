@@ -126,7 +126,7 @@ abstract class AntOAController extends Controller {
                 if (!$column->isTypeDisplay())
                     $columns[] = $column->col;
             }
-            $res = $gridListDbObject->select($columns)->paginate(15);
+            $res = $gridListDbObject->select($columns)->paginate($gridList->getRecordPerPage());
             $res = json_decode(json_encode($res), true);
             foreach ($res['data'] as &$searchResultItem) {
                 $searchResultItem['BUTTON_CONDITION_DATA'] = [];
@@ -347,7 +347,13 @@ abstract class AntOAController extends Controller {
                 $buttonList = $this->gridObj->getGridList()->getRowButtonList();
                 if (!$buttonList[$index]->isColumnNeedDealApiDetailColumnList())
                     throw new Exception("该数据不存在，请检查RowButton相关配置！");
-                $buttonList[$index]->dealApiDetailColumnList($request, $uid);
+                return $buttonList[$index]->dealApiDetailColumnList($request, $uid);
+            } else if ($type == "easy_header") {
+                $index = $request->get("index");
+                $buttonList = $this->gridObj->getGridList()->getHeaderButtonList();
+                if (!$buttonList[$index]->isColumnNeedDealApiDetailColumnList())
+                    throw new Exception("该数据不存在，请检查HeaderButton相关配置！");
+                return $buttonList[$index]->dealApiDetailColumnList($request, $uid);
             }
             throw new Exception("指定字段不存在");
         } catch (Exception $e) {

@@ -95,6 +95,10 @@ class GridList implements JsonSerializable {
      * @var bool 列表页是否有删除按钮
      */
     public $hasDelete = true;
+    /**
+     * @var int 每页数据条数
+     */
+    private $recordPerPage = 15;
 
     /**
      * 构造方法
@@ -566,5 +570,22 @@ class GridList implements JsonSerializable {
     public function rowApiButtonWithForm(ListRowButtonWithForm $listRowButtonItem) {
         $this->listRowButtonCollection->addItem($listRowButtonItem);
         return $this;
+    }
+
+    /**
+     * 设置每页数据条数
+     * @param int $recordPerPage 每页数据条数
+     * @return GridList 返回this以便链式调用
+     */
+    public function setRecordPerPage($recordPerPage){
+        $this->recordPerPage = $recordPerPage;
+        return $this;
+    }
+
+    /**
+     * @return int 获取每页数据条数
+     */
+    public function getRecordPerPage(){
+        return $this->recordPerPage;
     }
 }

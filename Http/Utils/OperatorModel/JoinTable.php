@@ -23,14 +23,14 @@ class JoinTable {
      * @param String $table 被连接的表名
      * @param String $alias 被连接的表别名
      * @param String $id 被连接的表的外键
-     * @param String $originTable 被连接表的外键指向的表别名
+     * @param String $originTableAlias 被连接表的外键指向的表别名
      * @param String $originId 被连接表的外键指向的表键
      */
-    public function __construct($table, $alias, $id, $originTable, $originId) {
+    public function __construct($table, $alias, $id, $originTableAlias, $originId) {
         $this->table = $table;
         $this->tableAlias = $alias;
         $this->id = $id;
-        $this->originTable = $originTable;
+        $this->originTable = $originTableAlias;
         $this->originId = $originId;
     }
 }

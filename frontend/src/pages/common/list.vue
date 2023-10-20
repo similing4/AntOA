@@ -117,7 +117,8 @@ export default {
 					pageSize: 15
 				},
 			},
-			statistic: ""
+			statistic: "",
+			intervalLoadPageIndex: -1
 		};
 	},
 	components: {
@@ -158,11 +159,21 @@ export default {
 			this.generateSearchObject();
 			await this.loadPage();
 			this.isLoadOk = true;
+			this.setIntervalLoadPage();
 		} catch (e) {
 			this.$message.error("配置加载错误：" + e, 5);
 		}
 	},
+	beforeDestory: function(){
+		if(this.intervalLoadPageIndex != -1)
+			clearInterval(this.intervalLoadPageIndex);
+	},
 	methods: {
+		setIntervalLoadPage(){
+			this.intervalLoadPageIndex = setInterval(()=>{
+				this.loadPage();
+			}, 1000 * 120); //2分钟刷新一次
+		},
 		generateSearchObject(){
 			let searchObj = {};
 			this.gridListObject.listFilterCollection.map((col) => {
@@ -227,7 +238,7 @@ export default {
 		},
 		async loadPage() {
 			let param = {};
-			Object.assign(param, this.tableModel.searchObj, {
+			Object.assign(param, this.$route.query, this.tableModel.searchObj, {
 				page: this.tableModel.pagination.current
 			});
 			for (let i in param) {

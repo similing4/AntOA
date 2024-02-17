@@ -1,13 +1,12 @@
-export COMPOSER_ALLOW_SUPERUSER=1
-composer create-project --prefer-dist laravel/laravel blog "6.*"
+sudo -u www composer create-project --prefer-dist laravel/laravel blog "8.*"
 mv blog/* .
 rm blog -rf
-composer require nwidart/laravel-modules 7.3
-composer require wikimedia/composer-merge-plugin
+sudo -u www composer require nwidart/laravel-modules
+sudo -u www composer require wikimedia/composer-merge-plugin
 php artisan module:make AntOA
 rm composer.json -f
 wget http://similing.gitee.io/antoa/composer.json
-composer dump-autoload
+sudo -u www composer dump-autoload
 cd Modules
 rm AntOA -rf
 git clone https://gitee.com/similing/AntOA.git

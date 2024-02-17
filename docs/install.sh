@@ -15,8 +15,6 @@ cd AntOA/frontend
 yarn
 yarn build
 cd ../../..
-chmod -R 777 storage
-chmod -R 777 bootstrap
 wget http://similing.gitee.io/antoa/.env
 chmod 777 .env
 cp Modules/AntOA/Config/config.php.example ./config/antoa.php

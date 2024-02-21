@@ -126,7 +126,7 @@ export default {
 					let blob = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).setBlob(true).call(true);
 					let filename = /filename=(.*)/.exec(blob.headers["content-disposition"]);
 					if(!filename)
-						filename = rowButtonItem.downloadFilename;
+						filename = headerButtonItem.downloadFilename;
 					else
 						filename = filename[1];
 					blob = blob.data;

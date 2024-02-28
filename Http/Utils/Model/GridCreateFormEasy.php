@@ -197,6 +197,18 @@ class GridCreateFormEasy implements JsonSerializable {
     }
 
     /**
+     * 指定一个日期选择输入框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridCreateFormEasy 返回this以便链式调用
+     */
+    public function columnDate($col, $colTip, $defaultVal = '') {
+        $this->createColumnCollection->addItem(new CreateColumnDate($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
      * 指定一个时富文本输入框
      * @param String $col 数据库列名
      * @param String $colTip 在列表页该列的的表头名称

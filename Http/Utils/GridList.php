@@ -21,10 +21,12 @@ use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnBase;
 use Modules\AntOA\Http\Utils\AbstractModel\ListTableColumnCollection;
 use Modules\AntOA\Http\Utils\Model\CascaderNode;
 use Modules\AntOA\Http\Utils\Model\ListFilterCascader;
+use Modules\AntOA\Http\Utils\Model\ListFilterEndDate;
 use Modules\AntOA\Http\Utils\Model\ListFilterEndTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterEnum;
 use Modules\AntOA\Http\Utils\Model\ListFilterHidden;
 use Modules\AntOA\Http\Utils\Model\ListFilterMultiSelect;
+use Modules\AntOA\Http\Utils\Model\ListFilterStartDate;
 use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterText;
 use Modules\AntOA\Http\Utils\Model\ListFilterUID;
@@ -333,6 +335,28 @@ class GridList implements JsonSerializable {
      */
     public function filterEndTime($col, $colTip) {
         $this->listFilterCollection->addItem(new ListFilterEndTime($col, $colTip));
+        return $this;
+    }
+
+    /**
+     * 指定开始时间筛选列
+     * @param String $col 筛选的列名
+     * @param String $colTip 筛选项的名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterStartDate($col, $colTip) {
+        $this->listFilterCollection->addItem(new ListFilterStartDate($col, $colTip));
+        return $this;
+    }
+
+    /**
+     * 指定结束时间筛选列
+     * @param String $col 筛选的列名
+     * @param String $colTip 筛选项的名称
+     * @return GridList 返回this以便链式调用
+     */
+    public function filterEndDate($col, $colTip) {
+        $this->listFilterCollection->addItem(new ListFilterEndDate($col, $colTip));
         return $this;
     }
 

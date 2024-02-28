@@ -6,8 +6,8 @@
 			</div>
 		</a-col>
 		<a-col :span="16">
-			<a-date-picker :value="moment(value, 'YYYY-MM-DD HH:mm:ss')" @change="onDateChange"
-						   format="YYYY-MM-DD HH:mm:ss" :placeholder="'请选择' + item.tip" show-time style="width: 100%;"
+			<a-date-picker :value="moment(value, 'YYYY-MM-DD')" @change="onDateChange" format="YYYY-MM-DD"
+						   :placeholder="'请选择' + item.tip" style="width: 100%;"
 						   @panelChange="$forceUpdate()"></a-date-picker>
 		</a-col>
 	</a-row>
@@ -40,7 +40,7 @@
 				return moment(val, format);
 			},
 			onDateChange(e) {
-				this.$emit("input", !e ? "" : e.format("YYYY-MM-DD HH:mm:ss"));
+				this.$emit("input", !e ? "" : e.format("YYYY-MM-DD"));
 			}
 		}
 	}

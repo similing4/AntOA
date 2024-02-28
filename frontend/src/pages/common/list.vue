@@ -12,6 +12,10 @@
 											 v-model="tableModel.searchObj[filterItem.col+ '_starttime']"/>
 						<ListFilterEndTime v-if="filterItem.type == 'ListFilterEndTime'" :item="filterItem"
 										   v-model="tableModel.searchObj[filterItem.col+  '_endtime']"/>
+						<ListFilterStartDate v-if="filterItem.type == 'ListFilterStartDate'" :item="filterItem"
+											 v-model="tableModel.searchObj[filterItem.col+ '_startdate']"/>
+						<ListFilterEndDate v-if="filterItem.type == 'ListFilterEndDate'" :item="filterItem"
+										   v-model="tableModel.searchObj[filterItem.col+  '_enddate']"/>
 						<ListFilterText v-if="filterItem.type == 'ListFilterText'" :item="filterItem"
 										v-model="tableModel.searchObj[filterItem.col]"/>
 						<ListFilterMultiSelect v-if="filterItem.type == 'ListFilterMultiSelect'" :item="filterItem"
@@ -81,6 +85,8 @@
 <script>
 	import ListFilterStartTime from "./components/list/filter/ListFilterStartTime.vue";
 	import ListFilterEndTime from "./components/list/filter/ListFilterEndTime.vue";
+	import ListFilterStartDate from "./components/list/filter/ListFilterStartDate.vue";
+	import ListFilterEndDate from "./components/list/filter/ListFilterEndDate.vue";
 	import ListFilterEnum from "./components/list/filter/ListFilterEnum.vue";
 	import ListFilterText from "./components/list/filter/ListFilterText.vue";
 	import ListFilterMultiSelect from "./components/list/filter/ListFilterMultiSelect.vue";
@@ -150,6 +156,8 @@
 			ListFilterEnum,
 			ListFilterStartTime,
 			ListFilterEndTime,
+			ListFilterStartDate,
+			ListFilterEndDate,
 			ListFilterText,
 			ListTableColumnText,
 			ListTableColumnEnum,
@@ -204,6 +212,10 @@
 						return searchObj[col.col + "_starttime"] = (this.$route.query[col.col + "_starttime"] ? this.$route.query[col.col + "_starttime"] : '');
 					if (col.type === "ListFilterEndTime")
 						return searchObj[col.col + "_endtime"] = (this.$route.query[col.col + "_endtime"] ? this.$route.query[col.col + "_endtime"] : '');
+					if (col.type === "ListFilterStartDate")
+						return searchObj[col.col + "_startdate"] = (this.$route.query[col.col + "_startdate"] ? this.$route.query[col.col + "_startdate"] : '');
+					if (col.type === "ListFilterEndDate")
+						return searchObj[col.col + "_enddate"] = (this.$route.query[col.col + "_enddate"] ? this.$route.query[col.col + "_enddate"] : '');
 					return searchObj[col.col] = (this.$route.query[col.col] ? this.$route.query[col.col] : '');
 				});
 				this.tableModel.searchObj = searchObj;

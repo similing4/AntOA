@@ -65,6 +65,9 @@
 				<CreateColumnTimestamp :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnTimestamp'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnTimestamp>
+				<CreateColumnDate :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnDate'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</CreateColumnDate>
 				<CreateColumnPlugin :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type.startsWith('PluginCreateColumn')" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPlugin>
@@ -100,6 +103,7 @@ import CreateColumnPictureLocal from "./components/create/column_column/CreateCo
 import CreateColumnPicturesLocal from "./components/create/column_column/CreateColumnPicturesLocal.vue";
 import CreateColumnRichText from "./components/create/column_column/CreateColumnRichText.vue";
 import CreateColumnTextarea from "./components/create/column_column/CreateColumnTextarea.vue";
+import CreateColumnDate from "./components/create/column_column/CreateColumnDate.vue";
 import CreateColumnTimestamp from "./components/create/column_column/CreateColumnTimestamp.vue";
 import CreateColumnPlugin from "./components/CreateColumnPluginGeneral.vue";
 import ConfirmDialog from "@/components/tool/ConfirmDialog.vue";
@@ -153,6 +157,7 @@ export default {
 		CreateColumnPicturesLocal,
 		CreateColumnRichText,
 		CreateColumnTextarea,
+		CreateColumnDate,
 		CreateColumnTimestamp,
 		CreateColumnPlugin,
 		ConfirmDialog,

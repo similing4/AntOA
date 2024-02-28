@@ -21,6 +21,7 @@ use Modules\AntOA\Http\Utils\hook\CreateOrEditColumnChangeHook;
 use Modules\AntOA\Http\Utils\Model\CascaderNode;
 use Modules\AntOA\Http\Utils\Model\EditColumnCascader;
 use Modules\AntOA\Http\Utils\Model\EditColumnChildrenChoose;
+use Modules\AntOA\Http\Utils\Model\EditColumnDate;
 use Modules\AntOA\Http\Utils\Model\EditColumnDisplay;
 use Modules\AntOA\Http\Utils\Model\EditColumnDivideNumber;
 use Modules\AntOA\Http\Utils\Model\EditColumnEnum;
@@ -273,6 +274,18 @@ class GridEditForm implements JsonSerializable {
      */
     public function columnTimestamp($col, $colTip, $defaultVal = '') {
         $this->editColumnCollection->addItem(new EditColumnTimestamp($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 指定一个日期选择输入框
+     * @param String $col 数据库列名
+     * @param String $colTip 在列表页该列的的表头名称
+     * @param String $defaultVal 默认值
+     * @return GridEditForm 返回this以便链式调用
+     */
+    public function columnDate($col, $colTip, $defaultVal = '') {
+        $this->editColumnCollection->addItem(new EditColumnDate($col, $colTip, $defaultVal));
         return $this;
     }
 

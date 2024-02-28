@@ -65,6 +65,9 @@
 				<CreateColumnTimestamp :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnTimestamp'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnTimestamp>
+				<CreateColumnDate :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type == 'CreateColumnDate'" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
+					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
+				</CreateColumnDate>
 				<CreateColumnPlugin :column="column" :grid-api-object="gridApiObject" v-model="form[column.col]" v-if="column.type.startsWith('PluginCreateColumn')" v-show="displayColumns.includes(column.col)" @input="onFormItemChange(column.col);$forceUpdate();" :type="type" :index="index">
 					<RowButton v-if="getApiButtonByColumn(column.col)" :form="form" :button="getApiButtonByColumn(column.col)" @formchange="onFormChange" />
 				</CreateColumnPlugin>
@@ -97,6 +100,7 @@ import CreateColumnPicturesLocal from "../create/column_column/CreateColumnPictu
 import CreateColumnRichText from "../create/column_column/CreateColumnRichText.vue";
 import CreateColumnTextarea from "../create/column_column/CreateColumnTextarea.vue";
 import CreateColumnTimestamp from "../create/column_column/CreateColumnTimestamp.vue";
+import CreateColumnDate from "../create/column_column/CreateColumnDate.vue";
 import CreateColumnPlugin from "../CreateColumnPluginGeneral.vue";
 import ConfirmDialog from "@/components/tool/ConfirmDialog.vue";
 export default {
@@ -165,6 +169,7 @@ export default {
 		CreateColumnRichText,
 		CreateColumnTextarea,
 		CreateColumnTimestamp,
+		CreateColumnDate,
 		CreateColumnPlugin,
 		ConfirmDialog,
 		RowButton

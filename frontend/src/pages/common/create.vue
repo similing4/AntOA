@@ -237,6 +237,8 @@ export default {
 			this.gridCreateObject.createColumnCollection.map((col) => {
 				if (col.type === 'CreateColumnDisplay')
 					return;
+				if (col.type === 'CreateColumnHidden')
+					return param[col.col] = this.$route.query[col.col];
 				param[col.col] = this.form[col.col];
 			});
 			try {

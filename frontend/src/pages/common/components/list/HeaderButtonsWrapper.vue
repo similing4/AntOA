@@ -11,7 +11,7 @@
 		</a-modal>
 		<confirm-dialog ref="confirmDialog"></confirm-dialog>
 		<div v-for="(headerButton,index) in gridListObject.listHeaderButtonCollection" :key="index + '_b'">
-			<a-modal :visible="!!isShowCreateModal[index]" @ok="doSubmit(index, headerButton)" @cancel="isShowCreateModal[index] = false;$forceUpdate()" v-if="headerButton.type === 'ListHeaderButtonWithForm'" :confirmLoading="submitIndex == index">
+			<a-modal :visible="!!isShowCreateModal[index]" @ok="doSubmit(index, headerButton)" @cancel="isShowCreateModal[index] = false;$forceUpdate()" v-if="headerButton.type === 'ListHeaderButtonWithForm' || headerButton.type === 'ListHeaderBlobButtonWithForm'" :confirmLoading="submitIndex == index">
 				<easy-create-form-modal :grid-create-object="headerButton.gridCreateForm" :grid-api-object="gridApiObject" :index="index" :ref="'modal_' + index" type="easy_header"></easy-create-form-modal>
 			</a-modal>
 		</div>
@@ -157,6 +157,12 @@ export default {
 				this.$nextTick(()=>{
 					this.$refs['modal_' + index][0].reset()
 				})
+			} else if (headerButtonItem.type === "ListHeaderBlobButtonWithForm") {
+				this.isShowCreateModal[index] = true;
+				this.$forceUpdate();
+				this.$nextTick(()=>{
+					this.$refs['modal_' + index][0].reset()
+				})
 			} else if (headerButtonItem.type === "ListHeaderButtonClipboard") {
 				let res = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).call();
 				if (!res.status)
@@ -190,21 +196,62 @@ export default {
 			Object.assign(search_obj, this.tableModel.searchObj, {
 				page: this.tableModel.pagination.current
 			});
+			let blobToString = function (blob) {
+				return new Promise((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onloadend = () => {
+						resolve(reader.result);
+					};
+					reader.onerror = reject;
+					reader.readAsText(blob);
+				})
+			};
 			this.$refs['modal_' + index][0].submit(async (param)=>{
-				let res = await this.$api(headerButton.baseUrl).method("POST").param({
-					query: param,
-					antoa_row_selected: this.selectedRows,
-					search_obj
-				}).call();
-				if (!res.status)
-					this.$message.error(res.msg);
-				else{
-					this.$message.success(res.data);
-					this.isShowCreateModal[index] = false;
+				if(headerButton.type === 'ListHeaderBlobButtonWithForm'){
+					try {
+						this.submitIndex = -1;
+						this.isShowCreateModal[index] = false;
+						this.$forceUpdate();
+						let blob = await this.$api(headerButton.baseUrl).method("POST").param({
+							query: param,
+							antoa_row_selected: this.selectedRows,
+							search_obj
+						}).setBlob(true).call(true);
+						if(blob.data.type === "text/html")
+							throw new Error(JSON.parse(await blobToString(blob.data)).msg);
+						let filename = /filename=(.*)/.exec(blob.headers["content-disposition"]);
+						if(!filename)
+							filename = headerButton.downloadFilename;
+						else
+							filename = filename[1];
+						blob = blob.data;
+						let downloadElement = document.createElement("a");
+						let href = window.URL.createObjectURL(blob);
+						downloadElement.href = href;
+						downloadElement.download = filename;
+						document.body.appendChild(downloadElement);
+						downloadElement.click();
+						document.body.removeChild(downloadElement);
+						window.URL.revokeObjectURL(href);
+					} catch (e) {
+						this.$message.error("文件导出时发生了错误：" + e, 5);
+					}
+				}else{
+					let res = await this.$api(headerButton.baseUrl).method("POST").param({
+						query: param,
+						antoa_row_selected: this.selectedRows,
+						search_obj
+					}).call();
+					if (!res.status)
+						this.$message.error(res.msg);
+					else{
+						this.$message.success(res.data);
+						this.isShowCreateModal[index] = false;
+					}
+					this.loadPage();
+					this.submitIndex = -1;
+					this.$forceUpdate();
 				}
-				this.loadPage();
-				this.submitIndex = -1;
-				this.$forceUpdate();
 			});
 		}
 	}

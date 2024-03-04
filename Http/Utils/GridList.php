@@ -30,6 +30,7 @@ use Modules\AntOA\Http\Utils\Model\ListFilterStartDate;
 use Modules\AntOA\Http\Utils\Model\ListFilterStartTime;
 use Modules\AntOA\Http\Utils\Model\ListFilterText;
 use Modules\AntOA\Http\Utils\Model\ListFilterUID;
+use Modules\AntOA\Http\Utils\Model\ListHeaderBlobButtonWithForm;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonClipboard;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApi;
 use Modules\AntOA\Http\Utils\Model\ListHeaderButtonApiWithConfirm;
@@ -522,6 +523,16 @@ class GridList implements JsonSerializable {
      * @return GridList 返回this以便链式调用
      */
     public function headerApiButtonWithForm(ListHeaderButtonWithForm $listHeaderButtonItem) {
+        $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
+        return $this;
+    }
+
+    /**
+     * 创建一个需要弹窗输入内容且确定后下载响应内容的模态框的顶部按钮
+     * @param ListHeaderButtonWithForm $listHeaderButtonItem 按钮项
+     * @return GridList 返回this以便链式调用
+     */
+    public function headerApiBlobButtonWithForm(ListHeaderBlobButtonWithForm $listHeaderButtonItem) {
         $this->listHeaderButtonCollection->addItem($listHeaderButtonItem);
         return $this;
     }

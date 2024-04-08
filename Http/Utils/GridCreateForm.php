@@ -95,6 +95,11 @@ class GridCreateForm implements JsonSerializable {
      * 数据变更时的钩子
      */
     private $createOrEditColumnChangeHookCollection;
+    /**
+     * @var array<string>
+     * 要求必填的选项
+     */
+    private $requireColumns;
 
     /**
      * 构造方法
@@ -105,6 +110,7 @@ class GridCreateForm implements JsonSerializable {
         $this->createColumnCollection = new CreateColumnCollection();
         $this->createRowButtonBaseCollection = new CreateRowButtonBaseCollection();
         $this->createOrEditColumnChangeHookCollection = new CreateOrEditColumnChangeHookCollection();
+        $this->requireColumns = [];
     }
 
     /**
@@ -140,11 +146,12 @@ class GridCreateForm implements JsonSerializable {
     public function jsonSerialize() {
         return [
             "primaryKey"                             => $this->primaryKey,
-            "createColumnCollection"                   => $this->createColumnCollection,
-            "createRowButtonBaseCollection"            => $this->createRowButtonBaseCollection,
+            "createColumnCollection"                 => $this->createColumnCollection,
+            "createRowButtonBaseCollection"          => $this->createRowButtonBaseCollection,
             "createOrEditColumnChangeHookCollection" => $this->createOrEditColumnChangeHookCollection
         ];
     }
+
     /**
      * 获取所有列对象
      * @return array<CreateColumnBase>
@@ -516,6 +523,24 @@ class GridCreateForm implements JsonSerializable {
      */
     public function columnFilesLocal($col, $colTip, $defaultVal = '') {
         $this->createColumnCollection->addItem(new CreateColumnFilesLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 获取要求必填的选项列
+     * @return array
+     */
+    public function getRequireColumns() {
+        return $this->requireColumns;
+    }
+
+    /**
+     * 设置要求必填的选项列
+     * @param array $requireColumns 要求必填的选项列
+     * @return GridCreateForm
+     */
+    public function setRequireColumns($requireColumns) {
+        $this->requireColumns = $requireColumns;
         return $this;
     }
 }

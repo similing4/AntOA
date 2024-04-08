@@ -214,8 +214,11 @@ abstract class AntOAController extends Controller {
             $req = json_decode($request->getContent(), true);
             $gridCreateForm = $this->gridObj->getCreateForm();
             $param = [];
-            foreach ($gridCreateForm->getCreateColumnList() as $col) //EditColumnBase
+            foreach ($gridCreateForm->getCreateColumnList() as $col) {//EditColumnBase
                 $param[$col->col] = $col->onGuestVal($req, $uid);
+                if (empty($param[$col->col]) && in_array($col->col, $gridCreateForm->getRequireColumns()))
+                    throw new Exception("请填写" . $col->tip);
+            }
             $hook = $this->gridObj->getCreateHook();
             if ($hook != null)
                 $param = $hook->hook($param);
@@ -299,8 +302,11 @@ abstract class AntOAController extends Controller {
             $req = json_decode($request->getContent(), true);
             $gridEditForm = $this->gridObj->getEditForm();
             $param = [];
-            foreach ($gridEditForm->getEditColumnList() as $col) //EditColumnBase
+            foreach ($gridEditForm->getEditColumnList() as $col) { //EditColumnBase
                 $param[$col->col] = $col->onGuestVal($req, $uid);
+                if (empty($param[$col->col]) && in_array($col->col, $gridCreateForm->getRequireColumns()))
+                    throw new Exception("请填写" . $col->tip);
+            }
             $hook = $this->gridObj->getSaveHook();
             if ($hook != null)
                 $param = $hook->hook($param);

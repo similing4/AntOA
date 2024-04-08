@@ -95,6 +95,11 @@ class GridEditForm implements JsonSerializable {
      * 数据变更时的钩子
      */
     private $createOrEditColumnChangeHookCollection;
+    /**
+     * @var array<string>
+     * 要求必填的选项
+     */
+    private $requireColumns;
 
     /**
      * 构造方法
@@ -105,6 +110,7 @@ class GridEditForm implements JsonSerializable {
         $this->editColumnCollection = new EditColumnCollection();
         $this->editRowButtonBaseCollection = new EditRowButtonBaseCollection();
         $this->createOrEditColumnChangeHookCollection = new CreateOrEditColumnChangeHookCollection();
+        $this->requireColumns = [];
     }
 
     /**
@@ -514,6 +520,24 @@ class GridEditForm implements JsonSerializable {
      */
     public function columnFilesLocal($col, $colTip, $defaultVal = '') {
         $this->editColumnCollection->addItem(new EditColumnFilesLocal($col, $colTip, $defaultVal));
+        return $this;
+    }
+
+    /**
+     * 获取要求必填的选项列
+     * @return array
+     */
+    public function getRequireColumns() {
+        return $this->requireColumns;
+    }
+
+    /**
+     * 设置要求必填的选项列
+     * @param array $requireColumns 要求必填的选项列
+     * @return GridEditForm
+     */
+    public function setRequireColumns($requireColumns) {
+        $this->requireColumns = $requireColumns;
         return $this;
     }
 }

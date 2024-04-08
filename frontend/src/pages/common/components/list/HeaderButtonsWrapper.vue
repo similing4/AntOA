@@ -106,12 +106,17 @@ export default {
 				this.loadPage();
 			} else if (headerButtonItem.type === "ListHeaderButtonApiWithConfirm") {
 				this.$refs.confirmDialog.confirm("确认要这样做么？").then(async () => {
-					let res = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).call();
-					if (!res.status)
-						this.$message.error(res.msg);
-					else
-						this.$message.success(res.data);
-					this.loadPage();
+					try{
+						this.loadingIndex = index;
+						let res = await this.$api(headerButtonItem.finalUrl).method("POST").param(param).call();
+						if (!res.status)
+							this.$message.error(res.msg);
+						else
+							this.$message.success(res.data);
+						this.loadPage();
+					}finally{
+						this.loadingIndex = -1;
+					}
 				});
 			} else if (headerButtonItem.type === "ListHeaderButtonNavigate") {
 				this.$emit('openurl', headerButtonItem.finalUrl);

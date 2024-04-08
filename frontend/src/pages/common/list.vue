@@ -52,7 +52,7 @@
 						</div>
 					</a-alert>
 				</div>
-				<standard-table :columns="tableModel.columns" :data-source="tableModel.dataSource"
+				<standard-table :columns="tableModel.columns" :data-source="tableModel.dataSource" :loading="isLoading"
 								:selected-rows.sync="tableModel.selectedRows" :pagination="tableModel.pagination"
 								:row-key="gridListObject.primaryKey" @change="onDataChange">
 					<template :slot="'ANTOA_' + templateItem.col" slot-scope="{text, record}"
@@ -109,6 +109,7 @@
 		data() {
 			return {
 				isLoadOk: false,
+				isLoading: false,
 				gridPath: "",
 				gridConfigUrl: "",
 				gridApiObject: {
@@ -274,23 +275,30 @@
 				this.loadPage();
 			},
 			async loadPage() {
-				let param = {};
-				Object.assign(param, this.$route.query, this.tableModel.searchObj, {
-					page: this.tableModel.pagination.current
-				});
-				for (let i in param) {
-					if (param[i] instanceof moment)
-						param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
-					if (param[i] === null || param[i] === undefined)
-						param[i] = "";
+				try {
+					if (this.isLoading)
+						return;
+					this.isLoading = true;
+					let param = {};
+					Object.assign(param, this.$route.query, this.tableModel.searchObj, {
+						page: this.tableModel.pagination.current
+					});
+					for (let i in param) {
+						if (param[i] instanceof moment)
+							param[i] = param[i].format('YYYY-MM-DD HH:mm:ss');
+						if (param[i] === null || param[i] === undefined)
+							param[i] = "";
+					}
+					let res = await this.$api(this.gridApiObject.list).method("POST").param(param).call();
+					if (res.status == 0)
+						throw res.msg;
+					this.tableModel.pagination.total = res.total;
+					this.tableModel.pagination.pageSize = res.per_page;
+					this.tableModel.dataSource = res.data;
+					this.statistic = res.statistic;
+				} finally {
+					this.isLoading = false;
 				}
-				let res = await this.$api(this.gridApiObject.list).method("POST").param(param).call();
-				if (res.status == 0)
-					throw res.msg;
-				this.tableModel.pagination.total = res.total;
-				this.tableModel.pagination.pageSize = res.per_page;
-				this.tableModel.dataSource = res.data;
-				this.statistic = res.statistic;
 			}
 		}
 	};

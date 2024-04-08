@@ -2,9 +2,11 @@
 	<div>
 		<a-button @click="onEditClick(record[gridListObject.primaryKey])" type="primary" v-if="gridListObject.hasEdit" style="margin: 5px;">编辑</a-button>
 		<a-button @click="onDeleteClick(record[gridListObject.primaryKey])" type="danger" v-if="gridListObject.hasDelete" style="margin: 5px;">删除</a-button>
-		<a-button @click="onRowButtonClick(rowButton, record, index)" :type="rowButton.buttonType" v-for="(rowButton,index) in gridListObject.listRowButtonCollection" :key="index + '_a'" v-if="record['BUTTON_CONDITION_DATA'][index]" style="margin: 5px;">
-			{{ rowButton.buttonText }}
-		</a-button>
+		<a-spin v-for="(rowButton,index) in gridListObject.listRowButtonCollection" :key="index + '_a'" v-if="record['BUTTON_CONDITION_DATA'][index]" :spinning="loadingIndex == index">
+			<a-button @click="onRowButtonClick(rowButton, record, index)" :type="rowButton.buttonType" style="margin: 5px;">
+				{{ rowButton.buttonText }}
+			</a-button>
+		</a-spin>
 		<a-modal v-model="richHtmlModal.isShow" @ok="richHtmlModal.isShow = false">
 			<div v-html="richHtmlModal.html"></div>
 		</a-modal>
@@ -70,6 +72,7 @@ export default {
 				isShow: false,
 				html: ""
 			},
+			loadingIndex: -1,
 			isShowCreateModal: []
 		};
 	},
@@ -82,67 +85,79 @@ export default {
 			this.$emit("loadpage");
 		},
 		async onRowButtonClick(rowButtonItem, record, index) {
-			let finalUrl = this.record.BUTTON_FINAL_URL_DATA[index];
-			let param = {
-				query: param,
-				row: record
-			};
-			if (rowButtonItem.type === "ListRowButtonApi") {
-				let res = await this.$api(finalUrl).method("POST").param(param).call();
-				if (!res.status)
-					this.$message.error(res.msg);
-				else
-					this.$message.success(res.data);
-				this.loadPage();
-			} else if (rowButtonItem.type === "ListRowButtonApiWithConfirm") {
-				this.$refs.confirmDialog.confirm("确认要这样做么？").then(async () => {
+			if(this.loadingIndex == index)
+				return;
+			this.loadingIndex = index;
+			try {
+				let finalUrl = this.record.BUTTON_FINAL_URL_DATA[index];
+				let param = {
+					query: param,
+					row: record
+				};
+				if (rowButtonItem.type === "ListRowButtonApi") {
 					let res = await this.$api(finalUrl).method("POST").param(param).call();
 					if (!res.status)
 						this.$message.error(res.msg);
 					else
 						this.$message.success(res.data);
 					this.loadPage();
-				});
-			} else if (rowButtonItem.type === "ListRowButtonNavigate") {
-				this.$emit('openurl', finalUrl);
-			} else if (rowButtonItem.type === "ListRowButtonRichText") {
-				const html = await this.$api(finalUrl).method("POST").param(param).call();
-				if (!html.status)
-					return this.$message.error(html.msg);
-				this.richHtmlModal.html = html.data;
-				this.richHtmlModal.isShow = true;
-			} else if (rowButtonItem.type === "ListRowButtonBlob") {
-				try {
-					let blob = await this.$api(finalUrl).method("POST").param(param).setBlob(true).call(true);
-					let filename = /filename=(.*)/.exec(blob.headers["content-disposition"]);
-					if(!filename)
-						filename = rowButtonItem.downloadFilename;
+				} else if (rowButtonItem.type === "ListRowButtonApiWithConfirm") {
+					this.$refs.confirmDialog.confirm("确认要这样做么？").then(async () => {
+						try {
+							this.loadingIndex = index;
+							let res = await this.$api(finalUrl).method("POST").param(param).call();
+							if (!res.status)
+								this.$message.error(res.msg);
+							else
+								this.$message.success(res.data);
+							this.loadPage();
+						} finally {
+							this.loadingIndex = -1;
+						}
+					});
+				} else if (rowButtonItem.type === "ListRowButtonNavigate") {
+					this.$emit('openurl', finalUrl);
+				} else if (rowButtonItem.type === "ListRowButtonRichText") {
+					const html = await this.$api(finalUrl).method("POST").param(param).call();
+					if (!html.status)
+						return this.$message.error(html.msg);
+					this.richHtmlModal.html = html.data;
+					this.richHtmlModal.isShow = true;
+				} else if (rowButtonItem.type === "ListRowButtonBlob") {
+					try {
+						let blob = await this.$api(finalUrl).method("POST").param(param).setBlob(true).call(true);
+						let filename = /filename=(.*)/.exec(blob.headers["content-disposition"]);
+						if (!filename)
+							filename = rowButtonItem.downloadFilename;
+						else
+							filename = filename[1];
+						blob = blob.data;
+						let downloadElement = document.createElement("a");
+						let href = window.URL.createObjectURL(blob);
+						downloadElement.href = href;
+						downloadElement.download = filename;
+						document.body.appendChild(downloadElement);
+						downloadElement.click();
+						document.body.removeChild(downloadElement);
+						window.URL.revokeObjectURL(href);
+					} catch (e) {
+						this.$message.error("文件导出时发生了错误：" + e, 5);
+					}
+				} else if (rowButtonItem.type === "ListRowButtonWithForm") {
+					this.isShowCreateModal[index] = true;
+					this.$forceUpdate();
+					this.$nextTick(() => {
+						this.$refs['modal_' + index][0].reset()
+					})
+				} else if (rowButtonItem.type === "ListRowButtonClipboard") {
+					let res = await this.$api(finalUrl).method("POST").param(param).call();
+					if (!res.status)
+						this.$message.error(res.msg);
 					else
-						filename = filename[1];
-					blob = blob.data;
-					let downloadElement = document.createElement("a");
-					let href = window.URL.createObjectURL(blob);
-					downloadElement.href = href;
-					downloadElement.download = filename;
-					document.body.appendChild(downloadElement);
-					downloadElement.click();
-					document.body.removeChild(downloadElement);
-					window.URL.revokeObjectURL(href);
-				} catch (e) {
-					this.$message.error("文件导出时发生了错误：" + e, 5);
+						this.doCopy(res.data);
 				}
-			} else if (rowButtonItem.type === "ListRowButtonWithForm") {
-				this.isShowCreateModal[index] = true;
-				this.$forceUpdate();
-				this.$nextTick(()=>{
-					this.$refs['modal_' + index][0].reset()
-				})
-			} else if (rowButtonItem.type === "ListRowButtonClipboard") {
-				let res = await this.$api(finalUrl).method("POST").param(param).call();
-				if (!res.status)
-					this.$message.error(res.msg);
-				else
-					this.doCopy(res.data);
+			} finally {
+				this.loadingIndex = -1;
 			}
 		},
 		doCopy(content) {

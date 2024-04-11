@@ -304,7 +304,7 @@ abstract class AntOAController extends Controller {
             $param = [];
             foreach ($gridEditForm->getEditColumnList() as $col) { //EditColumnBase
                 $param[$col->col] = $col->onGuestVal($req, $uid);
-                if (empty($param[$col->col]) && in_array($col->col, $gridCreateForm->getRequireColumns()))
+                if (empty($param[$col->col]) && in_array($col->col, $gridEditForm->getRequireColumns()))
                     throw new Exception("请填写" . $col->tip);
             }
             $hook = $this->gridObj->getSaveHook();

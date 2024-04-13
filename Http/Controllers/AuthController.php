@@ -34,7 +34,7 @@ class AuthController {
         try {
             $isLoginDiy = config("antoa.login_diy", false);
             if($isLoginDiy)
-                throw new Error("自定义登录情况下默认登录接口禁用");
+                throw new \Exception("自定义登录情况下默认登录接口禁用");
             $req = json_decode($request->getContent(), true);
             $username = $req["username"];
             $password = $req["password"];
@@ -103,7 +103,7 @@ class AuthController {
             $auth = new QiniuAuth($accessKey, $secretKey);
             $token = $auth->uploadToken($bucketName, null, 300, [
                 "detectMime" => 3,
-                "saveKey"    => '$(etag)' . '$(ext)'
+                "saveKey"    => date("Ymd") . '$(etag)' . '$(ext)'
             ], true);
             $routes = $this->makeRoutes($uid);
             $titleMap = $this->makeTitleMap();

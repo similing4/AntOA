@@ -20,4 +20,13 @@ class EditColumnDisplay extends EditColumnBase {
             "type" => "EditColumnDisplay"
         ]);
     }
+
+    /**
+     * 当客户端数据传入时
+     * @param $req
+     * @return string 返回需要接下来
+     */
+    public function onGuestVal($req, $uid) {
+        return "";
+    }
 }

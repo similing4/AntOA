@@ -3,7 +3,9 @@
 		<div class="alert">
 			<a-alert type="info" :show-icon="true" v-if="selectedRows">
 				<div class="message" slot="message">
-					已选择&nbsp;<a>{{selectedRows.length}}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
+					已选择&nbsp;<a>{{selectedRows.length}}</a>&nbsp;项
+					<a class="clear" @click="onClear">清空</a>
+					<a class="clear" @click="isColumnFilterModalShow=true" style="margin-right: 10px">菜单列</a>
 					<template v-for="(item, index) in needTotalList">
 						<div v-if="item.needTotal" :key="index">
 							{{item.title}}总计&nbsp;
@@ -13,23 +15,33 @@
 				</div>
 			</a-alert>
 		</div>
-		<a-table :bordered="bordered" :loading="loading" :columns="columns" :dataSource="dataSource" :rowKey="rowKey"
-			:pagination="pagination" :expandedRowKeys="expandedRowKeys" :expandedRowRender="expandedRowRender"
-			@change="onChange" :scroll="{x: true}"
-			:rowSelection="selectedRows ? {selectedRowKeys: selectedRowKeys, onChange: updateSelect} : undefined">
+		<a-table :bordered="bordered" :loading="loading" :columns="columnsDisplay" :dataSource="dataSource"
+				 :rowKey="rowKey"
+				 :pagination="pagination" :expandedRowKeys="expandedRowKeys" :expandedRowRender="expandedRowRender"
+				 @change="onChange" :scroll="{x: true}"
+				 :rowSelection="selectedRows ? {selectedRowKeys: selectedRowKeys, onChange: updateSelect} : undefined">
 			<template slot-scope="text, record, index" :slot="slot"
-				v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') ">
+					  v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') ">
 				<slot :name="slot" v-bind="{text, record, index}"></slot>
 			</template>
 			<template :slot="slot" v-for="slot in Object.keys($slots)">
 				<slot :name="slot"></slot>
 			</template>
 			<template slot-scope="record, index, indent, expanded"
-				:slot="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''">
+					  :slot="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''">
 				<slot v-bind="{record, index, indent, expanded}"
-					:name="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''"></slot>
+					  :name="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''"></slot>
 			</template>
 		</a-table>
+		<a-modal v-model="isColumnFilterModalShow" :footer="null">
+			<div>
+				<a-checkbox :checked="item.scopedSlots ? !hideColumnKeys.includes(item.scopedSlots.customRender) : true"
+							style="width: 100%" :disabled="!item.scopedSlots" v-for="item in columns"
+							@change="onItemSelectedChange(item)">
+					{{ item.title }}
+				</a-checkbox>
+			</div>
+		</a-modal>
 	</div>
 </template>
 
@@ -55,7 +67,9 @@
 		},
 		data() {
 			return {
-				needTotalList: []
+				needTotalList: [],
+				hideColumnKeys: [],
+				isColumnFilterModalShow: false
 			}
 		},
 		methods: {
@@ -83,6 +97,15 @@
 				this.$emit('change', pagination, filters, sorter, {
 					currentDataSource
 				})
+			},
+			onItemSelectedChange(item) {
+				if (!item.scopedSlots)
+					return;
+				if (this.hideColumnKeys.includes(item.scopedSlots.customRender))
+					this.hideColumnKeys = this.hideColumnKeys.filter(t => t !== item.scopedSlots.customRender);
+				else
+					this.hideColumnKeys.push(item.scopedSlots.customRender);
+				this.$forceUpdate();
 			}
 		},
 		created() {
@@ -113,6 +136,14 @@
 				return this.selectedRows.map(record => {
 					return (typeof this.rowKey === 'function') ? this.rowKey(record) : record[this.rowKey]
 				})
+			},
+			columnsDisplay() {
+				return this.columns.filter((t) => {
+					if (!t.scopedSlots)
+						return true;
+					return !this.hideColumnKeys.includes(t.scopedSlots.customRender);
+					//t.title
+				});
 			}
 		}
 	}
@@ -133,5 +164,9 @@
 				float: right;
 			}
 		}
+	}
+
+	/deep/ .ant-table-column-title {
+		white-space: nowrap;
 	}
 </style>
